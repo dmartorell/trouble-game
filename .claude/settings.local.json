@@ -5,7 +5,11 @@
       "Bash(mkdir:*)",
       "Bash(rm:*)",
       "Bash(npm install:*)",
-      "Bash(eza:*)"
+      "Bash(eza:*)",
+      "Bash(gh repo view:*)",
+      "Bash(gh issue list:*)",
+      "Bash(gh issue create:*)",
+      "Bash(gh label create:*)"
     ],
     "deny": [],
     "ask": []
