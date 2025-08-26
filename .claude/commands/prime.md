@@ -2,7 +2,8 @@
 > Follow the instructions to understand the project
 
 ## Run these commands
-- eza --tree --git-ignore
+- eza . --tree --level 5 -I "node_modules|dist" --git-ignore
+
 
 ## Read these files exclusively
 > Do not read any other files

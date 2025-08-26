@@ -4,7 +4,8 @@
       "Bash(cat:*)",
       "Bash(mkdir:*)",
       "Bash(rm:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(eza:*)"
     ],
     "deny": [],
     "ask": []
