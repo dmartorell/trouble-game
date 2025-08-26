@@ -27,6 +27,7 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
+          <string>troublegame</string>
           <string>com.dmartorell.troublegame</string>
         </array>
       </dict>
