@@ -38,3 +38,6 @@ yarn-error.*
 
 # ESLint cache
 .eslintcache
+
+# Project logs
+logs/
