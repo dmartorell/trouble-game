@@ -100,7 +100,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 
 ## Phase 2: Core Mechanics (Week 3-4)
 ### Die System
-- [ ] **#13** Create PopOMatic die component
+- ✅ **#13** Create PopOMatic die component
   - Design die container
   - Add pop button
   - Create die face display
@@ -286,13 +286,13 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 
 ### Phase Completion
 - ✅ Phase 1: Foundation (12/12 tasks) - 100% Complete
-- [ ] Phase 2: Core Mechanics (0/11 tasks)
+- 🚧 Phase 2: Core Mechanics (1/11 tasks) - 9% Complete
 - [ ] Phase 3: Special Features (0/10 tasks)
 - [ ] Phase 4: Polish & UX (0/8 tasks)
 - [ ] Phase 5: Testing & Optimization (0/4 tasks)
 
 ### Overall Progress
-**Completed:** 12/45 tasks (27%)
+**Completed:** 13/45 tasks (29%)
 **In Progress:** 0/45 tasks (0%)
 
 ### Milestones
@@ -340,9 +340,11 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 - ✅ **#10** Create BoardSVG component structure (Completed 2025-08-27)
 - ✅ **#11** Redesign board with authentic TROUBLE layout (Completed 2025-08-27)
 - ✅ **#12** Implement player areas and zones (Completed 2025-08-27)
+- ✅ **#13** Create PopOMatic die component (Completed 2025-08-27)
 
 **Navigation & Routing Section: 100% Complete**
 **State Management Section: 100% Complete (4/4 tasks)** ✅
 **Board Foundation Section: 100% Complete (3/3 tasks)** ✅
 **Phase 1 Foundation: COMPLETE** ✅
-Next: Begin Phase 2 - Core Mechanics (#13-#23)
+**Phase 2 Core Mechanics: STARTED** 🚧 (1/11 tasks)
+Next: Continue with die system (#14-#16) and peg system (#17-#20)

@@ -137,7 +137,7 @@ For complete rules, see [ia_docs/troubleRules.md](ia_docs/troubleRules.md)
 
 ## 📊 Development Status
 
-### Current Phase: Foundation (100% Complete) ✅
+### Current Phase: Core Mechanics (9% Complete) 🚧
 - ✅ Project initialization
 - ✅ Expo and React Native setup
 - ✅ TypeScript configuration
@@ -149,6 +149,7 @@ For complete rules, see [ia_docs/troubleRules.md](ia_docs/troubleRules.md)
 - ✅ State persistence with MMKV
 - ✅ Board SVG component structure
 - ✅ Authentic TROUBLE board layout
+- ✅ PopOMatic die component with haptic feedback
 
 ### Phase 1: Foundation (100% Complete - 12/12 tasks) ✅
 - ✅ Navigation structure with Expo Router
@@ -161,13 +162,19 @@ For complete rules, see [ia_docs/troubleRules.md](ia_docs/troubleRules.md)
 - ✅ Authentic TROUBLE board redesign (Issue #11 - Completed)
 - ✅ Player areas and zones implementation (Issue #12 - Completed)
 
-**Ready for Phase 2: Core Mechanics** →
-
-### Phase 2: Core Mechanics (Planned)
-- [ ] Die component with animations
+### Phase 2: Core Mechanics (9% Complete - 1/11 tasks) 🚧
+- ✅ PopOMatic die component (Issue #13 - Completed)
+- [ ] Die roll animations and physics
 - [ ] Peg movement system
-- [ ] Turn management
-- [ ] Basic game rules implementation
+- [ ] Turn management logic
+
+**Current Focus: Die System & Peg Mechanics**
+
+### Phase 3: Special Features (Planned)
+- [ ] Double Trouble spaces implementation
+- [ ] Warp space teleportation
+- [ ] Roll of 1 special rule
+- [ ] FINISH zone exact count validation
 
 ### Phase 3: Special Features (Planned)
 - [ ] Special spaces (Double Trouble, Warp)
