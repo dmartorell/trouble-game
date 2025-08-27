@@ -26,7 +26,10 @@
       "Bash(git log:*)",
       "Bash(npm start)",
       "Bash(npx expo prebuild:*)",
-      "Bash(npm run ios:*)"
+      "Bash(npm run ios:*)",
+      "Bash(git checkout:*)",
+      "Bash(mv:*)",
+      "Bash(npx expo start:*)"
     ],
     "deny": [],
     "ask": []

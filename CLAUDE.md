@@ -35,7 +35,7 @@ This is a React Native mobile game called "trouble-game" built with Expo and Typ
 - **assets/** - App icons, splash screens, and static assets
 - **android/** - Native Android project files and configuration
 - **ios/** - Native iOS project files and Xcode workspace
-- **ia_docs/** - Documentation directory (currently contains empty troubleRules.md)
+- **ai_docs/** - Documentation directory (currently contains empty troubleRules.md)
 
 ## Configuration Details
 

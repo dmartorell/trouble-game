@@ -27,6 +27,10 @@ export default [
         global: 'readonly',
         process: 'readonly',
         Buffer: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
       },
     },
     plugins: {
@@ -36,9 +40,9 @@ export default [
     },
     rules: {
       // TypeScript rules
-    ...tsPlugin.configs.recommended.rules,
-    ...tsPlugin.configs['recommended-requiring-type-checking'].rules,
-  '@typescript-eslint/no-unused-vars': 'error',
+      ...tsPlugin.configs.recommended.rules,
+      ...tsPlugin.configs['recommended-requiring-type-checking'].rules,
+      '@typescript-eslint/no-unused-vars': 'error',
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
