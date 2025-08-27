@@ -308,7 +308,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 - Add comments for blockers or dependencies
 - Track actual vs estimated time for future planning
 - Create GitHub issues for each task when starting development
-- **Board Design Reference**: See ia_docs/images/ for authentic TROUBLE board layout examples
+- **Board Design Reference**: See ai_docs/images/ for authentic TROUBLE board layout examples
 
 ## Task Labels
 - **High Priority:** Core functionality that blocks other work

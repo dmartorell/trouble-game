@@ -1,3 +1,5 @@
+Prime Claude with essential project context from key files and structure
+
 # Context Prime
 > Follow the instructions to understand the project
 
@@ -8,7 +10,11 @@
 ## Read these files exclusively
 > Do not read any other files
 - package.json
-- src/*
 - README.md
 - MVP_TASK_MANAGER.md
-- ai_docs/*
+- ai_docs/troubleRules.md
+<!-- - src/* -->
+
+## Output
+> No feedback or report is necessary. Only respond with:
+Project Context Primer Complete ✅

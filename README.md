@@ -105,7 +105,7 @@ trouble-game/
 ├── ios/                   # iOS native code with dependencies
 ├── android/              # Android native code
 ├── specs/                # Development specifications
-└── ia_docs/              # Game rules documentation
+└── ai_docs/              # Game rules documentation
 ```
 
 ### Technology Stack
@@ -133,7 +133,7 @@ trouble-game/
 - **Roll of 1**: All other players move a peg to START
 - **Exact Count**: Must roll exact number to enter FINISH
 
-For complete rules, see [ia_docs/troubleRules.md](ia_docs/troubleRules.md)
+For complete rules, see [ai_docs/troubleRules.md](ai_docs/troubleRules.md)
 
 ## 📊 Development Status
 
@@ -205,7 +205,7 @@ For complete rules, see [ia_docs/troubleRules.md](ia_docs/troubleRules.md)
 ## 📝 Documentation
 
 - [Development Specification](specs/trouble-game-development-spec.md) - Complete technical spec
-- [Game Rules](ia_docs/troubleRules.md) - Official game rules
+- [Game Rules](ai_docs/troubleRules.md) - Official game rules
 - [Claude Instructions](CLAUDE.md) - AI assistant guidelines
 
 ## 🤝 Contributing
