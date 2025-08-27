@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { router } from 'expo-router';
 
-import { Player } from '@/utils/types';
+import { Player } from '@/models';
+import { useGameStore } from '@/store';
 
 export const useGameSetup = () => {
+  const initializeGame = useGameStore(state => state.initializeGame);
+
   const [players, setPlayers] = useState<Player[]>([
     { id: 'player-1', name: 'Player 1', color: 'red', isActive: true },
     { id: 'player-2', name: 'Player 2', color: 'blue', isActive: true },
@@ -27,6 +30,10 @@ export const useGameSetup = () => {
     const activePlayers = players.filter(p => p.isActive);
 
     if (activePlayers.length >= 2) {
+      // Initialize game state in store
+      initializeGame(players);
+
+      // Navigate to game
       router.replace('/game/play');
     }
   };
