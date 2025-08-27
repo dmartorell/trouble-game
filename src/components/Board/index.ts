@@ -1,0 +1,1 @@
+export { BoardSVG } from './BoardSVG';
