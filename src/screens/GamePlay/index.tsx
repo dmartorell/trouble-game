@@ -23,7 +23,7 @@ export const GamePlayScreen = () => {
       </View>
 
       <View style={styles.gameBoard}>
-        <BoardSVG />
+        <BoardSVG showSpaceNumbers={false} />
       </View>
 
       <View style={styles.dieContainer}>

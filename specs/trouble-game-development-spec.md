@@ -14,12 +14,14 @@ TROUBLE is a classic board game where 2-4 players race their pegs around the boa
 
 ### Core Features
 1. **Game Board**
-   - 56-space track with special spaces
-   - HOME areas for 2 players (opposite sides)
-   - START positions for each player
-   - FINISH zones with 4 spaces each
-   - Double Trouble (XX) spaces for extra turns
-   - Warp space pairs for instant transportation
+   - **Main Track**: 28 spaces in circular layout around the board
+   - **Double Trouble (XX) Spaces**: 4 spaces at positions 0, 7, 14, 21 (every 7 spaces starting from 0)
+   - **START Spaces**: 4 colored spaces at positions 25=RED, 4=BLUE, 11=GREEN, 18=YELLOW (part of main 28-space track)
+   - **HOME Areas**: 4 corner areas with 4 circular spaces each for player pegs
+   - **FINISH Zones**: 4 tracks extending from main track toward center, 4 spaces each
+   - **Warp Spaces**: 4 spaces positioned right before START spaces at positions 3, 10, 17, 24
+     - Warp pairs connect diagonally: 3↔17 and 10↔24
+     - Located at spaces immediately before START positions in the main track
 
 2. **Game Mechanics**
    - POP-O-MATIC die with animated 3D effect

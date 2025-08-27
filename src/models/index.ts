@@ -29,6 +29,12 @@ export interface Space {
   warpPairId?: number;
 }
 
+export interface SpacePosition {
+  x: number;
+  y: number;
+  index: number;
+}
+
 export interface GameSettings {
   soundEnabled: boolean;
   hapticsEnabled: boolean;
