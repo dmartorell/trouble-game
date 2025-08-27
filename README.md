@@ -9,7 +9,7 @@ TROUBLE is a classic board game where 2-4 players race their pegs around the boa
 ### Key Features
 - **POP-O-MATIC Die**: Animated 3D die roller
 - **Strategic Gameplay**: Send opponents back to HOME by landing on them
-- **Special Spaces**: 
+- **Special Spaces**:
   - Double Trouble (XX) for extra turns
   - Warp spaces for instant teleportation
 - **Special Rules**: Roll of 1 lets all other players move a peg to START
@@ -27,7 +27,7 @@ TROUBLE is a classic board game where 2-4 players race their pegs around the boa
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 - Expo CLI
 - iOS Simulator (for Mac) or Expo Go app on iPhone
