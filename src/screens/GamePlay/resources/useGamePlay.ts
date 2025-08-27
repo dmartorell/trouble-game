@@ -5,7 +5,8 @@ export const useGamePlay = () => {
   const [currentTurn] = useState('Red');
 
   const exitGame = () => {
-    router.replace('/');
+    // Go back to home screen (should go back to original home since GameSetup was replaced)
+    router.back();
   };
 
   const popDie = () => {
