@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { GameState, Player, Peg, Turn, GameStore } from '@/models';
 import { GAME_CONFIG } from '@/constants/game';
 import { createPersistMiddleware, PersistApi } from './middleware/persistence';
+import { generateDiceRoll, applyStreakBreaker, createDieRollResult } from '@/utils/diceUtils';
 
 export const useGameStore = create<GameStore & PersistApi>(
   createPersistMiddleware<GameStore>(
@@ -12,6 +13,10 @@ export const useGameStore = create<GameStore & PersistApi>(
       pegs: [],
       currentTurn: null,
       winner: null,
+      dieState: {
+        lastRoll: null,
+        consecutiveRepeats: 0,
+      },
 
       // Actions
       initializeGame: (selectedPlayers: Player[]) => {
@@ -64,28 +69,28 @@ export const useGameStore = create<GameStore & PersistApi>(
       },
 
       rollDie: (): Promise<number> => {
-        // Simulate die roll with animation delay
         return new Promise((resolve) => {
-          // Simulate die roll with animation delay
-          const rollValue = Math.floor(Math.random() * 6) + 1;
+          const { dieState, currentTurn } = get();
 
-          // Update current turn with the roll
-          const { currentTurn } = get();
+          // Generate roll with streak breaker logic
+          const initialRoll = generateDiceRoll();
+          const { result, consecutiveRepeats } = applyStreakBreaker(initialRoll, dieState);
 
+          // Update die state
+          set({ dieState: { lastRoll: result, consecutiveRepeats } });
+
+          // Update current turn if exists
           if (currentTurn) {
             set({
               currentTurn: {
                 ...currentTurn,
-                dieRoll: {
-                  value: rollValue,
-                  timestamp: Date.now(),
-                },
-                movesAvailable: rollValue === 6 ? rollValue : rollValue,
+                dieRoll: createDieRollResult(result),
+                movesAvailable: result,
               },
             });
           }
 
-          resolve(rollValue);
+          resolve(result);
         });
       },
 
@@ -138,6 +143,7 @@ export const useGameStore = create<GameStore & PersistApi>(
           pegs: [],
           currentTurn: null,
           winner: null,
+          dieState: { lastRoll: null, consecutiveRepeats: 0 },
         });
       },
 
@@ -166,6 +172,7 @@ export const useGameStore = create<GameStore & PersistApi>(
         pegs: state.pegs,
         currentTurn: state.currentTurn,
         winner: state.winner,
+        dieState: state.dieState,
       }),
     },
   ),

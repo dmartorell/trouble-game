@@ -1,13 +1,12 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 
 import { useGamePlay } from './resources/useGamePlay';
-import { BoardSVG } from '@/components';
+import { BoardSVG, PopOMatic } from '@/components';
 
 export const GamePlayScreen = () => {
   const {
     currentTurn,
     exitGame,
-    popDie,
   } = useGamePlay();
 
   return (
@@ -27,9 +26,10 @@ export const GamePlayScreen = () => {
       </View>
 
       <View style={styles.dieContainer}>
-        <Pressable style={styles.dieButton} onPress={popDie}>
-          <Text style={styles.dieButtonText}>POP!</Text>
-        </Pressable>
+        <PopOMatic
+          size={120}
+          onRoll={(value) => console.log('Die rolled:', value)}
+        />
       </View>
 
       <View style={styles.playerInfo}>
@@ -88,24 +88,6 @@ const styles = StyleSheet.create({
   dieContainer: {
     alignItems: 'center',
     paddingVertical: 20,
-  },
-  dieButton: {
-    width: 120,
-    height: 120,
-    backgroundColor: '#FFA502',
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    elevation: 10,
-  },
-  dieButtonText: {
-    fontSize: 32,
-    fontWeight: '900',
-    color: '#1a1a2e',
   },
   playerInfo: {
     flexDirection: 'row',
