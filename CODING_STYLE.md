@@ -124,7 +124,7 @@ export const calculateDistance = (x1: number, y1: number, x2: number, y2: number
 - Use proper typing for all functions and variables
 
 ### DRY Principle (Don't Repeat Yourself)
-- **Reuse existing interfaces** - Always check `src/utils/types.ts` before creating new type definitions
+- **Reuse existing interfaces** - Always check `src/models/index.ts` before creating new type definitions
 - **Reuse existing components** - Check `src/components/` for existing components before creating new ones
 - **Avoid code duplication** - If similar logic exists elsewhere, extract it to a shared utility or hook
 - **Import shared types** - Never duplicate interface/type definitions across files
@@ -132,7 +132,7 @@ export const calculateDistance = (x1: number, y1: number, x2: number, y2: number
 **Examples:**
 ```typescript
 // ✅ CORRECT - Use existing types
-import { Player, GameState } from '@/utils/types';
+import { Player, GameState } from '@/models';
 
 // ❌ INCORRECT - Duplicating existing interface
 interface Player {

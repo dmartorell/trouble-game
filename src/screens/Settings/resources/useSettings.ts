@@ -1,13 +1,12 @@
-import { useState } from 'react';
+import { useSettingsStore } from '@/store';
 
 export const useSettings = () => {
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const [hapticsEnabled, setHapticsEnabled] = useState(true);
-  const [darkMode, setDarkMode] = useState(true);
-
-  const toggleSound = () => setSoundEnabled(!soundEnabled);
-  const toggleHaptics = () => setHapticsEnabled(!hapticsEnabled);
-  const toggleDarkMode = () => setDarkMode(!darkMode);
+  const {
+    settings,
+    toggleSound,
+    toggleHaptics,
+    toggleDarkMode,
+  } = useSettingsStore();
 
   const resetStatistics = () => {
     // TODO: Implement statistics reset
@@ -15,9 +14,9 @@ export const useSettings = () => {
   };
 
   return {
-    soundEnabled,
-    hapticsEnabled,
-    darkMode,
+    soundEnabled: settings.soundEnabled,
+    hapticsEnabled: settings.hapticsEnabled,
+    darkMode: settings.darkMode,
     toggleSound,
     toggleHaptics,
     toggleDarkMode,

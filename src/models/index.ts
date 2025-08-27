@@ -46,3 +46,39 @@ export interface Turn {
   movesAvailable: number;
   extraTurnsRemaining: number;
 }
+
+// Store Interfaces
+export interface GameStore {
+  // Game State
+  gameState: GameState;
+  players: Player[];
+  pegs: Peg[];
+  currentTurn: Turn | null;
+  winner: string | null;
+
+  // Actions
+  initializeGame: (selectedPlayers: Player[]) => void;
+  setGameState: (state: GameState) => void;
+  setCurrentTurn: (turn: Turn) => void;
+  rollDie: () => Promise<number>;
+  movePeg: (pegId: string, newPosition: number) => void;
+  endTurn: () => void;
+  resetGame: () => void;
+
+  // Getters
+  getActivePlayers: () => Player[];
+  getCurrentPlayer: () => Player | null;
+  getPlayerPegs: (playerId: string) => Peg[];
+}
+
+export interface SettingsStore {
+  // Settings State
+  settings: GameSettings;
+
+  // Actions
+  updateSettings: (newSettings: Partial<GameSettings>) => void;
+  toggleSound: () => void;
+  toggleHaptics: () => void;
+  toggleDarkMode: () => void;
+  resetSettings: () => void;
+}
