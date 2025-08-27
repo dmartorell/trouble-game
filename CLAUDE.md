@@ -45,9 +45,14 @@ This is a React Native mobile game called "trouble-game" built with Expo and Typ
 - **New Architecture**: Enabled (React Native's new architecture/Fabric)
 - **Edge-to-edge**: Enabled on Android
 
+## Coding Standards
+
+**IMPORTANT:** All code must strictly follow the guidelines defined in [CODING_STYLE.md](./CODING_STYLE.md). This includes:
+
+
 ## Development Notes
 
-- The project is currently in initial state with default Expo template code
+- The project uses Expo Router v5 for file-based navigation
 - TypeScript is configured with strict mode for better type safety
 - The project includes both native iOS and Android directories for custom native code
-- Expo Router is configured as a plugin for file-based navigation
+- All screens must follow the custom hook pattern for state management

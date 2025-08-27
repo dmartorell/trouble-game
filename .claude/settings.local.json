@@ -9,7 +9,11 @@
       "Bash(gh repo view:*)",
       "Bash(gh issue list:*)",
       "Bash(gh issue create:*)",
-      "Bash(gh label create:*)"
+      "Bash(gh label create:*)",
+      "Bash(npm run lint)",
+      "Bash(npm run lint:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []

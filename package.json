@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
-    "prebuild": "npx expo prebuild",
+  "prebuild": "npx expo prebuild",
+  "prebuild:clean": "npx expo prebuild --clean",
     "start": "expo start --dev-client",
     "android": "expo run:android",
-  "ios": "npx expo run:ios",
+    "ios": "npx expo run:ios",
     "web": "expo start --web",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
     "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix"
@@ -15,11 +16,13 @@
     "expo": "~53.0.22",
     "expo-av": "~15.1.7",
     "expo-haptics": "~14.1.4",
-    "expo-router": "~5.1.5",
+    "expo-router": "~5.1.4",
     "expo-status-bar": "~2.2.3",
     "expo-system-ui": "^5.0.10",
     "react": "19.0.0",
-    "react-native": "0.79.6"
+    "react-native": "0.79.6",
+    "react-native-safe-area-context": "^5.6.1",
+    "react-native-screens": "^4.15.3"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

@@ -74,18 +74,38 @@ Or scan the QR code with Expo Go app on your iPhone.
 
 ```
 trouble-game/
-├── src/                    # Source code (to be created)
-│   ├── app/               # Expo Router screens
-│   ├── components/        # React components
-│   ├── store/            # State management (Zustand)
-│   ├── utils/            # Game logic and helpers
-│   ├── constants/        # Configuration and constants
-│   └── hooks/            # Custom React hooks
+├── src/                    # Source code ✅ IMPLEMENTED
+│   ├── app/               # Expo Router v5 file-based routing ✅
+│   │   ├── (tabs)/        # Tab navigation group
+│   │   │   ├── _layout.tsx    # Tab layout configuration
+│   │   │   ├── rules.tsx      # Rules screen route
+│   │   │   └── stats.tsx      # Statistics screen route
+│   │   ├── game/          # Game flow screens
+│   │   │   ├── setup.tsx      # Game setup route
+│   │   │   └── play.tsx       # Game play route
+│   │   ├── settings/      # Settings screens
+│   │   │   └── index.tsx      # Settings route
+│   │   ├── _layout.tsx    # Root stack layout
+│   │   └── index.tsx      # Home screen route
+│   ├── screens/           # Screen components with custom hooks ✅
+│   │   ├── Home/          # Main menu screen
+│   │   ├── GameSetup/     # Player selection screen
+│   │   ├── GamePlay/      # Game board screen (placeholder)
+│   │   ├── Settings/      # App settings screen
+│   │   ├── Rules/         # Game rules screen
+│   │   └── Stats/         # Statistics screen
+│   ├── constants/         # Game configuration ✅
+│   │   └── game.ts        # Colors, config, animation constants
+│   ├── utils/             # Type definitions ✅
+│   │   └── types.ts       # TypeScript interfaces and types
+│   ├── components/        # Reusable components (to be created)
+│   ├── store/            # Zustand state management (planned)
+│   └── hooks/            # Global custom hooks (to be created)
 ├── assets/                # Images, sounds, animations
-├── ios/                   # iOS native code
+├── ios/                   # iOS native code with dependencies ✅
 ├── android/              # Android native code
 ├── specs/                # Development specifications
-└── ia_docs/              # Game rules documentation
+└── ia_docs/              # Game rules documentation ✅
 ```
 
 ### Technology Stack
@@ -117,17 +137,23 @@ For complete rules, see [ia_docs/troubleRules.md](ia_docs/troubleRules.md)
 
 ## 📊 Development Status
 
-### Current Phase: Initial Setup ✅
+### Current Phase: Foundation (75% Complete) ✅
 - [x] Project initialization
 - [x] Expo and React Native setup
 - [x] TypeScript configuration
 - [x] Development specifications
+- [x] Expo Router v5 file-based navigation
+- [x] All core screens implemented
+- [x] Custom hook pattern established
+- [x] Game constants and types defined
 
 ### Phase 1: Foundation (In Progress)
-- [ ] Navigation structure with Expo Router
+- [x] Navigation structure with Expo Router ✅ COMPLETED
+- [x] Basic component structure ✅ COMPLETED
+- [x] Screen implementations with custom hooks ✅ COMPLETED
+- [x] TypeScript configuration and types ✅ COMPLETED
 - [ ] Zustand store implementation
 - [ ] Board SVG creation
-- [ ] Basic component structure
 
 ### Phase 2: Core Mechanics (Planned)
 - [ ] Die component with animations

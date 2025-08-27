@@ -1,0 +1,48 @@
+export type PlayerColor = 'red' | 'blue' | 'yellow' | 'green';
+
+export type GameState = 'setup' | 'playing' | 'paused' | 'finished';
+
+export type SpaceType = 'normal' | 'start' | 'home' | 'finish' | 'double-trouble' | 'warp';
+
+export interface Player {
+  id: string;
+  name: string;
+  color: PlayerColor;
+  isActive: boolean;
+  isAI?: boolean;
+}
+
+export interface Peg {
+  id: string;
+  playerId: string;
+  position: number;
+  isInHome: boolean;
+  isInFinish: boolean;
+  finishPosition?: number;
+}
+
+export interface Space {
+  id: number;
+  type: SpaceType;
+  x: number;
+  y: number;
+  warpPairId?: number;
+}
+
+export interface GameSettings {
+  soundEnabled: boolean;
+  hapticsEnabled: boolean;
+  darkMode: boolean;
+}
+
+export interface DieRollResult {
+  value: number;
+  timestamp: number;
+}
+
+export interface Turn {
+  playerId: string;
+  dieRoll: DieRollResult | null;
+  movesAvailable: number;
+  extraTurnsRemaining: number;
+}
