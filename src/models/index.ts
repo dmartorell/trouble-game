@@ -53,6 +53,11 @@ export interface Turn {
   extraTurnsRemaining: number;
 }
 
+export interface DieState {
+  lastRoll: number | null;
+  consecutiveRepeats: number;
+}
+
 // Store Interfaces
 export interface GameStore {
   // Game State
@@ -61,6 +66,7 @@ export interface GameStore {
   pegs: Peg[];
   currentTurn: Turn | null;
   winner: string | null;
+  dieState: DieState;
 
   // Actions
   initializeGame: (selectedPlayers: Player[]) => void;
