@@ -137,7 +137,7 @@ For complete rules, see [ai_docs/troubleRules.md](ai_docs/troubleRules.md)
 
 ## 📊 Development Status
 
-### Current Phase: Core Mechanics (9% Complete) 🚧
+### Current Phase: Core Mechanics (18% Complete) 🚧
 - ✅ Project initialization
 - ✅ Expo and React Native setup
 - ✅ TypeScript configuration
@@ -150,6 +150,7 @@ For complete rules, see [ai_docs/troubleRules.md](ai_docs/troubleRules.md)
 - ✅ Board SVG component structure
 - ✅ Authentic TROUBLE board layout
 - ✅ PopOMatic die component with haptic feedback
+- ✅ 3D die roll animation with React Native Reanimated
 
 ### Phase 1: Foundation (100% Complete - 12/12 tasks) ✅
 - ✅ Navigation structure with Expo Router
@@ -162,9 +163,9 @@ For complete rules, see [ai_docs/troubleRules.md](ai_docs/troubleRules.md)
 - ✅ Authentic TROUBLE board redesign (Issue #11 - Completed)
 - ✅ Player areas and zones implementation (Issue #12 - Completed)
 
-### Phase 2: Core Mechanics (9% Complete - 1/11 tasks) 🚧
+### Phase 2: Core Mechanics (18% Complete - 2/11 tasks) 🚧
 - ✅ PopOMatic die component (Issue #13 - Completed)
-- [ ] Die roll animations and physics
+- ✅ 3D die roll animation with physics (Issue #14 - Completed)
 - [ ] Peg movement system
 - [ ] Turn management logic
 
