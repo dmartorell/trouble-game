@@ -63,15 +63,38 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
   - Create component hierarchy
   - Add responsive scaling
 
-- [ ] **#11** Generate 56-space track path (IN PROGRESS) ⚠️
-  - Calculate space positions
-  - Create path coordinates
-  - Add space numbering system
+- [ ] **#11** Redesign board with authentic TROUBLE layout (IN PROGRESS) ⚠️
+  - **Track Layout Redesign**
+    - Replace rectangular track with rounded square layout
+    - Implement proper corner curves instead of sharp angles
+    - Calculate authentic space positions following curved path
+    - Adjust space distribution to match real board proportions
+  - **Special Spaces Implementation**
+    - Position 4 Double Trouble (XX) spaces with oval markers
+    - Create 4 WARP spaces with diagonal crossing pairs
+    - Add proper visual styling for special spaces
+  - **Central Die Area**
+    - Replace simple circle with square black Pop-O-Matic housing
+    - Add proper dimensions and 3D effect styling
+    - Position centrally with authentic proportions
 
-- [ ] **#12** Add player HOME and START areas (IN PROGRESS) ⚠️
-  - Create HOME zones (4 spots each)
-  - Position START spaces
-  - Add FINISH zones
+- [ ] **#12** Implement player areas and zones (IN PROGRESS) ⚠️
+  - **Corner Sections (4 Players)**
+    - Create triangular colored backgrounds (Red, Blue, Green, Yellow)
+    - Position corners with proper 90-degree sections
+    - Add player branding/labels in each corner
+  - **HOME Areas**
+    - Create 4 circular HOME spaces per player corner
+    - Implement proper spacing within triangular sections
+    - Add visual depth effects for peg holes
+  - **START Positions**
+    - Position one START space per player at track entry
+    - Add directional arrows and player color coding
+    - Mark with distinctive border styling
+  - **FINISH Areas**
+    - Create linear tracks from main path toward center
+    - Implement 4 spaces per player FINISH track
+    - Add proper alignment and entry indicators
 
 ---
 
@@ -285,6 +308,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 - Add comments for blockers or dependencies
 - Track actual vs estimated time for future planning
 - Create GitHub issues for each task when starting development
+- **Board Design Reference**: See ia_docs/images/ for authentic TROUBLE board layout examples
 
 ## Task Labels
 - **High Priority:** Core functionality that blocks other work
@@ -318,5 +342,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 **Navigation & Routing Section: 100% Complete**
 **State Management Section: 100% Complete (4/4 tasks)** ✅
 **Board Foundation Section: 33% Complete (1/3 tasks)**
-**In Progress:** #11 (Track path generation) and #12 (HOME/START areas) - GitHub issues open
-Next: Complete track path generation (#11) and HOME/START areas (#12)
+**In Progress:** 
+- #11 (Board redesign with authentic TROUBLE layout) - Expanded with detailed sub-tasks
+- #12 (Player areas and zones implementation) - Expanded with corner sections, HOME, START, and FINISH areas
+Next: Complete authentic board redesign (#11) and implement all player areas (#12)
