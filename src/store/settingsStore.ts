@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { GameSettings, SettingsStore } from '@/models';
+import { createPersistMiddleware, PersistApi } from './middleware/persistence';
 
 const defaultSettings: GameSettings = {
   soundEnabled: true,
@@ -7,49 +8,58 @@ const defaultSettings: GameSettings = {
   darkMode: true,
 };
 
-export const useSettingsStore = create<SettingsStore>((set) => ({
-  // Initial State
-  settings: defaultSettings,
+export const useSettingsStore = create<SettingsStore & PersistApi>(
+  createPersistMiddleware<SettingsStore>(
+    (set) => ({
+      // Initial State
+      settings: defaultSettings,
 
-  // Actions
-  updateSettings: (newSettings: Partial<GameSettings>) => {
-    set(state => ({
-      settings: {
-        ...state.settings,
-        ...newSettings,
+      // Actions
+      updateSettings: (newSettings: Partial<GameSettings>) => {
+        set(state => ({
+          settings: {
+            ...state.settings,
+            ...newSettings,
+          },
+        }));
       },
-    }));
-  },
 
-  toggleSound: () => {
-    set(state => ({
-      settings: {
-        ...state.settings,
-        soundEnabled: !state.settings.soundEnabled,
+      toggleSound: () => {
+        set(state => ({
+          settings: {
+            ...state.settings,
+            soundEnabled: !state.settings.soundEnabled,
+          },
+        }));
       },
-    }));
-  },
 
-  toggleHaptics: () => {
-    set(state => ({
-      settings: {
-        ...state.settings,
-        hapticsEnabled: !state.settings.hapticsEnabled,
+      toggleHaptics: () => {
+        set(state => ({
+          settings: {
+            ...state.settings,
+            hapticsEnabled: !state.settings.hapticsEnabled,
+          },
+        }));
       },
-    }));
-  },
 
-  toggleDarkMode: () => {
-    set(state => ({
-      settings: {
-        ...state.settings,
-        darkMode: !state.settings.darkMode,
+      toggleDarkMode: () => {
+        set(state => ({
+          settings: {
+            ...state.settings,
+            darkMode: !state.settings.darkMode,
+          },
+        }));
       },
-    }));
-  },
 
-  resetSettings: () => {
-    set({ settings: defaultSettings });
-  },
-}));
-
+      resetSettings: () => {
+        set({ settings: defaultSettings });
+      },
+    }),
+    {
+      name: 'trouble-settings-store',
+      partialize: (state) => ({
+        settings: state.settings,
+      }),
+    },
+  ),
+);

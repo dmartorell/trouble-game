@@ -50,7 +50,7 @@ export const RootLayout = () => {
           }}
         />
         <Stack.Screen
-          name="settings"
+          name="settings/index"
           options={{
             title: 'Settings',
             presentation: 'modal',
