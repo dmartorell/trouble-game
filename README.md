@@ -148,6 +148,7 @@ For complete rules, see [ia_docs/troubleRules.md](ia_docs/troubleRules.md)
 - ✅ Game constants and types defined
 - ✅ State persistence with MMKV
 - ✅ Board SVG component structure
+- ✅ Authentic TROUBLE board layout
 
 ### Phase 1: Foundation (100% Complete - 12/12 tasks) ✅
 - ✅ Navigation structure with Expo Router
@@ -175,7 +176,7 @@ For complete rules, see [ia_docs/troubleRules.md](ia_docs/troubleRules.md)
 - [ ] Capture animations
 
 ### Phase 4: Polish (Planned)
-- [ ]. Advanced animations
+- [ ] Advanced animations
 - [ ] Sound effects integration
 - [ ] Haptic feedback
 - [ ] UI/UX refinements
