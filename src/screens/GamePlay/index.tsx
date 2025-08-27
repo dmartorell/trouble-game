@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useGamePlay } from './resources/useGamePlay';
+import { BoardSVG } from '@/components';
 
 export const GamePlayScreen = () => {
   const {
@@ -23,8 +24,7 @@ export const GamePlayScreen = () => {
       </View>
 
       <View style={styles.gameBoard}>
-        <Text style={styles.placeholder}>Game Board</Text>
-        <Text style={styles.placeholderSub}>Board component will be implemented in Phase 1</Text>
+        <BoardSVG />
       </View>
 
       <View style={styles.dieContainer}>
@@ -84,16 +84,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 2,
     borderColor: '#333',
-  },
-  placeholder: {
-    fontSize: 32,
-    color: '#666',
-    fontWeight: '700',
-  },
-  placeholderSub: {
-    fontSize: 14,
-    color: '#555',
-    marginTop: 8,
   },
   dieContainer: {
     alignItems: 'center',
