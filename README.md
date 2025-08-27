@@ -74,8 +74,8 @@ Or scan the QR code with Expo Go app on your iPhone.
 
 ```
 trouble-game/
-├── src/                    # Source code ✅ IMPLEMENTED
-│   ├── app/               # Expo Router v5 file-based routing ✅
+├── src/                    # Source code
+│   ├── app/               # Expo Router v5 file-based routing
 │   │   ├── (tabs)/        # Tab navigation group
 │   │   │   ├── _layout.tsx    # Tab layout configuration
 │   │   │   ├── rules.tsx      # Rules screen route
@@ -87,25 +87,25 @@ trouble-game/
 │   │   │   └── index.tsx      # Settings route
 │   │   ├── _layout.tsx    # Root stack layout
 │   │   └── index.tsx      # Home screen route
-│   ├── screens/           # Screen components with custom hooks ✅
+│   ├── screens/           # Screen components with custom hooks
 │   │   ├── Home/          # Main menu screen
 │   │   ├── GameSetup/     # Player selection screen
 │   │   ├── GamePlay/      # Game board screen (placeholder)
 │   │   ├── Settings/      # App settings screen
 │   │   ├── Rules/         # Game rules screen
 │   │   └── Stats/         # Statistics screen
-│   ├── constants/         # Game configuration ✅
+│   ├── constants/         # Game configuration
 │   │   └── game.ts        # Colors, config, animation constants
-│   ├── utils/             # Type definitions ✅
+│   ├── utils/             # Type definitions
 │   │   └── types.ts       # TypeScript interfaces and types
 │   ├── components/        # Reusable components (to be created)
 │   ├── store/            # Zustand state management (planned)
 │   └── hooks/            # Global custom hooks (to be created)
 ├── assets/                # Images, sounds, animations
-├── ios/                   # iOS native code with dependencies ✅
+├── ios/                   # iOS native code with dependencies
 ├── android/              # Android native code
 ├── specs/                # Development specifications
-└── ia_docs/              # Game rules documentation ✅
+└── ia_docs/              # Game rules documentation
 ```
 
 ### Technology Stack
