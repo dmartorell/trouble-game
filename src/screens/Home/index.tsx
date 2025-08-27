@@ -1,11 +1,10 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link } from 'expo-router';
 
 export const HomeScreen = () => {
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.content}>
         <View style={styles.logoContainer}>
           <Text style={styles.title}>TROUBLE</Text>
@@ -36,7 +35,7 @@ export const HomeScreen = () => {
           <Text style={styles.footerText}>v1.0.0</Text>
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -44,6 +43,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#16213e',
+    paddingTop: 20,
   },
   content: {
     flex: 1,

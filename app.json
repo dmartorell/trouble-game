@@ -6,12 +6,19 @@
         "foregroundImage": "./assets/adaptive-icon.png"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.dmartorell.troublegame"
+      "package": "com.dmartorell.troublegame",
+      "statusBar": {
+        "hidden": true
+      }
     },
     "icon": "./assets/icon.png",
     "ios": {
       "bundleIdentifier": "com.dmartorell.troublegame",
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "UIStatusBarHidden": true,
+        "UIViewControllerBasedStatusBarAppearance": false
+      }
     },
     "name": "trouble-game",
     "newArchEnabled": true,

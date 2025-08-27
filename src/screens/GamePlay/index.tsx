@@ -1,5 +1,4 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useGamePlay } from './resources/useGamePlay';
 import { BoardSVG } from '@/components';
@@ -12,7 +11,7 @@ export const GamePlayScreen = () => {
   } = useGamePlay();
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <Pressable
           style={styles.backButton}
@@ -43,7 +42,7 @@ export const GamePlayScreen = () => {
           <Text style={styles.playerText}>Player 2</Text>
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -51,6 +50,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#16213e',
+    paddingTop: 20,
   },
   header: {
     flexDirection: 'row',

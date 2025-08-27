@@ -1,5 +1,4 @@
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useGameSetup } from './resources/useGameSetup';
 import { PLAYER_COLORS } from '@/constants/game';
@@ -13,7 +12,7 @@ export const GameSetupScreen = () => {
   } = useGameSetup();
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>Select Players</Text>
         <Text style={styles.subtitle}>Choose 2-4 players</Text>
@@ -74,7 +73,7 @@ export const GameSetupScreen = () => {
           </Pressable>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

@@ -1,5 +1,4 @@
 import { View, Text, StyleSheet, Switch, Pressable } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useSettings } from './resources/useSettings';
 
@@ -15,7 +14,7 @@ export const SettingsScreen = () => {
   } = useSettings();
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.title}>Settings</Text>
 
@@ -78,7 +77,7 @@ export const SettingsScreen = () => {
           <Text style={styles.resetButtonText}>Reset Statistics</Text>
         </Pressable>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

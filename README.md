@@ -157,8 +157,8 @@ For complete rules, see [ia_docs/troubleRules.md](ia_docs/troubleRules.md)
 - ✅ Zustand store implementation (GameStore + SettingsStore)
 - ✅ State persistence with MMKV
 - ✅ Board SVG creation
-- [ ] Track path generation
-- [ ] HOME and START areas
+- ⚠️ Track path generation (Issue #11 - In Progress)
+- ⚠️ HOME and START areas (Issue #12 - In Progress)
 
 ### Phase 2: Core Mechanics (Planned)
 - [ ] Die component with animations

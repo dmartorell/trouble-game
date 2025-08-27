@@ -63,12 +63,12 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
   - Create component hierarchy
   - Add responsive scaling
 
-- [ ] **#11** Generate 56-space track path
+- [ ] **#11** Generate 56-space track path (IN PROGRESS) ⚠️
   - Calculate space positions
   - Create path coordinates
   - Add space numbering system
 
-- [ ] **#12** Add player HOME and START areas
+- [ ] **#12** Add player HOME and START areas (IN PROGRESS) ⚠️
   - Create HOME zones (4 spots each)
   - Position START spaces
   - Add FINISH zones
@@ -262,7 +262,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 ## Progress Tracking
 
 ### Phase Completion
-- ✅ Phase 1: Foundation (10/12 tasks) - 83% Complete
+- ✅ Phase 1: Foundation (10/12 tasks) - 83% Complete (2 tasks in progress)
 - [ ] Phase 2: Core Mechanics (0/11 tasks)
 - [ ] Phase 3: Special Features (0/10 tasks)
 - [ ] Phase 4: Polish & UX (0/8 tasks)
@@ -270,6 +270,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 
 ### Overall Progress
 **Completed:** 10/45 tasks (22%)
+**In Progress:** 2/45 tasks (4%)
 
 ### Milestones
 - ✅ **Milestone 1:** MVP Foundation - Basic navigation and state (83% complete)
@@ -308,7 +309,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 - ✅ **#3** Implement home/menu screen (Completed 2025-08-27)
 - ✅ **#4** Create game setup screen (Completed 2025-08-27)
 - ✅ **#5** Add settings screen (Completed 2025-08-27)
-- ✅ **#6** Install and configure Zustand (Completed 2025-81-27)
+- ✅ **#6** Install and configure Zustand (Completed 2025-08-27)
 - ✅ **#7** Create gameStore with initial types (Completed 2025-08-27)
 - ✅ **#8** Implement settingsStore for preferences (Completed 2025-08-27)
 - ✅ **#9** Add state persistence with MMKV (Completed 2025-08-27)
@@ -317,4 +318,5 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 **Navigation & Routing Section: 100% Complete**
 **State Management Section: 100% Complete (4/4 tasks)** ✅
 **Board Foundation Section: 33% Complete (1/3 tasks)**
+**In Progress:** #11 (Track path generation) and #12 (HOME/START areas) - GitHub issues open
 Next: Complete track path generation (#11) and HOME/START areas (#12)
