@@ -8,11 +8,16 @@ export const GamePlayScreen = () => {
   const {
     exitGame,
     handleDieRoll,
+    handlePegPress,
     dieValue,
     rollCount,
     isLocked,
     dieState,
     currentPlayer,
+    currentPlayerPegs,
+    selectablePegIds,
+    selectedPegId,
+    currentDieRoll,
   } = useGamePlay();
 
   return (
@@ -50,46 +55,43 @@ export const GamePlayScreen = () => {
             disabled={false}
           />
 
-          {/* Peg Component Testing */}
+          {/* Current Player's Pegs */}
           <View style={styles.pegTestContainer}>
-            <Text style={styles.pegTestTitle}>Peg Component Testing</Text>
+            <Text style={styles.pegTestTitle}>
+              Current Player Pegs ({currentPlayer?.name || 'Unknown'})
+            </Text>
+            {currentDieRoll && (
+              <Text style={styles.dieRollInfo}>Die Roll: {currentDieRoll}</Text>
+            )}
             <View style={styles.pegTestRow}>
-              <Peg
-                id="test-red-1"
-                playerId="player-1"
-                color="red"
-                size={32}
-                isMovable={true}
-                onPress={(id) => console.log('Peg pressed:', id)}
-              />
-              <Peg
-                id="test-blue-1"
-                playerId="player-2"
-                color="blue"
-                size={32}
-                isHighlighted={true}
-                isMovable={true}
-                onPress={(id) => console.log('Peg pressed:', id)}
-              />
-              <Peg
-                id="test-yellow-1"
-                playerId="player-3"
-                color="yellow"
-                size={32}
-                isSelected={true}
-                isMovable={true}
-                onPress={(id) => console.log('Peg pressed:', id)}
-              />
-              <Peg
-                id="test-green-1"
-                playerId="player-4"
-                color="green"
-                size={32}
-                isMovable={false}
-              />
+              {currentPlayerPegs.map((peg) => {
+                const isSelectable = selectablePegIds.includes(peg.id);
+                const isSelected = selectedPegId === peg.id;
+
+                return (
+                  <View key={peg.id} style={styles.pegContainer}>
+                    <Peg
+                      id={peg.id}
+                      playerId={peg.playerId}
+                      color={currentPlayer?.color || 'red'}
+                      size={32}
+                      isMovable={isSelectable}
+                      isSelected={isSelected}
+                      isHighlighted={isSelectable && !isSelected}
+                      onPress={handlePegPress}
+                      testID={`peg-${peg.id}`}
+                    />
+                    <Text style={styles.pegLabel}>
+                      {peg.isInHome ? 'HOME' : peg.isInFinish ? 'FINISH' : `${peg.position}`}
+                    </Text>
+                  </View>
+                );
+              })}
             </View>
             <Text style={styles.pegTestDescription}>
-            Red: Normal | Blue: Highlighted | Yellow: Selected | Green: Disabled
+              {currentDieRoll
+                ? `Roll: ${currentDieRoll} | Selectable pegs are highlighted`
+                : 'Roll the die to select pegs'}
             </Text>
           </View>
 
@@ -102,6 +104,8 @@ export const GamePlayScreen = () => {
             <Text style={styles.debugText}>Is Locked: {isLocked ? 'Yes 🔒' : 'No 🔓'}</Text>
             <Text style={styles.debugText}>Consecutive: {dieState.consecutiveRepeats}</Text>
             <Text style={styles.debugText}>Callbacks: {dieState.rollCallbacks.length}</Text>
+            <Text style={styles.debugText}>Selected Peg: {selectedPegId || 'None'}</Text>
+            <Text style={styles.debugText}>Selectable Pegs: {selectablePegIds.length}</Text>
           </View>
         </View>
 
@@ -242,5 +246,22 @@ const styles = StyleSheet.create({
     fontSize: 11,
     textAlign: 'center',
     opacity: 0.8,
+  },
+  pegContainer: {
+    alignItems: 'center',
+    gap: 4,
+  },
+  pegLabel: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  dieRollInfo: {
+    color: '#FFA502',
+    fontSize: 12,
+    fontWeight: '600',
+    marginBottom: 8,
+    textAlign: 'center',
   },
 });

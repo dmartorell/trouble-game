@@ -51,6 +51,7 @@ export const useGameStore = create<GameStore & PersistApi>(
           dieRoll: null,
           movesAvailable: 0,
           extraTurnsRemaining: 0,
+          selectedPegId: null,
         };
 
         set({
@@ -118,6 +119,7 @@ export const useGameStore = create<GameStore & PersistApi>(
                   ...currentTurn,
                   dieRoll: createDieRollResult(result),
                   movesAvailable: result,
+                  selectedPegId: null, // Clear selection on new roll
                 },
               });
             }
@@ -186,6 +188,19 @@ export const useGameStore = create<GameStore & PersistApi>(
         });
       },
 
+      selectPeg: (pegId: string | null) => {
+        const { currentTurn } = get();
+
+        if (!currentTurn) return;
+
+        set({
+          currentTurn: {
+            ...currentTurn,
+            selectedPegId: pegId,
+          },
+        });
+      },
+
       endTurn: () => {
         const { players, currentTurn } = get();
 
@@ -200,6 +215,7 @@ export const useGameStore = create<GameStore & PersistApi>(
           dieRoll: null,
           movesAvailable: 0,
           extraTurnsRemaining: 0,
+          selectedPegId: null,
         };
 
         set({ currentTurn: newTurn });
@@ -231,6 +247,46 @@ export const useGameStore = create<GameStore & PersistApi>(
 
       getPlayerPegs: (playerId: string) => {
         return get().pegs.filter(peg => peg.playerId === playerId);
+      },
+
+      getSelectablePegs: (playerId: string, dieRoll: number) => {
+        const { pegs } = get();
+        const playerPegs = pegs.filter(peg => peg.playerId === playerId);
+
+        return playerPegs.filter(peg => {
+          // Can move from HOME if rolled a 6
+          if (peg.isInHome) {
+            return dieRoll === 6;
+          }
+
+          // Can't move pegs in FINISH (for now - this will be enhanced later)
+          if (peg.isInFinish) {
+            return false;
+          }
+
+          // Normal pegs on the board can always move (for now - collision detection will be added later)
+          return true;
+        });
+      },
+
+      isValidMove: (pegId: string, dieRoll: number) => {
+        const { pegs } = get();
+        const peg = pegs.find(p => p.id === pegId);
+
+        if (!peg) return false;
+
+        // Can move from HOME only with a 6
+        if (peg.isInHome) {
+          return dieRoll === 6;
+        }
+
+        // Can't move pegs in FINISH (for now)
+        if (peg.isInFinish) {
+          return false;
+        }
+
+        // Normal board pieces can move (basic validation)
+        return true;
       },
     }),
     {

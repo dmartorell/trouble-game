@@ -11,8 +11,13 @@ export const useGamePlay = () => {
   const {
     gameState,
     dieState,
+    currentTurn,
     initializeGame,
     getCurrentPlayer,
+    getPlayerPegs,
+    getSelectablePegs,
+    isValidMove,
+    selectPeg,
   } = useGameStore();
 
   const currentPlayer = getCurrentPlayer();
@@ -53,14 +58,47 @@ export const useGamePlay = () => {
     setRollCount(prev => prev + 1);
   }, []);
 
+  const handlePegPress = useCallback((pegId: string) => {
+    if (!currentTurn || !currentTurn.dieRoll) {
+      console.log('No die roll available');
+
+      return;
+    }
+
+    // Check if this peg can be moved with current die roll
+    if (!isValidMove(pegId, currentTurn.dieRoll.value)) {
+      console.log('Invalid move for peg:', pegId);
+
+      return;
+    }
+
+    // Toggle selection
+    if (currentTurn.selectedPegId === pegId) {
+      selectPeg(null); // Deselect if already selected
+    } else {
+      selectPeg(pegId); // Select peg
+    }
+  }, [currentTurn, isValidMove, selectPeg]);
+
+  // Get current player's pegs and their selectability
+  const currentPlayerPegs = currentPlayer ? getPlayerPegs(currentPlayer.id) : [];
+  const selectablePegIds = currentPlayer && currentTurn?.dieRoll
+    ? getSelectablePegs(currentPlayer.id, currentTurn.dieRoll.value).map(p => p.id)
+    : [];
+
   return {
     currentTurn: currentTurnText,
     exitGame,
     handleDieRoll,
+    handlePegPress,
     dieValue,
     rollCount,
     isLocked,
     dieState,
     currentPlayer,
+    currentPlayerPegs,
+    selectablePegIds,
+    selectedPegId: currentTurn?.selectedPegId,
+    currentDieRoll: currentTurn?.dieRoll?.value,
   };
 };

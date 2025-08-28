@@ -51,6 +51,7 @@ export interface Turn {
   dieRoll: DieRollResult | null;
   movesAvailable: number;
   extraTurnsRemaining: number;
+  selectedPegId?: string | null;
 }
 
 export interface DieState {
@@ -80,6 +81,7 @@ export interface GameStore {
   setDieRolling: (isRolling: boolean) => void;
   registerDieCallback: (callback: DieRollCallback) => () => void;
   movePeg: (pegId: string, newPosition: number) => void;
+  selectPeg: (pegId: string | null) => void;
   endTurn: () => void;
   resetGame: () => void;
 
@@ -87,6 +89,8 @@ export interface GameStore {
   getActivePlayers: () => Player[];
   getCurrentPlayer: () => Player | null;
   getPlayerPegs: (playerId: string) => Peg[];
+  getSelectablePegs: (playerId: string, dieRoll: number) => Peg[];
+  isValidMove: (pegId: string, dieRoll: number) => boolean;
 }
 
 export interface SettingsStore {

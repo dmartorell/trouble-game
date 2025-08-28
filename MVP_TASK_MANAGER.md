@@ -121,7 +121,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
   - Landing impact
 
 ### Peg System
-- [ ] **#17** Create Peg component with player colors
+- ✅ **#17** Create Peg component with player colors
   - Design peg shape
   - Implement color variants
   - Add selection highlighting
@@ -286,13 +286,13 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 
 ### Phase Completion
 - ✅ Phase 1: Foundation (12/12 tasks) - 100% Complete
-- 🚧 Phase 2: Core Mechanics (4/11 tasks) - 36% Complete
+- 🚧 Phase 2: Core Mechanics (5/11 tasks) - 45% Complete
 - [ ] Phase 3: Special Features (0/10 tasks)
 - [ ] Phase 4: Polish & UX (0/8 tasks)
 - [ ] Phase 5: Testing & Optimization (0/4 tasks)
 
 ### Overall Progress
-**Completed:** 16/45 tasks (36%)
+**Completed:** 17/45 tasks (38%)
 **In Progress:** 0/45 tasks (0%)
 
 ### Milestones
@@ -344,10 +344,12 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 - ✅ **#14** Implement 3D die roll animation (Completed 2025-08-27)
 - ✅ **#15** Add die roll state management (Completed 2025-08-28)
 - ✅ **#16** Create die haptic feedback (Completed 2025-08-28)
+- ✅ **#17** Create Peg component with player colors (Completed 2025-08-28)
 
 **Navigation & Routing Section: 100% Complete**
 **State Management Section: 100% Complete (4/4 tasks)** ✅
 **Board Foundation Section: 100% Complete (3/3 tasks)** ✅
+**Die System Section: 100% Complete (4/4 tasks)** ✅
 **Phase 1 Foundation: COMPLETE** ✅
-**Phase 2 Core Mechanics: IN PROGRESS** 🚧 (4/11 tasks)
-Next: Begin peg system implementation (#17-#20)
+**Phase 2 Core Mechanics: IN PROGRESS** 🚧 (5/11 tasks)
+Next: Continue peg system implementation (#18-#20)
