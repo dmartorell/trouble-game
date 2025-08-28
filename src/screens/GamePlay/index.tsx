@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 
 import { useGamePlay } from './resources/useGamePlay';
 import { BoardSVG, PopOMatic, Peg } from '@/components';
@@ -38,11 +38,12 @@ export const GamePlayScreen = () => {
         </Text>
       </View>
 
-      <View style={styles.gameBoard}>
-        <BoardSVG showSpaceNumbers={false} />
-      </View>
+      <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <View style={styles.gameBoard}>
+          <BoardSVG showSpaceNumbers={false} />
+        </View>
 
-      <View style={styles.dieContainer}>
+        <View style={styles.dieContainer}>
         <PopOMatic
           size={120}
           onRoll={handleDieRoll}
@@ -102,18 +103,18 @@ export const GamePlayScreen = () => {
           <Text style={styles.debugText}>Consecutive: {dieState.consecutiveRepeats}</Text>
           <Text style={styles.debugText}>Callbacks: {dieState.rollCallbacks.length}</Text>
         </View>
-      </View>
 
-      <View style={styles.playerInfo}>
-        <View style={styles.playerCard}>
-          <View style={[styles.playerIndicator, { backgroundColor: '#FF4757' }]} />
-          <Text style={styles.playerText}>Player 1</Text>
+        <View style={styles.playerInfo}>
+          <View style={styles.playerCard}>
+            <View style={[styles.playerIndicator, { backgroundColor: '#FF4757' }]} />
+            <Text style={styles.playerText}>Player 1</Text>
+          </View>
+          <View style={styles.playerCard}>
+            <View style={[styles.playerIndicator, { backgroundColor: '#3742FA' }]} />
+            <Text style={styles.playerText}>Player 2</Text>
+          </View>
         </View>
-        <View style={styles.playerCard}>
-          <View style={[styles.playerIndicator, { backgroundColor: '#3742FA' }]} />
-          <Text style={styles.playerText}>Player 2</Text>
-        </View>
-      </View>
+      </ScrollView>
     </View>
   );
 };
@@ -147,8 +148,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
   },
-  gameBoard: {
+  scrollContent: {
     flex: 1,
+  },
+  gameBoard: {
     justifyContent: 'center',
     alignItems: 'center',
     margin: 20,
@@ -156,6 +159,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 2,
     borderColor: '#333',
+    minHeight: 400,
   },
   dieContainer: {
     alignItems: 'center',
