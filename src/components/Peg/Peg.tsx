@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import Svg, { Circle, Defs, RadialGradient, Stop, DropShadow, Filter } from 'react-native-svg';
+import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 import { PlayerColor } from '@/models';
 import { PLAYER_COLORS } from '@/constants/game';
 import { useSettingsStore } from '@/store/settingsStore';
@@ -95,10 +95,6 @@ export const Peg: FC<PegProps> = ({
             <Stop offset="100%" stopColor={shadowColor} stopOpacity={shadowOpacity} />
           </RadialGradient>
 
-          {/* Drop shadow filter */}
-          <Filter id={`dropShadow-${id}`}>
-            <DropShadow dx="0" dy="2" stdDeviation="2" floodColor="#000000" floodOpacity="0.3" />
-          </Filter>
         </Defs>
 
         {/* Shadow circle */}
@@ -117,7 +113,6 @@ export const Peg: FC<PegProps> = ({
           fill={`url(#pegGradient-${id})`}
           stroke={strokeColor}
           strokeWidth={strokeWidth}
-          filter={`url(#dropShadow-${id})`}
         />
 
         {/* Highlight shine for 3D effect */}
