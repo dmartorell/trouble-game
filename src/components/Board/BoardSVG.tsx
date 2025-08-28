@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import Svg, {
   Rect,
@@ -22,7 +22,7 @@ interface BoardSVGProps {
   showSpaceNumbers?: boolean; // For debugging
 }
 
-export const BoardSVG: React.FC<BoardSVGProps> = ({
+export const BoardSVG: FC<BoardSVGProps> = ({
   width: customWidth,
   height: customHeight,
   showSpaceNumbers = false,

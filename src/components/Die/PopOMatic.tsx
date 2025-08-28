@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { FC, useState, useRef, useCallback, useEffect } from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import Svg, { Circle, Rect, G, Defs, RadialGradient, Stop } from 'react-native-svg';
@@ -20,7 +20,7 @@ interface PopOMaticProps {
   onRoll?: (value: number) => void;
 }
 
-export const PopOMatic: React.FC<PopOMaticProps> = ({
+export const PopOMatic: FC<PopOMaticProps> = ({
   size = 80,
   disabled = false,
   onRoll,
