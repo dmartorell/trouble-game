@@ -156,6 +156,6 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   disabled: {
-    opacity: 0.7,
+    opacity: 0.4,
   },
 });
