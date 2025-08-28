@@ -1,1 +1,1 @@
-export { Peg } from './PegComponent';
+export { Peg } from './Peg';
