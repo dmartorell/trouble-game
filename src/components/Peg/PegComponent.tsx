@@ -6,7 +6,7 @@ import { PlayerColor } from '@/models';
 import { PLAYER_COLORS } from '@/constants/game';
 import { useSettingsStore } from '@/store/settingsStore';
 
-export interface PegProps {
+interface PegProps {
   id: string;
   playerId: string;
   color: PlayerColor;
