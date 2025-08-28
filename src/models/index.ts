@@ -56,7 +56,11 @@ export interface Turn {
 export interface DieState {
   lastRoll: number | null;
   consecutiveRepeats: number;
+  isRolling: boolean;
+  rollCallbacks: DieRollCallback[];
 }
+
+export type DieRollCallback = (result: number) => void;
 
 // Store Interfaces
 export interface GameStore {
@@ -73,6 +77,8 @@ export interface GameStore {
   setGameState: (state: GameState) => void;
   setCurrentTurn: (turn: Turn) => void;
   rollDie: () => Promise<number>;
+  setDieRolling: (isRolling: boolean) => void;
+  registerDieCallback: (callback: DieRollCallback) => () => void;
   movePeg: (pegId: string, newPosition: number) => void;
   endTurn: () => void;
   resetGame: () => void;
