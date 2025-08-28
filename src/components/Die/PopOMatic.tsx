@@ -12,6 +12,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useGameStore } from '@/store/gameStore';
 import { useSettingsStore } from '@/store/settingsStore';
+import { ANIMATION_DURATION } from '@/constants/game';
 
 interface PopOMaticProps {
   size?: number;
@@ -25,10 +26,10 @@ export const PopOMatic: React.FC<PopOMaticProps> = ({
   onRoll,
 }) => {
   const [isPressed, setIsPressed] = useState(false);
-  const [isRolling, setIsRolling] = useState(false);
   const [animatedDieValue, setAnimatedDieValue] = useState(6);
-  const { rollDie } = useGameStore();
+  const { rollDie, dieState } = useGameStore();
   const { settings } = useSettingsStore();
+  const isRolling = dieState.isRolling;
 
   // Timer refs for cleanup
   const tumbleTimerRef = useRef<number | null>(null);
@@ -150,7 +151,6 @@ export const PopOMatic: React.FC<PopOMaticProps> = ({
     if (disabled || isRolling) return;
 
     setIsPressed(true);
-    setIsRolling(true);
 
     // Haptic feedback for pop sensation
     if (settings.hapticsEnabled) {
@@ -160,28 +160,30 @@ export const PopOMatic: React.FC<PopOMaticProps> = ({
     }
 
     try {
+      // Start the roll - this will set isRolling to true in the store
       const result = await rollDie();
 
       // Start animation
       animateDieRoll(result);
 
-      // Wait for animation to complete
+      // Wait for animation to complete (match store timeout)
       animationTimerRef.current = setTimeout(() => {
-        setIsRolling(false);
         setIsPressed(false);
-      }, 1200);
+      }, ANIMATION_DURATION.dieRoll);
 
-      onRoll?.(result);
-    } catch (error) {
-      setIsRolling(false);
+      // Call the onRoll callback if provided
+      if (onRoll) {
+        onRoll(result);
+      }
+    } catch {
       setIsPressed(false);
-      throw error;
+      // Die roll failed - likely because die is already rolling
     }
   };
 
   const handlePress = () => {
-    handlePressAsync().catch((error) => {
-      console.warn('Die roll failed:', error);
+    handlePressAsync().catch(() => {
+      // Error handled in handlePressAsync
     });
   };
 
@@ -197,7 +199,7 @@ export const PopOMatic: React.FC<PopOMaticProps> = ({
   };
 
   const handlePressOut = () => {
-    if (!isRolling) {
+    if (!dieState.isRolling) {
       setIsPressed(false);
     }
   };

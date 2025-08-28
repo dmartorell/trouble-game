@@ -29,4 +29,5 @@ export const ANIMATION_DURATION = {
   medium: 400,
   slow: 600,
   verySlow: 1000,
+  dieRoll: 1500,
 } as const;
