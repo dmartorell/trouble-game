@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import { GameState, Player, Peg, Turn, GameStore } from '@/models';
-import { GAME_CONFIG } from '@/constants/game';
+import { GameState, Player, Peg, Turn, GameStore, DieRollCallback } from '@/models';
+import { GAME_CONFIG, ANIMATION_DURATION } from '@/constants/game';
 import { createPersistMiddleware, PersistApi } from './middleware/persistence';
 import { generateDiceRoll, applyStreakBreaker, createDieRollResult } from '@/utils/diceUtils';
 
@@ -16,6 +16,8 @@ export const useGameStore = create<GameStore & PersistApi>(
       dieState: {
         lastRoll: null,
         consecutiveRepeats: 0,
+        isRolling: false,
+        rollCallbacks: [],
       },
 
       // Actions
@@ -69,29 +71,96 @@ export const useGameStore = create<GameStore & PersistApi>(
       },
 
       rollDie: (): Promise<number> => {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
           const { dieState, currentTurn } = get();
 
-          // Generate roll with streak breaker logic
+          // Check if die is already rolling
+          if (dieState.isRolling) {
+            reject(new Error('Die is already rolling'));
+
+            return;
+          }
+
+          // Generate roll with streak breaker logic immediately
           const initialRoll = generateDiceRoll();
           const { result, consecutiveRepeats } = applyStreakBreaker(initialRoll, dieState);
 
-          // Update die state
-          set({ dieState: { lastRoll: result, consecutiveRepeats } });
+          // Lock the die and immediately return the result for animation
+          set({
+            dieState: {
+              ...dieState,
+              isRolling: true,
+              // Don't update lastRoll yet - wait for animation to complete
+            },
+          });
 
-          // Update current turn if exists
-          if (currentTurn) {
+          // Immediately resolve with the result so animation can start
+          resolve(result);
+
+          // Schedule state update for after animation completes
+          setTimeout(() => {
+            const { dieState: currentDieState } = get();
+
+            // Update die state and unlock after animation
             set({
-              currentTurn: {
-                ...currentTurn,
-                dieRoll: createDieRollResult(result),
-                movesAvailable: result,
+              dieState: {
+                ...currentDieState,
+                lastRoll: result,
+                consecutiveRepeats,
+                isRolling: false,
               },
             });
-          }
 
-          resolve(result);
+            // Update current turn if exists
+            if (currentTurn) {
+              set({
+                currentTurn: {
+                  ...currentTurn,
+                  dieRoll: createDieRollResult(result),
+                  movesAvailable: result,
+                },
+              });
+            }
+
+            // Execute all registered callbacks
+            currentDieState.rollCallbacks.forEach(callback => callback(result));
+          }, ANIMATION_DURATION.dieRoll);
         });
+      },
+
+      setDieRolling: (isRolling: boolean) => {
+        const { dieState } = get();
+
+        set({
+          dieState: {
+            ...dieState,
+            isRolling,
+          },
+        });
+      },
+
+      registerDieCallback: (callback: DieRollCallback) => {
+        const { dieState } = get();
+
+        // Add callback to the list
+        set({
+          dieState: {
+            ...dieState,
+            rollCallbacks: [...dieState.rollCallbacks, callback],
+          },
+        });
+
+        // Return unregister function
+        return () => {
+          const { dieState: currentDieState } = get();
+
+          set({
+            dieState: {
+              ...currentDieState,
+              rollCallbacks: currentDieState.rollCallbacks.filter(cb => cb !== callback),
+            },
+          });
+        };
       },
 
       movePeg: (pegId: string, newPosition: number) => {
@@ -143,7 +212,7 @@ export const useGameStore = create<GameStore & PersistApi>(
           pegs: [],
           currentTurn: null,
           winner: null,
-          dieState: { lastRoll: null, consecutiveRepeats: 0 },
+          dieState: { lastRoll: null, consecutiveRepeats: 0, isRolling: false, rollCallbacks: [] },
         });
       },
 

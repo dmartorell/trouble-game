@@ -56,3 +56,6 @@ This is a React Native mobile game called "trouble-game" built with Expo and Typ
 - TypeScript is configured with strict mode for better type safety
 - The project includes both native iOS and Android directories for custom native code
 - All screens must follow the custom hook pattern for state management
+- NEVER automatically commit changes
+- NEVER automatically push to remote repositories
+- NEVER automatically start the app. Tell the user when changes are ready to be tested in the app.

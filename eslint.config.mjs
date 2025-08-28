@@ -97,6 +97,10 @@ export default [
     rules: {
       '@typescript-eslint/no-require-imports': 'off',
       '@typescript-eslint/no-var-requires': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
     },
   },
   {
@@ -110,6 +114,8 @@ export default [
       '*.log',
       '.git/**',
       'logs/**',
+      'babel.config.js',
+      'metro.config.js',
     ],
   },
 ];
