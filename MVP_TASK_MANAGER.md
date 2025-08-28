@@ -115,7 +115,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
   - Lock during animation
   - Result callback system
 
-- [ ] **#16** Create die haptic feedback
+- ✅ **#16** Create die haptic feedback
   - Pop sensation on press
   - Tumble feedback during roll
   - Landing impact
@@ -286,13 +286,13 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 
 ### Phase Completion
 - ✅ Phase 1: Foundation (12/12 tasks) - 100% Complete
-- 🚧 Phase 2: Core Mechanics (3/11 tasks) - 27% Complete
+- 🚧 Phase 2: Core Mechanics (4/11 tasks) - 36% Complete
 - [ ] Phase 3: Special Features (0/10 tasks)
 - [ ] Phase 4: Polish & UX (0/8 tasks)
 - [ ] Phase 5: Testing & Optimization (0/4 tasks)
 
 ### Overall Progress
-**Completed:** 15/45 tasks (33%)
+**Completed:** 16/45 tasks (36%)
 **In Progress:** 0/45 tasks (0%)
 
 ### Milestones
@@ -343,10 +343,11 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 - ✅ **#13** Create PopOMatic die component (Completed 2025-08-27)
 - ✅ **#14** Implement 3D die roll animation (Completed 2025-08-27)
 - ✅ **#15** Add die roll state management (Completed 2025-08-28)
+- ✅ **#16** Create die haptic feedback (Completed 2025-08-28)
 
 **Navigation & Routing Section: 100% Complete**
 **State Management Section: 100% Complete (4/4 tasks)** ✅
 **Board Foundation Section: 100% Complete (3/3 tasks)** ✅
 **Phase 1 Foundation: COMPLETE** ✅
-**Phase 2 Core Mechanics: IN PROGRESS** 🚧 (3/11 tasks)
-Next: Continue with die system (#16) and peg system (#17-#20)
+**Phase 2 Core Mechanics: IN PROGRESS** 🚧 (4/11 tasks)
+Next: Begin peg system implementation (#17-#20)
