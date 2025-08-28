@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import Svg, { Circle, Defs, RadialGradient, Stop, DropShadow, Filter } from 'react-native-svg';
@@ -18,7 +18,7 @@ export interface PegProps {
   testID?: string;
 }
 
-export const Peg: React.FC<PegProps> = ({
+export const Peg: FC<PegProps> = ({
   id,
   color,
   size = 24,
