@@ -95,16 +95,12 @@ export const GamePlayScreen = () => {
         {/* Debug Information */}
         <View style={styles.debugContainer}>
           <Text style={styles.debugTitle}>Die State Testing</Text>
-          <View style={styles.debugRow}>
-            <Text style={styles.debugText}>Roll: {dieValue || 'None'}</Text>
-            <Text style={styles.debugText}>Count: {rollCount}</Text>
-            <Text style={styles.debugText}>{dieState.isRolling ? '🎲' : '🔓'}</Text>
-          </View>
-          <View style={styles.debugRow}>
-            <Text style={styles.debugText}>Locked: {isLocked ? 'Yes' : 'No'}</Text>
-            <Text style={styles.debugText}>Streak: {dieState.consecutiveRepeats}</Text>
-            <Text style={styles.debugText}>CB: {dieState.rollCallbacks.length}</Text>
-          </View>
+          <Text style={styles.debugText}>Last Roll: {dieValue || 'None'}</Text>
+          <Text style={styles.debugText}>Roll Count: {rollCount}</Text>
+          <Text style={styles.debugText}>Is Rolling: {dieState.isRolling ? 'Yes 🎲' : 'No'}</Text>
+          <Text style={styles.debugText}>Is Locked: {isLocked ? 'Yes 🔒' : 'No 🔓'}</Text>
+          <Text style={styles.debugText}>Consecutive: {dieState.consecutiveRepeats}</Text>
+          <Text style={styles.debugText}>Callbacks: {dieState.rollCallbacks.length}</Text>
         </View>
       </View>
 
@@ -211,13 +207,7 @@ const styles = StyleSheet.create({
   debugText: {
     color: '#FFFFFF',
     fontSize: 11,
-    flex: 1,
-    textAlign: 'center',
-  },
-  debugRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 3,
+    marginBottom: 2,
   },
   pegTestContainer: {
     marginTop: 20,
