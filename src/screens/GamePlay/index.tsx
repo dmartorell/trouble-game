@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 
 import { useGamePlay } from './resources/useGamePlay';
-import { BoardSVG, PopOMatic } from '@/components';
+import { BoardSVG, PopOMatic, Peg } from '@/components';
 import { PLAYER_COLORS } from '@/constants/game';
 
 export const GamePlayScreen = () => {
@@ -48,6 +48,49 @@ export const GamePlayScreen = () => {
           onRoll={handleDieRoll}
           disabled={false}
         />
+
+        {/* Peg Component Testing */}
+        <View style={styles.pegTestContainer}>
+          <Text style={styles.pegTestTitle}>Peg Component Testing</Text>
+          <View style={styles.pegTestRow}>
+            <Peg
+              id="test-red-1"
+              playerId="player-1"
+              color="red"
+              size={32}
+              isMovable={true}
+              onPress={(id) => console.log('Peg pressed:', id)}
+            />
+            <Peg
+              id="test-blue-1"
+              playerId="player-2"
+              color="blue"
+              size={32}
+              isSelected={true}
+              isMovable={true}
+              onPress={(id) => console.log('Peg pressed:', id)}
+            />
+            <Peg
+              id="test-yellow-1"
+              playerId="player-3"
+              color="yellow"
+              size={32}
+              isHighlighted={true}
+              isMovable={true}
+              onPress={(id) => console.log('Peg pressed:', id)}
+            />
+            <Peg
+              id="test-green-1"
+              playerId="player-4"
+              color="green"
+              size={32}
+              isMovable={false}
+            />
+          </View>
+          <Text style={styles.pegTestDescription}>
+            Red: Normal | Blue: Selected | Yellow: Highlighted | Green: Disabled
+          </Text>
+        </View>
 
         {/* Debug Information */}
         <View style={styles.debugContainer}>
@@ -165,5 +208,34 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 12,
     marginBottom: 4,
+  },
+  pegTestContainer: {
+    marginTop: 20,
+    padding: 15,
+    backgroundColor: 'rgba(46, 213, 115, 0.1)',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#2ED573',
+    alignItems: 'center',
+  },
+  pegTestTitle: {
+    color: '#2ED573',
+    fontSize: 14,
+    fontWeight: '700',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  pegTestRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    width: '100%',
+    marginBottom: 8,
+  },
+  pegTestDescription: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    textAlign: 'center',
+    opacity: 0.8,
   },
 });
