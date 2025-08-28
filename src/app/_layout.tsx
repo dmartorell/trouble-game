@@ -53,6 +53,7 @@ export const RootLayout = () => {
           options={{
             title: 'Settings',
             presentation: 'modal',
+            headerShown: false,
           }}
         />
       </Stack>
