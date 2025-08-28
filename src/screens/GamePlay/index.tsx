@@ -103,6 +103,7 @@ export const GamePlayScreen = () => {
           <Text style={styles.debugText}>Consecutive: {dieState.consecutiveRepeats}</Text>
           <Text style={styles.debugText}>Callbacks: {dieState.rollCallbacks.length}</Text>
         </View>
+        </View>
 
         <View style={styles.playerInfo}>
           <View style={styles.playerCard}>
