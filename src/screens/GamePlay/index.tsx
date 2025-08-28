@@ -2,11 +2,17 @@ import { View, Text, StyleSheet, Pressable } from 'react-native';
 
 import { useGamePlay } from './resources/useGamePlay';
 import { BoardSVG, PopOMatic } from '@/components';
+import { PLAYER_COLORS } from '@/constants/game';
 
 export const GamePlayScreen = () => {
   const {
-    currentTurn,
     exitGame,
+    handleDieRoll,
+    dieValue,
+    rollCount,
+    isLocked,
+    dieState,
+    currentPlayer,
   } = useGamePlay();
 
   return (
@@ -18,7 +24,18 @@ export const GamePlayScreen = () => {
         >
           <Text style={styles.backButtonText}>Exit</Text>
         </Pressable>
-        <Text style={styles.turnIndicator}>{currentTurn}&apos;s Turn</Text>
+        <Text style={styles.turnIndicator}>
+          {currentPlayer ? (
+            <>
+              <Text style={[styles.playerColor, { color: PLAYER_COLORS[currentPlayer.color] }]}>
+                {currentPlayer.name}
+              </Text>
+              &apos;s Turn
+            </>
+          ) : (
+            'Loading...'
+          )}
+        </Text>
       </View>
 
       <View style={styles.gameBoard}>
@@ -28,8 +45,20 @@ export const GamePlayScreen = () => {
       <View style={styles.dieContainer}>
         <PopOMatic
           size={120}
-          onRoll={(value) => console.log('Die rolled:', value)}
+          onRoll={handleDieRoll}
+          disabled={false}
         />
+
+        {/* Debug Information */}
+        <View style={styles.debugContainer}>
+          <Text style={styles.debugTitle}>Die State Testing</Text>
+          <Text style={styles.debugText}>Last Roll: {dieValue || 'None'}</Text>
+          <Text style={styles.debugText}>Roll Count: {rollCount}</Text>
+          <Text style={styles.debugText}>Is Rolling: {dieState.isRolling ? 'Yes 🎲' : 'No'}</Text>
+          <Text style={styles.debugText}>Is Locked: {isLocked ? 'Yes 🔒' : 'No 🔓'}</Text>
+          <Text style={styles.debugText}>Consecutive: {dieState.consecutiveRepeats}</Text>
+          <Text style={styles.debugText}>Callbacks: {dieState.rollCallbacks.length}</Text>
+        </View>
       </View>
 
       <View style={styles.playerInfo}>
@@ -113,5 +142,28 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
+  },
+  playerColor: {
+    fontWeight: '700',
+  },
+  debugContainer: {
+    marginTop: 20,
+    padding: 15,
+    backgroundColor: 'rgba(255, 165, 2, 0.1)',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#FFA502',
+  },
+  debugTitle: {
+    color: '#FFA502',
+    fontSize: 14,
+    fontWeight: '700',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  debugText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    marginBottom: 4,
   },
 });
