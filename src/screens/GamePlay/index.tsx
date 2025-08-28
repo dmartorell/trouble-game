@@ -44,65 +44,65 @@ export const GamePlayScreen = () => {
         </View>
 
         <View style={styles.dieContainer}>
-        <PopOMatic
-          size={120}
-          onRoll={handleDieRoll}
-          disabled={false}
-        />
+          <PopOMatic
+            size={120}
+            onRoll={handleDieRoll}
+            disabled={false}
+          />
 
-        {/* Peg Component Testing */}
-        <View style={styles.pegTestContainer}>
-          <Text style={styles.pegTestTitle}>Peg Component Testing</Text>
-          <View style={styles.pegTestRow}>
-            <Peg
-              id="test-red-1"
-              playerId="player-1"
-              color="red"
-              size={32}
-              isMovable={true}
-              onPress={(id) => console.log('Peg pressed:', id)}
-            />
-            <Peg
-              id="test-blue-1"
-              playerId="player-2"
-              color="blue"
-              size={32}
-              isSelected={true}
-              isMovable={true}
-              onPress={(id) => console.log('Peg pressed:', id)}
-            />
-            <Peg
-              id="test-yellow-1"
-              playerId="player-3"
-              color="yellow"
-              size={32}
-              isHighlighted={true}
-              isMovable={true}
-              onPress={(id) => console.log('Peg pressed:', id)}
-            />
-            <Peg
-              id="test-green-1"
-              playerId="player-4"
-              color="green"
-              size={32}
-              isMovable={false}
-            />
-          </View>
-          <Text style={styles.pegTestDescription}>
+          {/* Peg Component Testing */}
+          <View style={styles.pegTestContainer}>
+            <Text style={styles.pegTestTitle}>Peg Component Testing</Text>
+            <View style={styles.pegTestRow}>
+              <Peg
+                id="test-red-1"
+                playerId="player-1"
+                color="red"
+                size={32}
+                isMovable={true}
+                onPress={(id) => console.log('Peg pressed:', id)}
+              />
+              <Peg
+                id="test-blue-1"
+                playerId="player-2"
+                color="blue"
+                size={32}
+                isSelected={true}
+                isMovable={true}
+                onPress={(id) => console.log('Peg pressed:', id)}
+              />
+              <Peg
+                id="test-yellow-1"
+                playerId="player-3"
+                color="yellow"
+                size={32}
+                isHighlighted={true}
+                isMovable={true}
+                onPress={(id) => console.log('Peg pressed:', id)}
+              />
+              <Peg
+                id="test-green-1"
+                playerId="player-4"
+                color="green"
+                size={32}
+                isMovable={false}
+              />
+            </View>
+            <Text style={styles.pegTestDescription}>
             Red: Normal | Blue: Selected | Yellow: Highlighted | Green: Disabled
-          </Text>
-        </View>
+            </Text>
+          </View>
 
-        {/* Debug Information */}
-        <View style={styles.debugContainer}>
-          <Text style={styles.debugTitle}>Die State Testing</Text>
-          <Text style={styles.debugText}>Last Roll: {dieValue || 'None'}</Text>
-          <Text style={styles.debugText}>Roll Count: {rollCount}</Text>
-          <Text style={styles.debugText}>Is Rolling: {dieState.isRolling ? 'Yes 🎲' : 'No'}</Text>
-          <Text style={styles.debugText}>Is Locked: {isLocked ? 'Yes 🔒' : 'No 🔓'}</Text>
-          <Text style={styles.debugText}>Consecutive: {dieState.consecutiveRepeats}</Text>
-          <Text style={styles.debugText}>Callbacks: {dieState.rollCallbacks.length}</Text>
-        </View>
+          {/* Debug Information */}
+          <View style={styles.debugContainer}>
+            <Text style={styles.debugTitle}>Die State Testing</Text>
+            <Text style={styles.debugText}>Last Roll: {dieValue || 'None'}</Text>
+            <Text style={styles.debugText}>Roll Count: {rollCount}</Text>
+            <Text style={styles.debugText}>Is Rolling: {dieState.isRolling ? 'Yes 🎲' : 'No'}</Text>
+            <Text style={styles.debugText}>Is Locked: {isLocked ? 'Yes 🔒' : 'No 🔓'}</Text>
+            <Text style={styles.debugText}>Consecutive: {dieState.consecutiveRepeats}</Text>
+            <Text style={styles.debugText}>Callbacks: {dieState.rollCallbacks.length}</Text>
+          </View>
         </View>
 
         <View style={styles.playerInfo}>
