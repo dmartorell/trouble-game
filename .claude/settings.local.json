@@ -29,7 +29,8 @@
       "Bash(npm run ios:*)",
       "Bash(git checkout:*)",
       "Bash(mv:*)",
-      "Bash(npx expo start:*)"
+      "Bash(npx expo start:*)",
+      "Bash(git reset:*)"
     ],
     "deny": [],
     "ask": []
