@@ -67,7 +67,7 @@ export const GamePlayScreen = () => {
                 playerId="player-2"
                 color="blue"
                 size={32}
-                isSelected={true}
+                isHighlighted={true}
                 isMovable={true}
                 onPress={(id) => console.log('Peg pressed:', id)}
               />
@@ -76,7 +76,7 @@ export const GamePlayScreen = () => {
                 playerId="player-3"
                 color="yellow"
                 size={32}
-                isHighlighted={true}
+                isSelected={true}
                 isMovable={true}
                 onPress={(id) => console.log('Peg pressed:', id)}
               />
@@ -89,7 +89,7 @@ export const GamePlayScreen = () => {
               />
             </View>
             <Text style={styles.pegTestDescription}>
-            Red: Normal | Blue: Selected | Yellow: Highlighted | Green: Disabled
+            Red: Normal | Blue: Highlighted | Yellow: Selected | Green: Disabled
             </Text>
           </View>
 
