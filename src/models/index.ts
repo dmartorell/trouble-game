@@ -27,6 +27,10 @@ export interface Peg {
   isInHome: boolean;
   isInFinish: boolean;
   finishPosition?: number;
+  // Animation properties
+  isAnimating?: boolean;
+  targetPosition?: number;
+  animationCallback?: () => void;
 }
 
 export interface Space {
@@ -89,6 +93,7 @@ export interface GameStore {
   setDieRolling: (isRolling: boolean) => void;
   registerDieCallback: (callback: DieRollCallback) => () => void;
   movePeg: (pegId: string, newPosition: number) => void;
+  animatePegMove: (pegId: string, targetPosition: number) => Promise<void>;
   selectPeg: (pegId: string | null) => void;
   endTurn: () => void;
   resetGame: () => void;
