@@ -105,6 +105,17 @@ export const useGamePlay = () => {
     endTurn();
   }, [endTurn]);
 
+  const handleSimulateMove = useCallback(() => {
+    if (!currentTurn) return;
+
+    // Simulate that player made a move - set hasMovedSinceRoll to true
+    const { setCurrentTurn } = useGameStore.getState();
+    setCurrentTurn({
+      ...currentTurn,
+      hasMovedSinceRoll: true,
+    });
+  }, [currentTurn]);
+
   // Get current player's pegs and their selectability
   const currentPlayerPegs = currentPlayer ? getPlayerPegs(currentPlayer.id) : [];
   const selectablePegIds = currentPlayer && currentTurn?.dieRoll
@@ -117,6 +128,7 @@ export const useGamePlay = () => {
     handleDieRoll,
     handlePegPress,
     handleEndTurn,
+    handleSimulateMove,
     dieValue,
     rollCount,
     isLocked,
@@ -128,5 +140,7 @@ export const useGamePlay = () => {
     selectedPegId: currentTurn?.selectedPegId,
     currentDieRoll: currentTurn?.dieRoll?.value,
     extraTurnsRemaining: currentTurn?.extraTurnsRemaining || 0,
+    rollsThisTurn: currentTurn?.rollsThisTurn || 0,
+    hasMovedSinceRoll: currentTurn?.hasMovedSinceRoll ?? true,
   };
 };

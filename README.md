@@ -137,7 +137,7 @@ For complete rules, see [ai_docs/troubleRules.md](ai_docs/troubleRules.md)
 
 ## 📊 Development Status
 
-### Current Phase: Core Mechanics (73% Complete) 🚧
+### Current Phase: Core Mechanics (91% Complete) 🚧
 - ✅ Project initialization
 - ✅ Expo and React Native setup
 - ✅ TypeScript configuration
@@ -157,6 +157,8 @@ For complete rules, see [ai_docs/troubleRules.md](ai_docs/troubleRules.md)
 - ✅ Peg selection logic with validation and visual feedback
 - ✅ Comprehensive peg movement validation system with Jest testing
 - ✅ Smooth peg animation system with path following
+- ✅ Basic turn switching logic with player tracking
+- ✅ Roll of 6 extra turn logic with correct TROUBLE game rules
 
 ### Phase 1: Foundation (100% Complete - 12/12 tasks) ✅
 - ✅ Navigation structure with Expo Router
@@ -169,7 +171,7 @@ For complete rules, see [ai_docs/troubleRules.md](ai_docs/troubleRules.md)
 - ✅ Authentic TROUBLE board redesign (Issue #11 - Completed)
 - ✅ Player areas and zones implementation (Issue #12 - Completed)
 
-### Phase 2: Core Mechanics (73% Complete - 8/11 tasks) 🚧
+### Phase 2: Core Mechanics (91% Complete - 10/11 tasks) 🚧
 - ✅ PopOMatic die component (Issue #13 - Completed)
 - ✅ 3D die roll animation with physics (Issue #14 - Completed)
 - ✅ Die roll state management (Issue #15 - Completed)
@@ -178,9 +180,11 @@ For complete rules, see [ai_docs/troubleRules.md](ai_docs/troubleRules.md)
 - ✅ Peg selection logic with validation (Issue #18 - Completed)
 - ✅ Comprehensive peg movement validation (Issue #19 - Completed)
 - ✅ Smooth peg animation system (Issue #20 - Completed)
-- [ ] Turn management logic
+- ✅ Basic turn switching logic (Issue #21 - Completed)
+- ✅ Roll of 6 extra turn logic (Issue #22 - Completed)
+- [ ] Turn timeout handling
 
-**Current Focus: Turn Management Implementation**
+**Current Focus: Turn Timeout Handling (Task #23)**
 
 ### Phase 3: Special Features (Planned)
 - [ ] Double Trouble spaces implementation

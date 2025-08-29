@@ -53,6 +53,8 @@ export const useGameStore = create<GameStore & PersistApi>(
           movesAvailable: 0,
           extraTurnsRemaining: 0,
           selectedPegId: null,
+          rollsThisTurn: 0,
+          hasMovedSinceRoll: true,
         };
 
         set({
@@ -83,6 +85,20 @@ export const useGameStore = create<GameStore & PersistApi>(
             return;
           }
 
+          // Enforce move requirement: Can't roll again without making a move first
+          if (currentTurn && currentTurn.rollsThisTurn > 0 && (!currentTurn.hasMovedSinceRoll || currentTurn.extraTurnsRemaining === 0)) {
+            reject(new Error('Must make a move before rolling again, or no extra turns remaining'));
+
+            return;
+          }
+
+          // Enforce maximum 2 rolls per turn sequence
+          if (currentTurn && currentTurn.rollsThisTurn >= 2) {
+            reject(new Error('Maximum 2 rolls per turn sequence reached'));
+
+            return;
+          }
+
           // Generate roll with streak breaker logic immediately
           const initialRoll = generateDiceRoll();
           const { result, consecutiveRepeats } = applyStreakBreaker(initialRoll, dieState);
@@ -101,7 +117,7 @@ export const useGameStore = create<GameStore & PersistApi>(
 
           // Schedule state update for after animation completes
           setTimeout(() => {
-            const { dieState: currentDieState } = get();
+            const { dieState: currentDieState, currentTurn: latestTurn } = get();
 
             // Update die state and unlock after animation
             set({
@@ -114,23 +130,43 @@ export const useGameStore = create<GameStore & PersistApi>(
             });
 
             // Update current turn if exists
-            if (currentTurn) {
-              // Check if player rolled a 6 for extra turn
+            if (latestTurn) {
               const rolledSix = result === 6;
+              const newRollCount = latestTurn.rollsThisTurn + 1;
+
+              // Correct TROUBLE rules: Only first 6 grants extra turn
+              const isFirstRoll = latestTurn.rollsThisTurn === 0;
+
+              // Calculate extra turns based on correct rules
+              let newExtraTurns = latestTurn.extraTurnsRemaining;
+
+              // Consume extra turn if this is a second+ roll
+              if (!isFirstRoll) {
+                newExtraTurns -= 1;
+                console.log(`Player ${latestTurn.playerId} used an extra turn. Remaining: ${newExtraTurns}`);
+              }
+
+              // Grant extra turn ONLY on first roll of turn sequence
+              if (rolledSix && isFirstRoll) {
+                newExtraTurns += 1;
+                console.log(`Player ${latestTurn.playerId} rolled 6 on first roll - extra turn granted!`);
+              } else if (rolledSix && !isFirstRoll) {
+                console.log(`Player ${latestTurn.playerId} rolled 6 on extra turn - no additional extra turn granted`);
+              }
 
               set({
                 currentTurn: {
-                  ...currentTurn,
+                  ...latestTurn,
                   dieRoll: createDieRollResult(result),
                   movesAvailable: result,
-                  selectedPegId: null, // Clear selection on new roll
-                  extraTurnsRemaining: rolledSix ? currentTurn.extraTurnsRemaining + 1 : currentTurn.extraTurnsRemaining,
+                  selectedPegId: null,
+                  extraTurnsRemaining: newExtraTurns,
+                  rollsThisTurn: newRollCount,
+                  hasMovedSinceRoll: false,
                 },
               });
 
-              if (rolledSix) {
-                console.log(`Player ${currentTurn.playerId} rolled 6 - extra turn granted!`);
-              }
+              console.log(`Player ${latestTurn.playerId} roll ${newRollCount}/2, extra turns: ${newExtraTurns}`);
             }
 
             // Execute all registered callbacks
@@ -266,20 +302,27 @@ export const useGameStore = create<GameStore & PersistApi>(
 
         if (!currentTurn) return;
 
-        // Check if player has extra turns remaining
-        if (currentTurn.extraTurnsRemaining > 0) {
-          // Continue with same player but decrement extra turns
+        // Check if player has extra turns remaining AND hasn't reached max rolls
+        if (currentTurn.extraTurnsRemaining > 0 && currentTurn.rollsThisTurn < 2) {
+          // Continue with same player - reset for next roll
           set({
             currentTurn: {
               ...currentTurn,
-              extraTurnsRemaining: currentTurn.extraTurnsRemaining - 1,
               dieRoll: null,
               movesAvailable: 0,
               selectedPegId: null,
+              hasMovedSinceRoll: true,
             },
           });
 
+          console.log(`Player ${currentTurn.playerId} continues with ${currentTurn.extraTurnsRemaining} extra turns remaining (roll ${currentTurn.rollsThisTurn}/2)`);
+
           return;
+        }
+
+        // Reset any unused extra turns when turn ends
+        if (currentTurn.extraTurnsRemaining > 0) {
+          console.log(`Player ${currentTurn.playerId} lost ${currentTurn.extraTurnsRemaining} unused extra turns`);
         }
 
         // Advance to next player
@@ -293,6 +336,8 @@ export const useGameStore = create<GameStore & PersistApi>(
           movesAvailable: 0,
           extraTurnsRemaining: 0,
           selectedPegId: null,
+          rollsThisTurn: 0,
+          hasMovedSinceRoll: true,
         };
 
         set({ currentTurn: newTurn });
@@ -306,29 +351,23 @@ export const useGameStore = create<GameStore & PersistApi>(
 
         if (!currentTurn || !currentTurn.dieRoll) return false;
 
-        // If no moves available after using the die roll, end turn
+        // If no moves available after using the die roll, check if turn should end
         if (currentTurn.movesAvailable <= 0) {
-          // Check if player rolled a 6 (should get extra turn)
-          const rolledSix = currentTurn.dieRoll.value === 6;
+          // Check if player has reached maximum rolls (2) for turn sequence
+          if (currentTurn.rollsThisTurn >= 2) {
+            console.log(`Player ${currentTurn.playerId} has reached maximum rolls (2) for this turn`);
 
-          if (rolledSix && currentTurn.extraTurnsRemaining === 0) {
-            // Grant extra turn for rolling 6
-            set({
-              currentTurn: {
-                ...currentTurn,
-                extraTurnsRemaining: 1,
-                dieRoll: null,
-                movesAvailable: 0,
-                selectedPegId: null,
-              },
-            });
-
-            console.log(`Player ${currentTurn.playerId} gets extra turn for rolling 6`);
-
-            return false; // Don't end turn, continue with same player
+            return true;
           }
 
-          // No extra turns, end the turn
+          // If player has extra turns remaining, don't end turn yet
+          if (currentTurn.extraTurnsRemaining > 0) {
+            console.log(`Player ${currentTurn.playerId} has ${currentTurn.extraTurnsRemaining} extra turns remaining`);
+
+            return false;
+          }
+
+          // No extra turns remaining, end the turn
           return true;
         }
 
@@ -365,12 +404,13 @@ export const useGameStore = create<GameStore & PersistApi>(
           // Animate the move
           await animatePegMove(pegId, targetPosition);
 
-          // Decrement moves available
+          // Decrement moves available and mark that a move was made
           set({
             currentTurn: {
               ...currentTurn,
               movesAvailable: currentTurn.movesAvailable - currentTurn.dieRoll.value,
-              selectedPegId: null, // Clear selection after move
+              selectedPegId: null,
+              hasMovedSinceRoll: true,
             },
           });
 
