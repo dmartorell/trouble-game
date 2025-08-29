@@ -115,14 +115,22 @@ export const useGameStore = create<GameStore & PersistApi>(
 
             // Update current turn if exists
             if (currentTurn) {
+              // Check if player rolled a 6 for extra turn
+              const rolledSix = result === 6;
+
               set({
                 currentTurn: {
                   ...currentTurn,
                   dieRoll: createDieRollResult(result),
                   movesAvailable: result,
                   selectedPegId: null, // Clear selection on new roll
+                  extraTurnsRemaining: rolledSix ? currentTurn.extraTurnsRemaining + 1 : currentTurn.extraTurnsRemaining,
                 },
               });
+
+              if (rolledSix) {
+                console.log(`Player ${currentTurn.playerId} rolled 6 - extra turn granted!`);
+              }
             }
 
             // Execute all registered callbacks
@@ -258,6 +266,23 @@ export const useGameStore = create<GameStore & PersistApi>(
 
         if (!currentTurn) return;
 
+        // Check if player has extra turns remaining
+        if (currentTurn.extraTurnsRemaining > 0) {
+          // Continue with same player but decrement extra turns
+          set({
+            currentTurn: {
+              ...currentTurn,
+              extraTurnsRemaining: currentTurn.extraTurnsRemaining - 1,
+              dieRoll: null,
+              movesAvailable: 0,
+              selectedPegId: null,
+            },
+          });
+
+          return;
+        }
+
+        // Advance to next player
         const currentPlayerIndex = players.findIndex(p => p.id === currentTurn.playerId);
         const nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
         const nextPlayer = players[nextPlayerIndex];
@@ -271,6 +296,97 @@ export const useGameStore = create<GameStore & PersistApi>(
         };
 
         set({ currentTurn: newTurn });
+
+        console.log(`Turn switched from ${currentTurn.playerId} to ${nextPlayer.id}`);
+      },
+
+      // Enhanced method to check if turn should end after a move
+      checkTurnEnd: () => {
+        const { currentTurn, hasValidMoves } = get();
+
+        if (!currentTurn || !currentTurn.dieRoll) return false;
+
+        // If no moves available after using the die roll, end turn
+        if (currentTurn.movesAvailable <= 0) {
+          // Check if player rolled a 6 (should get extra turn)
+          const rolledSix = currentTurn.dieRoll.value === 6;
+
+          if (rolledSix && currentTurn.extraTurnsRemaining === 0) {
+            // Grant extra turn for rolling 6
+            set({
+              currentTurn: {
+                ...currentTurn,
+                extraTurnsRemaining: 1,
+                dieRoll: null,
+                movesAvailable: 0,
+                selectedPegId: null,
+              },
+            });
+
+            console.log(`Player ${currentTurn.playerId} gets extra turn for rolling 6`);
+
+            return false; // Don't end turn, continue with same player
+          }
+
+          // No extra turns, end the turn
+          return true;
+        }
+
+        // Check if player has any valid moves remaining
+        if (!hasValidMoves(currentTurn.playerId, currentTurn.movesAvailable)) {
+          console.log(`No valid moves remaining for player ${currentTurn.playerId}`);
+
+          return true;
+        }
+
+        return false;
+      },
+
+      // Enhanced method to execute a peg move and handle turn logic
+      executePegMove: async (pegId: string, targetPosition: number) => {
+        const { currentTurn, getMoveValidation, animatePegMove, checkTurnEnd, endTurn } = get();
+
+        if (!currentTurn || !currentTurn.dieRoll) {
+          console.warn('Cannot execute move: No current turn or die roll');
+
+          return false;
+        }
+
+        // Validate the move
+        const validation = getMoveValidation(pegId, currentTurn.dieRoll.value);
+
+        if (!validation.isValid) {
+          console.warn('Invalid move:', validation.reason);
+
+          return false;
+        }
+
+        try {
+          // Animate the move
+          await animatePegMove(pegId, targetPosition);
+
+          // Decrement moves available
+          set({
+            currentTurn: {
+              ...currentTurn,
+              movesAvailable: currentTurn.movesAvailable - currentTurn.dieRoll.value,
+              selectedPegId: null, // Clear selection after move
+            },
+          });
+
+          console.log(`Peg ${pegId} moved to position ${targetPosition}`);
+
+          // Check if turn should end
+          if (checkTurnEnd()) {
+            endTurn();
+          }
+
+          return true;
+        } catch (error) {
+          console.error('Error executing peg move:', error);
+
+          return false;
+        }
       },
 
       resetGame: () => {

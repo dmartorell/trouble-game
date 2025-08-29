@@ -96,6 +96,8 @@ export interface GameStore {
   animatePegMove: (pegId: string, targetPosition: number) => Promise<void>;
   selectPeg: (pegId: string | null) => void;
   endTurn: () => void;
+  checkTurnEnd: () => boolean;
+  executePegMove: (pegId: string, targetPosition: number) => Promise<boolean>;
   resetGame: () => void;
 
   // Getters
