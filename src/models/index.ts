@@ -4,6 +4,14 @@ export type GameState = 'setup' | 'playing' | 'paused' | 'finished';
 
 export type SpaceType = 'normal' | 'start' | 'home' | 'finish' | 'double-trouble' | 'warp';
 
+export interface MoveValidationResult {
+  isValid: boolean;
+  reason?: string;
+  newPosition?: number;
+  capturedPegId?: string;
+  entersFinish?: boolean;
+}
+
 export interface Player {
   id: string;
   name: string;
@@ -91,6 +99,8 @@ export interface GameStore {
   getPlayerPegs: (playerId: string) => Peg[];
   getSelectablePegs: (playerId: string, dieRoll: number) => Peg[];
   isValidMove: (pegId: string, dieRoll: number) => boolean;
+  getMoveValidation: (pegId: string, dieRoll: number) => MoveValidationResult;
+  hasValidMoves: (playerId: string, dieRoll: number) => boolean;
 }
 
 export interface SettingsStore {

@@ -1,8 +1,9 @@
 import { create } from 'zustand';
-import { GameState, Player, Peg, Turn, GameStore, DieRollCallback } from '@/models';
+import { GameState, Player, Peg, Turn, GameStore, DieRollCallback, MoveValidationResult } from '@/models';
 import { GAME_CONFIG, ANIMATION_DURATION } from '@/constants/game';
 import { createPersistMiddleware, PersistApi } from './middleware/persistence';
 import { generateDiceRoll, applyStreakBreaker, createDieRollResult } from '@/utils/diceUtils';
+import { validatePegMove, getValidMoves, hasValidMoves as checkHasValidMoves } from '@/utils/moveValidation';
 
 export const useGameStore = create<GameStore & PersistApi>(
   createPersistMiddleware<GameStore>(
@@ -250,43 +251,62 @@ export const useGameStore = create<GameStore & PersistApi>(
       },
 
       getSelectablePegs: (playerId: string, dieRoll: number) => {
-        const { pegs } = get();
-        const playerPegs = pegs.filter(peg => peg.playerId === playerId);
+        const { pegs, players } = get();
+        const player = players.find(p => p.id === playerId);
 
-        return playerPegs.filter(peg => {
-          // Can move from HOME if rolled a 6
-          if (peg.isInHome) {
-            return dieRoll === 6;
-          }
+        if (!player) return [];
 
-          // Can't move pegs in FINISH (for now - this will be enhanced later)
-          if (peg.isInFinish) {
-            return false;
-          }
+        const validMoves = getValidMoves(playerId, dieRoll, pegs, player.color);
+        const selectablePegIds = validMoves.map(move => move.pegId);
 
-          // Normal pegs on the board can always move (for now - collision detection will be added later)
-          return true;
-        });
+        return pegs.filter(peg => selectablePegIds.includes(peg.id));
       },
 
       isValidMove: (pegId: string, dieRoll: number) => {
-        const { pegs } = get();
+        const { pegs, players } = get();
         const peg = pegs.find(p => p.id === pegId);
 
         if (!peg) return false;
 
-        // Can move from HOME only with a 6
-        if (peg.isInHome) {
-          return dieRoll === 6;
+        const player = players.find(p => p.id === peg.playerId);
+
+        if (!player) return false;
+
+        const validationResult = validatePegMove(peg, dieRoll, player.color, pegs);
+
+        return validationResult.isValid;
+      },
+
+      getMoveValidation: (pegId: string, dieRoll: number): MoveValidationResult => {
+        const { pegs, players } = get();
+        const peg = pegs.find(p => p.id === pegId);
+
+        if (!peg) {
+          return {
+            isValid: false,
+            reason: 'Peg not found',
+          };
         }
 
-        // Can't move pegs in FINISH (for now)
-        if (peg.isInFinish) {
-          return false;
+        const player = players.find(p => p.id === peg.playerId);
+
+        if (!player) {
+          return {
+            isValid: false,
+            reason: 'Player not found',
+          };
         }
 
-        // Normal board pieces can move (basic validation)
-        return true;
+        return validatePegMove(peg, dieRoll, player.color, pegs);
+      },
+
+      hasValidMoves: (playerId: string, dieRoll: number) => {
+        const { pegs, players } = get();
+        const player = players.find(p => p.id === playerId);
+
+        if (!player) return false;
+
+        return checkHasValidMoves(playerId, dieRoll, pegs, player.color);
       },
     }),
     {
