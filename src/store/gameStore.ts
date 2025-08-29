@@ -189,6 +189,57 @@ export const useGameStore = create<GameStore & PersistApi>(
         });
       },
 
+      animatePegMove: (pegId: string, targetPosition: number): Promise<void> => {
+        return new Promise((resolve) => {
+          const { pegs } = get();
+          const peg = pegs.find(p => p.id === pegId);
+
+          if (!peg) {
+            resolve();
+
+            return;
+          }
+
+          // Mark peg as animating
+          set({
+            pegs: pegs.map(p =>
+              p.id === pegId
+                ? { ...p, isAnimating: true, targetPosition }
+                : p,
+            ),
+          });
+
+          // Complete the move after animation
+          const handleMoveComplete = () => {
+            const { movePeg } = get();
+
+            movePeg(pegId, targetPosition);
+
+            // Clear animation state
+            const { pegs: currentPegs } = get();
+
+            set({
+              pegs: currentPegs.map(p =>
+                p.id === pegId
+                  ? { ...p, isAnimating: false, targetPosition: undefined }
+                  : p,
+              ),
+            });
+
+            resolve();
+          };
+
+          // Store callback for the animated peg component
+          set({
+            pegs: pegs.map(p =>
+              p.id === pegId
+                ? { ...p, animationCallback: handleMoveComplete }
+                : p,
+            ),
+          });
+        });
+      },
+
       selectPeg: (pegId: string | null) => {
         const { currentTurn } = get();
 
