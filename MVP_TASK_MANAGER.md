@@ -136,7 +136,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
   - Validate destinations
   - Handle blocked paths
 
-- [ ] **#20** Create smooth peg animation system
+- ✅ **#20** Create smooth peg animation system
   - Path following animation
   - Easing functions
   - Multi-space movement
@@ -286,13 +286,13 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 
 ### Phase Completion
 - ✅ Phase 1: Foundation (12/12 tasks) - 100% Complete
-- 🚧 Phase 2: Core Mechanics (7/11 tasks) - 64% Complete
+- 🚧 Phase 2: Core Mechanics (8/11 tasks) - 73% Complete
 - [ ] Phase 3: Special Features (0/10 tasks)
 - [ ] Phase 4: Polish & UX (0/8 tasks)
 - [ ] Phase 5: Testing & Optimization (0/4 tasks)
 
 ### Overall Progress
-**Completed:** 19/45 tasks (42%)
+**Completed:** 20/45 tasks (44%)
 **In Progress:** 0/45 tasks (0%)
 
 ### Milestones
@@ -347,12 +347,13 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 - ✅ **#17** Create Peg component with player colors (Completed 2025-08-28)
 - ✅ **#18** Implement peg selection logic (Completed 2025-08-28)
 - ✅ **#19** Add peg movement validation (Completed 2025-08-29)
+- ✅ **#20** Create smooth peg animation system (Completed 2025-08-29)
 
 **Navigation & Routing Section: 100% Complete**
 **State Management Section: 100% Complete (4/4 tasks)** ✅
 **Board Foundation Section: 100% Complete (3/3 tasks)** ✅
 **Die System Section: 100% Complete (4/4 tasks)** ✅
-**Peg System Section: 75% Complete (3/4 tasks)** 🚧
+**Peg System Section: 100% Complete (4/4 tasks)** ✅
 **Phase 1 Foundation: COMPLETE** ✅
-**Phase 2 Core Mechanics: IN PROGRESS** 🚧 (7/11 tasks - 64% Complete)
-Next: Complete peg animation system (#20) and begin turn management (#21-#23)
+**Phase 2 Core Mechanics: IN PROGRESS** 🚧 (8/11 tasks - 73% Complete)
+Next: Begin turn management implementation (#21-#23)

@@ -34,7 +34,8 @@
       "Bash(gh issue edit:*)",
       "Bash(git mv:*)",
       "Bash(npm test)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "Bash(~/.claude-code-docs/claude-docs-helper.sh:*)"
     ],
     "deny": [],
     "ask": []
