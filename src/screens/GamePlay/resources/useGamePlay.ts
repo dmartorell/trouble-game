@@ -12,12 +12,16 @@ export const useGamePlay = () => {
     gameState,
     dieState,
     currentTurn,
+    players,
     initializeGame,
     getCurrentPlayer,
     getPlayerPegs,
     getSelectablePegs,
     isValidMove,
     selectPeg,
+    endTurn,
+    executePegMove,
+    getMoveValidation,
   } = useGameStore();
 
   const currentPlayer = getCurrentPlayer();
@@ -26,10 +30,12 @@ export const useGamePlay = () => {
   // Initialize game if not already playing
   useEffect(() => {
     if (gameState !== 'playing') {
-      // Create test players
+      // Create test players with 4 players for better testing
       const testPlayers: Player[] = [
-        { id: 'p1', name: 'Red', color: 'red', isActive: true },
-        { id: 'p2', name: 'Blue', color: 'blue', isActive: true },
+        { id: 'p1', name: 'Red Player', color: 'red', isActive: true },
+        { id: 'p2', name: 'Blue Player', color: 'blue', isActive: true },
+        { id: 'p3', name: 'Yellow Player', color: 'yellow', isActive: true },
+        { id: 'p4', name: 'Green Player', color: 'green', isActive: true },
       ];
 
       initializeGame(testPlayers);
@@ -58,6 +64,20 @@ export const useGamePlay = () => {
     setRollCount(prev => prev + 1);
   }, []);
 
+  const executeMoveAsync = useCallback(async (pegId: string) => {
+    if (!currentTurn || !currentTurn.dieRoll) return;
+
+    const validation = getMoveValidation(pegId, currentTurn.dieRoll.value);
+
+    if (validation.isValid && validation.newPosition !== undefined) {
+      const success = await executePegMove(pegId, validation.newPosition);
+
+      if (success) {
+        console.log(`Move executed for peg ${pegId}`);
+      }
+    }
+  }, [currentTurn, getMoveValidation, executePegMove]);
+
   const handlePegPress = useCallback((pegId: string) => {
     if (!currentTurn || !currentTurn.dieRoll) {
       console.log('No die roll available');
@@ -72,13 +92,18 @@ export const useGamePlay = () => {
       return;
     }
 
-    // Toggle selection
+    // If peg is already selected, execute the move asynchronously
     if (currentTurn.selectedPegId === pegId) {
-      selectPeg(null); // Deselect if already selected
+      executeMoveAsync(pegId).catch(console.error);
     } else {
-      selectPeg(pegId); // Select peg
+      // Select the peg
+      selectPeg(pegId);
     }
-  }, [currentTurn, isValidMove, selectPeg]);
+  }, [currentTurn, isValidMove, selectPeg, executeMoveAsync]);
+
+  const handleEndTurn = useCallback(() => {
+    endTurn();
+  }, [endTurn]);
 
   // Get current player's pegs and their selectability
   const currentPlayerPegs = currentPlayer ? getPlayerPegs(currentPlayer.id) : [];
@@ -91,14 +116,17 @@ export const useGamePlay = () => {
     exitGame,
     handleDieRoll,
     handlePegPress,
+    handleEndTurn,
     dieValue,
     rollCount,
     isLocked,
     dieState,
     currentPlayer,
+    players,
     currentPlayerPegs,
     selectablePegIds,
     selectedPegId: currentTurn?.selectedPegId,
     currentDieRoll: currentTurn?.dieRoll?.value,
+    extraTurnsRemaining: currentTurn?.extraTurnsRemaining || 0,
   };
 };
