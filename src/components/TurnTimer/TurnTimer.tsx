@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, FC } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { useGameStore } from '@/store';
 import { TurnTimerProps } from '@/models';
 import { THEME_COLORS, TIMEOUT_CONFIG } from '@/constants/game';
 
-export const TurnTimer: React.FC<TurnTimerProps> = ({ visible }) => {
+export const TurnTimer: FC<TurnTimerProps> = ({ visible }) => {
   const { currentTurn, getRemainingTurnTime, shouldShowTimeoutWarning } = useGameStore();
   const [remainingTime, setRemainingTime] = useState(0);
   const [isWarning, setIsWarning] = useState(false);
@@ -82,7 +82,7 @@ export const TurnTimer: React.FC<TurnTimerProps> = ({ visible }) => {
     }
   }, [isWarning, pulseAnim]);
 
-  if (!visible || !currentTurn) return null;
+  if (!visible || !currentTurn || currentTurn.startTime === 0) return null;
 
   const minutes = Math.floor(remainingTime / 60);
   const seconds = remainingTime % 60;
@@ -108,11 +108,6 @@ export const TurnTimer: React.FC<TurnTimerProps> = ({ visible }) => {
         ]}>
           {timeString}
         </Text>
-        {isWarning && (
-          <Text style={styles.warningLabel}>
-            TIME RUNNING OUT!
-          </Text>
-        )}
       </View>
     </Animated.View>
   );
@@ -156,13 +151,5 @@ const styles = StyleSheet.create({
   },
   warningText: {
     color: '#FFFFFF',
-  },
-  warningLabel: {
-    fontFamily: 'System',
-    fontSize: 10,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    textAlign: 'center',
-    marginTop: 2,
   },
 });

@@ -33,7 +33,7 @@ export const ANIMATION_DURATION = {
 } as const;
 
 export const TIMEOUT_CONFIG = {
-  DEFAULT_TURN_TIMEOUT: 30, // seconds
-  WARNING_THRESHOLD: 10, // seconds remaining when to show warning
+  DEFAULT_TURN_TIMEOUT: 20, // seconds
+  WARNING_THRESHOLD: 5, // seconds remaining when to show warning
   WARNING_FLASH_INTERVAL: 500, // milliseconds
 } as const;

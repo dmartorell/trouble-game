@@ -59,3 +59,4 @@ This is a React Native mobile game called "trouble-game" built with Expo and Typ
 - NEVER automatically commit changes
 - NEVER automatically push to remote repositories
 - NEVER automatically start the app. Tell the user when changes are ready to be tested in the app.
+- NEVER commit or push without user's permission

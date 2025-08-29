@@ -57,7 +57,7 @@ export const useGameStore = create<GameStore & PersistApi>(
           selectedPegId: null,
           rollsThisTurn: 0,
           hasMovedSinceRoll: true,
-          startTime: Date.now(),
+          startTime: 0, // No timer until they roll
         };
 
         set({
@@ -68,10 +68,7 @@ export const useGameStore = create<GameStore & PersistApi>(
           winner: null,
         });
 
-        // Start the turn timer for the first player
-        const { startTurnTimer } = get();
-
-        startTurnTimer();
+        // Don't start timer - it will start when player rolls die
       },
 
       setGameState: (state: GameState) => {
@@ -111,8 +108,22 @@ export const useGameStore = create<GameStore & PersistApi>(
           const initialRoll = generateDiceRoll();
           const { result, consecutiveRepeats } = applyStreakBreaker(initialRoll, dieState);
 
-          // Reset turn timer since player is taking action
-          resetTurnTimer();
+          // Start or reset turn timer since player is taking action
+          if (currentTurn && currentTurn.startTime === 0) {
+            // First roll of the turn - start timer
+            const { startTurnTimer } = get();
+
+            const updatedTurn: Turn = {
+              ...currentTurn,
+              startTime: Date.now(),
+            };
+
+            set({ currentTurn: updatedTurn });
+            startTurnTimer();
+          } else {
+            // Subsequent roll - reset timer
+            resetTurnTimer();
+          }
 
           // Lock the die and immediately return the result for animation
           set({
@@ -296,12 +307,9 @@ export const useGameStore = create<GameStore & PersistApi>(
       },
 
       selectPeg: (pegId: string | null) => {
-        const { currentTurn, resetTurnTimer } = get();
+        const { currentTurn } = get();
 
         if (!currentTurn) return;
-
-        // Reset timer when player selects a peg
-        resetTurnTimer();
 
         set({
           currentTurn: {
@@ -312,13 +320,13 @@ export const useGameStore = create<GameStore & PersistApi>(
       },
 
       endTurn: () => {
-        const { players, currentTurn, clearTurnTimer, startTurnTimer } = get();
+        const { players, currentTurn, clearTurnTimer } = get();
 
         if (!currentTurn) return;
 
         // Check if player has extra turns remaining AND hasn't reached max rolls
         if (currentTurn.extraTurnsRemaining > 0 && currentTurn.rollsThisTurn < 2) {
-          // Continue with same player - reset for next roll and reset timer
+          // Continue with same player - keep existing timer running
           set({
             currentTurn: {
               ...currentTurn,
@@ -326,13 +334,10 @@ export const useGameStore = create<GameStore & PersistApi>(
               movesAvailable: 0,
               selectedPegId: null,
               hasMovedSinceRoll: true,
-              startTime: Date.now(), // Reset timer for extra turn
-              timeoutWarning: false,
+              // Don't reset startTime - keep timer running for extra turn
+              timeoutWarning: false, // Clear warning but keep timer
             },
           });
-
-          // Restart timer for the extra turn
-          startTurnTimer();
 
           console.log(`Player ${currentTurn.playerId} continues with ${currentTurn.extraTurnsRemaining} extra turns remaining (roll ${currentTurn.rollsThisTurn}/2)`);
 
@@ -360,13 +365,12 @@ export const useGameStore = create<GameStore & PersistApi>(
           selectedPegId: null,
           rollsThisTurn: 0,
           hasMovedSinceRoll: true,
-          startTime: Date.now(),
+          startTime: 0, // No timer until they roll
         };
 
         set({ currentTurn: newTurn });
 
-        // Start timer for the new player
-        startTurnTimer();
+        // Don't start timer - it will start when player rolls die
 
         console.log(`Turn switched from ${currentTurn.playerId} to ${nextPlayer.id}`);
       },
@@ -632,7 +636,7 @@ export const useGameStore = create<GameStore & PersistApi>(
       getRemainingTurnTime: () => {
         const { currentTurn } = get();
 
-        if (!currentTurn) return 0;
+        if (!currentTurn || currentTurn.startTime === 0) return 0; // No timer if not started
 
         const { settings } = useSettingsStore.getState();
         const timeoutDuration = settings.turnTimeout * 1000; // Convert to milliseconds
@@ -645,7 +649,7 @@ export const useGameStore = create<GameStore & PersistApi>(
       shouldShowTimeoutWarning: () => {
         const { currentTurn } = get();
 
-        if (!currentTurn) return false;
+        if (!currentTurn || currentTurn.startTime === 0) return false;
 
         return currentTurn.timeoutWarning === true;
       },
