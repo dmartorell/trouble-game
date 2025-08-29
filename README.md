@@ -137,7 +137,7 @@ For complete rules, see [ai_docs/troubleRules.md](ai_docs/troubleRules.md)
 
 ## 📊 Development Status
 
-### Current Phase: Special Features (Ready to Begin) 🎯
+### Current Phase: Game Integration (Ready to Begin) 🎯
 - ✅ Project initialization
 - ✅ Expo and React Native setup
 - ✅ TypeScript configuration
@@ -185,7 +185,12 @@ For complete rules, see [ai_docs/troubleRules.md](ai_docs/troubleRules.md)
 - ✅ Roll of 6 extra turn logic (Issue #22 - Completed)
 - ✅ Turn timeout handling (Issue #23 - Completed)
 
-**Next Focus: Phase 3 - Special Features (Double Trouble spaces)**
+### Phase 2.5: Game Integration (0/3 tasks) - Ready to Begin
+- [ ] **#24** Create integrated playable demo with board peg visualization (Issue #24 - Planned)
+- [ ] **#25** Polish basic gameplay UX and visual feedback (Issue #25 - Planned)
+- [ ] **#26** Test and refine basic game flow integration (Issue #26 - Planned)
+
+**Next Focus: Task #24 - Integrate pegs visually on board for playable demo**
 
 ### Phase 3: Special Features (Planned)
 - [ ] Double Trouble spaces implementation

@@ -159,55 +159,78 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 
 ---
 
+## Phase 2.5: Game Integration (Week 4.5)
+### Playable Demo
+- [ ] **#24** Create integrated playable demo with 2-4 players
+  - **Create PegOverlay component** to render pegs positioned over the board
+  - **Add coordinate mapping utilities** to convert peg positions to board SVG coordinates
+  - **Integrate PegOverlay into GamePlayScreen** with interactive board pegs
+  - **Clean up UX** by removing debug containers and improving visual feedback
+  - **Result**: Fully functional game with pegs visible on board, interactive die rolling, and complete turn-based gameplay
+
+- [ ] **#25** Polish basic gameplay UX and visual feedback
+  - Improve visual feedback for valid peg moves
+  - Add clear current player indicators and turn display
+  - Enhance peg selection highlighting and hover states
+  - Add move confirmation/cancellation options
+
+- [ ] **#26** Test and refine basic game flow integration
+  - Validate turn switching works correctly with all mechanics
+  - Ensure die roll → peg selection → movement cycle functions properly
+  - Fix any integration issues between completed components
+  - Test 2, 3, and 4 player scenarios
+
+---
+
 ## Phase 3: Special Features (Week 5)
 ### Special Spaces
-- [ ] **#24** Implement Double Trouble (XX) spaces
+- [ ] **#27** Implement Double Trouble (XX) spaces
   - Mark special spaces on board
   - Add visual indicators
   - Create landing detection
 
-- [ ] **#25** Add extra turn logic for Double Trouble
+- [ ] **#28** Add extra turn logic for Double Trouble
   - Grant bonus roll
   - Limit to 2 extra turns max
   - Update turn counter
 
-- [ ] **#26** Create Warp space pairs
+- [ ] **#29** Create Warp space pairs
   - Position warp spaces
   - Add visual connection
   - Create pair mapping
 
-- [ ] **#27** Implement Warp teleportation animation
+- [ ] **#30** Implement Warp teleportation animation
   - Dissolve effect
   - Transport trail
   - Materialize animation
 
 ### Special Rules
-- [ ] **#28** Implement roll of 1 special rule
+- [ ] **#31** Implement roll of 1 special rule
   - Detect roll of 1
   - Allow opponents to move to START
   - Handle blocked START spaces
 
-- [ ] **#29** Add opponent capture mechanics
+- [ ] **#32** Add opponent capture mechanics
   - Detect landing on opponent
   - Send opponent home
   - Trigger capture animation
 
-- [ ] **#30** Create FINISH zone entry validation
+- [ ] **#33** Create FINISH zone entry validation
   - Check if peg can enter
   - Validate exact count
   - Handle overflow
 
-- [ ] **#31** Implement exact count for FINISH
+- [ ] **#34** Implement exact count for FINISH
   - Calculate remaining spaces
   - Block invalid moves
   - Suggest alternatives
 
-- [ ] **#32** Add peg sent-home animation
+- [ ] **#35** Add peg sent-home animation
   - Shrink and lift effect
   - Trail to HOME
   - Landing animation
 
-- [ ] **#33** Create victory condition checking
+- [ ] **#36** Create victory condition checking
   - Check all pegs in FINISH
   - Trigger victory sequence
   - Update game state
@@ -287,17 +310,19 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 ### Phase Completion
 - ✅ Phase 1: Foundation (12/12 tasks) - 100% Complete
 - ✅ Phase 2: Core Mechanics (11/11 tasks) - 100% Complete
+- [ ] Phase 2.5: Game Integration (0/3 tasks) - Ready to Begin
 - [ ] Phase 3: Special Features (0/10 tasks)
 - [ ] Phase 4: Polish & UX (0/8 tasks)
 - [ ] Phase 5: Testing & Optimization (0/4 tasks)
 
 ### Overall Progress
-**Completed:** 23/45 tasks (51%)
-**In Progress:** 0/45 tasks (0%)
+**Completed:** 23/48 tasks (48%)
+**In Progress:** 0/48 tasks (0%)
 
 ### Milestones
 - ✅ **Milestone 1:** MVP Foundation - Basic navigation and state (100% complete)
-- ✅ **Milestone 2:** Playable Game - Core mechanics working (100% complete)
+- ✅ **Milestone 2:** Core mechanics working (100% complete)
+- [ ] **Milestone 2.5:** Integrated Playable Demo - Basic game fully functional
 - [ ] **Milestone 3:** Feature Complete - All special rules implemented
 - [ ] **Milestone 4:** Polished MVP - Ready for beta testing
 
