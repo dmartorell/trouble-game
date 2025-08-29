@@ -110,6 +110,7 @@ export const useGamePlay = () => {
 
     // Simulate that player made a move - set hasMovedSinceRoll to true
     const { setCurrentTurn } = useGameStore.getState();
+
     setCurrentTurn({
       ...currentTurn,
       hasMovedSinceRoll: true,
