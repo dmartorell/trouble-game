@@ -51,6 +51,7 @@ export interface GameSettings {
   soundEnabled: boolean;
   hapticsEnabled: boolean;
   darkMode: boolean;
+  turnTimeout: number; // in seconds
 }
 
 export interface DieRollResult {
@@ -66,6 +67,8 @@ export interface Turn {
   selectedPegId?: string | null;
   rollsThisTurn: number;
   hasMovedSinceRoll: boolean;
+  startTime: number;
+  timeoutWarning?: boolean;
 }
 
 export interface DieState {
@@ -86,6 +89,7 @@ export interface GameStore {
   currentTurn: Turn | null;
   winner: string | null;
   dieState: DieState;
+  turnTimer: ReturnType<typeof setTimeout> | null;
 
   // Actions
   initializeGame: (selectedPlayers: Player[]) => void;
@@ -101,6 +105,10 @@ export interface GameStore {
   checkTurnEnd: () => boolean;
   executePegMove: (pegId: string, targetPosition: number) => Promise<boolean>;
   resetGame: () => void;
+  startTurnTimer: () => void;
+  clearTurnTimer: () => void;
+  resetTurnTimer: () => void;
+  handleTurnTimeout: () => void;
 
   // Getters
   getActivePlayers: () => Player[];
@@ -110,6 +118,12 @@ export interface GameStore {
   isValidMove: (pegId: string, dieRoll: number) => boolean;
   getMoveValidation: (pegId: string, dieRoll: number) => MoveValidationResult;
   hasValidMoves: (playerId: string, dieRoll: number) => boolean;
+  getRemainingTurnTime: () => number;
+  shouldShowTimeoutWarning: () => boolean;
+}
+
+export interface TurnTimerProps {
+  visible: boolean;
 }
 
 export interface SettingsStore {

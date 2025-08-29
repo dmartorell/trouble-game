@@ -152,7 +152,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
   - Grant additional turn
   - Update UI indicators
 
-- [ ] **#23** Create turn timeout handling
+- ✅ **#23** Create turn timeout handling
   - Inactivity timer
   - Auto-pass functionality
   - Warning notifications
@@ -286,18 +286,18 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 
 ### Phase Completion
 - ✅ Phase 1: Foundation (12/12 tasks) - 100% Complete
-- 🚧 Phase 2: Core Mechanics (10/11 tasks) - 91% Complete
+- ✅ Phase 2: Core Mechanics (11/11 tasks) - 100% Complete
 - [ ] Phase 3: Special Features (0/10 tasks)
 - [ ] Phase 4: Polish & UX (0/8 tasks)
 - [ ] Phase 5: Testing & Optimization (0/4 tasks)
 
 ### Overall Progress
-**Completed:** 22/45 tasks (49%)
+**Completed:** 23/45 tasks (51%)
 **In Progress:** 0/45 tasks (0%)
 
 ### Milestones
 - ✅ **Milestone 1:** MVP Foundation - Basic navigation and state (100% complete)
-- [ ] **Milestone 2:** Playable Game - Core mechanics working
+- ✅ **Milestone 2:** Playable Game - Core mechanics working (100% complete)
 - [ ] **Milestone 3:** Feature Complete - All special rules implemented
 - [ ] **Milestone 4:** Polished MVP - Ready for beta testing
 
@@ -350,6 +350,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 - ✅ **#20** Create smooth peg animation system (Completed 2025-08-29)
 - ✅ **#21** Implement basic turn switching (Completed 2025-08-29)
 - ✅ **#22** Add roll of 6 extra turn logic (Completed 2025-08-29)
+- ✅ **#23** Create turn timeout handling (Completed 2025-08-29)
 
 **Navigation & Routing Section: 100% Complete**
 **State Management Section: 100% Complete (4/4 tasks)** ✅
@@ -357,5 +358,5 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 **Die System Section: 100% Complete (4/4 tasks)** ✅
 **Peg System Section: 100% Complete (4/4 tasks)** ✅
 **Phase 1 Foundation: COMPLETE** ✅
-**Phase 2 Core Mechanics: IN PROGRESS** 🚧 (10/11 tasks - 91% Complete)
-Next: Complete turn management implementation (#23)
+**Phase 2 Core Mechanics: COMPLETE** ✅ (11/11 tasks - 100% Complete)
+Next: Begin Phase 3 Special Features (#24)

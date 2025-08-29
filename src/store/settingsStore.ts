@@ -1,11 +1,13 @@
 import { create } from 'zustand';
 import { GameSettings, SettingsStore } from '@/models';
 import { createPersistMiddleware, PersistApi } from './middleware/persistence';
+import { TIMEOUT_CONFIG } from '@/constants/game';
 
 const defaultSettings: GameSettings = {
   soundEnabled: true,
   hapticsEnabled: true,
   darkMode: true,
+  turnTimeout: TIMEOUT_CONFIG.DEFAULT_TURN_TIMEOUT,
 };
 
 export const useSettingsStore = create<SettingsStore & PersistApi>(

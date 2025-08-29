@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 
 import { useGamePlay } from './resources/useGamePlay';
-import { BoardSVG, PopOMatic, Peg } from '@/components';
+import { BoardSVG, PopOMatic, Peg, TurnTimer } from '@/components';
 import { PLAYER_COLORS } from '@/constants/game';
 
 export const GamePlayScreen = () => {
@@ -28,6 +28,9 @@ export const GamePlayScreen = () => {
 
   return (
     <View style={styles.container}>
+      {/* Turn Timer */}
+      <TurnTimer visible={!!currentPlayer} />
+
       <View style={styles.header}>
         <Pressable
           style={styles.backButton}
