@@ -64,6 +64,8 @@ export interface Turn {
   movesAvailable: number;
   extraTurnsRemaining: number;
   selectedPegId?: string | null;
+  rollsThisTurn: number;
+  hasMovedSinceRoll: boolean;
 }
 
 export interface DieState {

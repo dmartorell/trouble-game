@@ -10,6 +10,7 @@ export const GamePlayScreen = () => {
     handleDieRoll,
     handlePegPress,
     handleEndTurn,
+    handleSimulateMove,
     dieValue,
     rollCount,
     isLocked,
@@ -21,6 +22,8 @@ export const GamePlayScreen = () => {
     selectedPegId,
     currentDieRoll,
     extraTurnsRemaining,
+    rollsThisTurn,
+    hasMovedSinceRoll,
   } = useGamePlay();
 
   return (
@@ -47,7 +50,7 @@ export const GamePlayScreen = () => {
           </Text>
           {extraTurnsRemaining > 0 && (
             <Text style={styles.extraTurnsIndicator}>
-              Extra Turns: {extraTurnsRemaining}
+              Extra Turns: {extraTurnsRemaining} | Roll {rollsThisTurn}/2
             </Text>
           )}
         </View>
@@ -62,7 +65,7 @@ export const GamePlayScreen = () => {
           <PopOMatic
             size={120}
             onRoll={handleDieRoll}
-            disabled={false}
+            disabled={rollsThisTurn >= 2 || (rollsThisTurn > 0 && (!hasMovedSinceRoll || extraTurnsRemaining === 0))}
           />
 
           {/* Current Player's Pegs */}
@@ -116,10 +119,22 @@ export const GamePlayScreen = () => {
             <Text style={styles.debugText}>Callbacks: {dieState.rollCallbacks.length}</Text>
             <Text style={styles.debugText}>Selected Peg: {selectedPegId || 'None'}</Text>
             <Text style={styles.debugText}>Selectable Pegs: {selectablePegIds.length}</Text>
+            <Text style={[styles.debugText, extraTurnsRemaining > 0 && styles.highlightedDebugText]}>
+              Extra Turns: {extraTurnsRemaining} {extraTurnsRemaining > 0 ? '⭐' : ''}
+            </Text>
+            <Text style={styles.debugText}>Rolls This Turn: {rollsThisTurn}/2</Text>
+            <Text style={styles.debugText}>Can Roll: {rollsThisTurn < 2 && (rollsThisTurn === 0 || (hasMovedSinceRoll && extraTurnsRemaining > 0)) ? 'Yes ✅' : 'No ❌'}</Text>
           </View>
 
           {/* Turn Controls */}
           <View style={styles.controlsContainer}>
+            <Pressable
+              style={[styles.simulateButton, isLocked && styles.disabledButton]}
+              onPress={handleSimulateMove}
+              disabled={isLocked || !currentDieRoll || hasMovedSinceRoll}
+            >
+              <Text style={styles.simulateButtonText}>Simulate Move</Text>
+            </Pressable>
             <Pressable
               style={[styles.endTurnButton, isLocked && styles.disabledButton]}
               onPress={handleEndTurn}
@@ -296,6 +311,10 @@ const styles = StyleSheet.create({
     fontSize: 11,
     marginBottom: 2,
   },
+  highlightedDebugText: {
+    color: '#2ED573',
+    fontWeight: '700',
+  },
   pegTestContainer: {
     marginTop: 20,
     padding: 15,
@@ -345,6 +364,8 @@ const styles = StyleSheet.create({
   controlsContainer: {
     marginTop: 15,
     alignItems: 'center',
+    flexDirection: 'row',
+    gap: 10,
   },
   endTurnButton: {
     backgroundColor: '#FF4757',
@@ -357,6 +378,20 @@ const styles = StyleSheet.create({
   disabledButton: {
     backgroundColor: '#666666',
     borderColor: '#666666',
+  },
+  simulateButton: {
+    backgroundColor: '#2ED573',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: '#2ED573',
+  },
+  simulateButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '700',
+    textAlign: 'center',
   },
   endTurnButtonText: {
     color: '#FFFFFF',

@@ -53,6 +53,8 @@ describe('Turn Management Logic Tests', () => {
       movesAvailable: 0,
       extraTurnsRemaining: 0,
       selectedPegId: null,
+      rollsThisTurn: 0,
+      hasMovedSinceRoll: true,
     };
   };
 
@@ -114,6 +116,8 @@ describe('Turn Management Logic Tests', () => {
         movesAvailable: 0,
         extraTurnsRemaining: 0,
         selectedPegId: null,
+        rollsThisTurn: 0,
+        hasMovedSinceRoll: true,
       };
 
       expect(shouldEndTurn(turn, false)).toBe(false);
@@ -126,6 +130,8 @@ describe('Turn Management Logic Tests', () => {
         movesAvailable: 0,
         extraTurnsRemaining: 0,
         selectedPegId: null,
+        rollsThisTurn: 1,
+        hasMovedSinceRoll: true,
       };
 
       expect(shouldEndTurn(turn, false)).toBe(true);
@@ -138,6 +144,8 @@ describe('Turn Management Logic Tests', () => {
         movesAvailable: 0,
         extraTurnsRemaining: 0,
         selectedPegId: null,
+        rollsThisTurn: 1,
+        hasMovedSinceRoll: true,
       };
 
       expect(shouldEndTurn(turn, false)).toBe(false); // Should grant extra turn
@@ -150,6 +158,8 @@ describe('Turn Management Logic Tests', () => {
         movesAvailable: 0,
         extraTurnsRemaining: 1,
         selectedPegId: null,
+        rollsThisTurn: 2,
+        hasMovedSinceRoll: true,
       };
 
       expect(shouldEndTurn(turn, false)).toBe(true); // Should end normally
@@ -162,6 +172,8 @@ describe('Turn Management Logic Tests', () => {
         movesAvailable: 3,
         extraTurnsRemaining: 0,
         selectedPegId: null,
+        rollsThisTurn: 1,
+        hasMovedSinceRoll: true,
       };
 
       expect(shouldEndTurn(turn, false)).toBe(true); // No valid moves
@@ -174,6 +186,8 @@ describe('Turn Management Logic Tests', () => {
         movesAvailable: 3,
         extraTurnsRemaining: 0,
         selectedPegId: null,
+        rollsThisTurn: 1,
+        hasMovedSinceRoll: true,
       };
 
       expect(shouldEndTurn(turn, true)).toBe(false); // Has valid moves
@@ -189,6 +203,8 @@ describe('Turn Management Logic Tests', () => {
         movesAvailable: 4,
         extraTurnsRemaining: 0,
         selectedPegId: 'some-peg',
+        rollsThisTurn: 1,
+        hasMovedSinceRoll: true,
       };
 
       const newTurn = advanceTurn(players, currentTurn);
@@ -208,6 +224,8 @@ describe('Turn Management Logic Tests', () => {
         movesAvailable: 6,
         extraTurnsRemaining: 2,
         selectedPegId: 'some-peg',
+        rollsThisTurn: 1,
+        hasMovedSinceRoll: true,
       };
 
       const newTurn = advanceTurn(players, currentTurn);
@@ -225,8 +243,10 @@ describe('Turn Management Logic Tests', () => {
         playerId: 'player1',
         dieRoll: { value: 4, timestamp: Date.now() },
         movesAvailable: 4,
-        extraTurnsRemaining: 1, // Last extra turn
+        extraTurnsRemaining: 1,
         selectedPegId: 'some-peg',
+        rollsThisTurn: 1,
+        hasMovedSinceRoll: true,
       };
 
       const newTurn = advanceTurn(players, currentTurn);
@@ -248,6 +268,8 @@ describe('Turn Management Logic Tests', () => {
         movesAvailable: 0,
         extraTurnsRemaining: 0,
         selectedPegId: 'some-peg',
+        rollsThisTurn: 1,
+        hasMovedSinceRoll: true,
       };
 
       const updatedTurn = grantExtraTurnForSix(turn);
@@ -264,8 +286,10 @@ describe('Turn Management Logic Tests', () => {
         playerId: 'player1',
         dieRoll: { value: 6, timestamp: Date.now() },
         movesAvailable: 0,
-        extraTurnsRemaining: 1, // Already has extra turn
+        extraTurnsRemaining: 1,
         selectedPegId: null,
+        rollsThisTurn: 1,
+        hasMovedSinceRoll: true,
       };
 
       const updatedTurn = grantExtraTurnForSix(turn);
@@ -277,9 +301,11 @@ describe('Turn Management Logic Tests', () => {
       const turn: Turn = {
         playerId: 'player1',
         dieRoll: { value: 6, timestamp: Date.now() },
-        movesAvailable: 3, // Still has moves
+        movesAvailable: 3,
         extraTurnsRemaining: 0,
         selectedPegId: null,
+        rollsThisTurn: 1,
+        hasMovedSinceRoll: true,
       };
 
       const updatedTurn = grantExtraTurnForSix(turn);
@@ -294,6 +320,8 @@ describe('Turn Management Logic Tests', () => {
         movesAvailable: 0,
         extraTurnsRemaining: 0,
         selectedPegId: null,
+        rollsThisTurn: 1,
+        hasMovedSinceRoll: true,
       };
 
       const updatedTurn = grantExtraTurnForSix(turn);
@@ -311,6 +339,8 @@ describe('Turn Management Logic Tests', () => {
         movesAvailable: 0,
         extraTurnsRemaining: 0,
         selectedPegId: null,
+        rollsThisTurn: 0,
+        hasMovedSinceRoll: true,
       };
 
       // Simulate 8 turn advances (2 full cycles)
@@ -335,6 +365,8 @@ describe('Turn Management Logic Tests', () => {
         movesAvailable: 0,
         extraTurnsRemaining: 0,
         selectedPegId: null,
+        rollsThisTurn: 1,
+        hasMovedSinceRoll: true,
       };
 
       // Check if should end turn (should not, due to roll of 6)
@@ -362,8 +394,10 @@ describe('Turn Management Logic Tests', () => {
         playerId: 'player1',
         dieRoll: null,
         movesAvailable: 0,
-        extraTurnsRemaining: 3, // Start with 3 extra turns
+        extraTurnsRemaining: 3,
         selectedPegId: null,
+        rollsThisTurn: 0,
+        hasMovedSinceRoll: true,
       };
 
       const initialPlayer = currentTurn.playerId;

@@ -26,6 +26,24 @@ Be the first player to move all four of your colored pegs around the game board 
 - If you don't roll a 6, your turn ends and you must wait
 - Rolling a 6 gives you an additional pop and move
 
+### Roll of 6 Rules (Detailed)
+
+1. **Player rolls 6**: Gets +1 extra turn
+2. **Player MUST make a move** (if possible) before rolling again
+3. **After moving, player can roll again** (using their extra turn)
+4. **If they roll another 6 on their extra turn**: They can move again but **DO NOT** get another extra turn (maximum 2 rolls per turn sequence)
+5. **If player rolls 6 but CANNOT move**: The extra turn is lost when their turn ends
+
+**Key Points:**
+- **Maximum 2 rolls per turn sequence** - never 3 or more
+- Rolling a 6 on your extra turn does **NOT** grant another extra turn
+- Extra turns are only granted on the first 6 roll of a turn sequence
+
+**Logic Summary:**
+- First roll of turn: If 6 → grant extra turn
+- Second roll (extra turn): If 6 → just move, no additional extra turn granted
+- Maximum extra turns a player can have: 1 (which allows for maximum 2 rolls total)
+
 ### Moving Pegs
 - Move pegs **clockwise** around the board
 - Move the exact number of spaces shown on the die
