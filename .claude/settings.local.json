@@ -32,7 +32,9 @@
       "Bash(npx expo start:*)",
       "Bash(git reset:*)",
       "Bash(gh issue edit:*)",
-      "Bash(git mv:*)"
+      "Bash(git mv:*)",
+      "Bash(npm test)",
+      "Bash(sed:*)"
     ],
     "deny": [],
     "ask": []
