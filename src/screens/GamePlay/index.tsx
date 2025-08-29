@@ -9,15 +9,18 @@ export const GamePlayScreen = () => {
     exitGame,
     handleDieRoll,
     handlePegPress,
+    handleEndTurn,
     dieValue,
     rollCount,
     isLocked,
     dieState,
     currentPlayer,
+    players,
     currentPlayerPegs,
     selectablePegIds,
     selectedPegId,
     currentDieRoll,
+    extraTurnsRemaining,
   } = useGamePlay();
 
   return (
@@ -29,18 +32,25 @@ export const GamePlayScreen = () => {
         >
           <Text style={styles.backButtonText}>Exit</Text>
         </Pressable>
-        <Text style={styles.turnIndicator}>
-          {currentPlayer ? (
-            <>
-              <Text style={[styles.playerColor, { color: PLAYER_COLORS[currentPlayer.color] }]}>
-                {currentPlayer.name}
-              </Text>
-              &apos;s Turn
-            </>
-          ) : (
-            'Loading...'
+        <View style={styles.turnInfo}>
+          <Text style={styles.turnIndicator}>
+            {currentPlayer ? (
+              <>
+                <Text style={[styles.playerColor, { color: PLAYER_COLORS[currentPlayer.color] }]}>
+                  {currentPlayer.name}
+                </Text>
+                &apos;s Turn
+              </>
+            ) : (
+              'Loading...'
+            )}
+          </Text>
+          {extraTurnsRemaining > 0 && (
+            <Text style={styles.extraTurnsIndicator}>
+              Extra Turns: {extraTurnsRemaining}
+            </Text>
           )}
-        </Text>
+        </View>
       </View>
 
       <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -107,17 +117,50 @@ export const GamePlayScreen = () => {
             <Text style={styles.debugText}>Selected Peg: {selectedPegId || 'None'}</Text>
             <Text style={styles.debugText}>Selectable Pegs: {selectablePegIds.length}</Text>
           </View>
+
+          {/* Turn Controls */}
+          <View style={styles.controlsContainer}>
+            <Pressable
+              style={[styles.endTurnButton, isLocked && styles.disabledButton]}
+              onPress={handleEndTurn}
+              disabled={isLocked}
+            >
+              <Text style={styles.endTurnButtonText}>End Turn</Text>
+            </Pressable>
+          </View>
         </View>
 
         <View style={styles.playerInfo}>
-          <View style={styles.playerCard}>
-            <View style={[styles.playerIndicator, { backgroundColor: '#FF4757' }]} />
-            <Text style={styles.playerText}>Player 1</Text>
-          </View>
-          <View style={styles.playerCard}>
-            <View style={[styles.playerIndicator, { backgroundColor: '#3742FA' }]} />
-            <Text style={styles.playerText}>Player 2</Text>
-          </View>
+          {players.map((player) => {
+            const isCurrentPlayer = currentPlayer?.id === player.id;
+
+            return (
+              <View
+                key={player.id}
+                style={[
+                  styles.playerCard,
+                  isCurrentPlayer && styles.activePlayerCard,
+                ]}
+              >
+                <View
+                  style={[
+                    styles.playerIndicator,
+                    { backgroundColor: PLAYER_COLORS[player.color] },
+                    isCurrentPlayer && styles.activePlayerIndicator,
+                  ]}
+                />
+                <Text style={[
+                  styles.playerText,
+                  isCurrentPlayer && styles.activePlayerText,
+                ]}>
+                  {player.name}
+                </Text>
+                {isCurrentPlayer && (
+                  <Text style={styles.currentPlayerBadge}>●</Text>
+                )}
+              </View>
+            );
+          })}
         </View>
       </ScrollView>
     </View>
@@ -148,10 +191,19 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: '600',
   },
+  turnInfo: {
+    alignItems: 'center',
+  },
   turnIndicator: {
     color: '#FFA502',
     fontSize: 18,
     fontWeight: '700',
+  },
+  extraTurnsIndicator: {
+    color: '#2ED573',
+    fontSize: 12,
+    fontWeight: '600',
+    marginTop: 2,
   },
   scrollContent: {
     flex: 1,
@@ -172,28 +224,54 @@ const styles = StyleSheet.create({
   },
   playerInfo: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingHorizontal: 20,
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    paddingHorizontal: 10,
     paddingBottom: 20,
+    gap: 8,
   },
   playerCard: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
     paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     backgroundColor: '#1a1a2e',
     borderRadius: 8,
+    borderWidth: 2,
+    borderColor: 'transparent',
+    minWidth: 130,
+  },
+  activePlayerCard: {
+    backgroundColor: '#2a2a4e',
+    borderColor: '#FFA502',
   },
   playerIndicator: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+  },
+  activePlayerIndicator: {
     width: 20,
     height: 20,
     borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
   },
   playerText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
+    flex: 1,
+  },
+  activePlayerText: {
+    color: '#FFA502',
+    fontWeight: '700',
+  },
+  currentPlayerBadge: {
+    color: '#2ED573',
+    fontSize: 16,
+    fontWeight: '700',
   },
   playerColor: {
     fontWeight: '700',
@@ -262,6 +340,28 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     marginBottom: 8,
+    textAlign: 'center',
+  },
+  controlsContainer: {
+    marginTop: 15,
+    alignItems: 'center',
+  },
+  endTurnButton: {
+    backgroundColor: '#FF4757',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: '#FF4757',
+  },
+  disabledButton: {
+    backgroundColor: '#666666',
+    borderColor: '#666666',
+  },
+  endTurnButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '700',
     textAlign: 'center',
   },
 });
