@@ -147,7 +147,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
   - Turn end triggers
   - Player notification
 
-- [ ] **#22** Add roll of 6 extra turn logic
+- ✅ **#22** Add roll of 6 extra turn logic
   - Detect 6 rolls
   - Grant additional turn
   - Update UI indicators
@@ -286,13 +286,13 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 
 ### Phase Completion
 - ✅ Phase 1: Foundation (12/12 tasks) - 100% Complete
-- 🚧 Phase 2: Core Mechanics (9/11 tasks) - 82% Complete
+- 🚧 Phase 2: Core Mechanics (10/11 tasks) - 91% Complete
 - [ ] Phase 3: Special Features (0/10 tasks)
 - [ ] Phase 4: Polish & UX (0/8 tasks)
 - [ ] Phase 5: Testing & Optimization (0/4 tasks)
 
 ### Overall Progress
-**Completed:** 21/45 tasks (47%)
+**Completed:** 22/45 tasks (49%)
 **In Progress:** 0/45 tasks (0%)
 
 ### Milestones
@@ -349,6 +349,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 - ✅ **#19** Add peg movement validation (Completed 2025-08-29)
 - ✅ **#20** Create smooth peg animation system (Completed 2025-08-29)
 - ✅ **#21** Implement basic turn switching (Completed 2025-08-29)
+- ✅ **#22** Add roll of 6 extra turn logic (Completed 2025-08-29)
 
 **Navigation & Routing Section: 100% Complete**
 **State Management Section: 100% Complete (4/4 tasks)** ✅
@@ -356,5 +357,5 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 **Die System Section: 100% Complete (4/4 tasks)** ✅
 **Peg System Section: 100% Complete (4/4 tasks)** ✅
 **Phase 1 Foundation: COMPLETE** ✅
-**Phase 2 Core Mechanics: IN PROGRESS** 🚧 (8/11 tasks - 73% Complete)
-Next: Begin turn management implementation (#21-#23)
+**Phase 2 Core Mechanics: IN PROGRESS** 🚧 (10/11 tasks - 91% Complete)
+Next: Complete turn management implementation (#23)
