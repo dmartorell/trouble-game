@@ -161,7 +161,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 
 ## Phase 2.5: Game Integration (Week 4.5)
 ### Playable Demo
-- [ ] **#24** Create integrated playable demo with 2-4 players
+- ✅ **#24** Create integrated playable demo with 2-4 players (GitHub Issue #42 - COMPLETED 2025-08-30)
   - **Create PegOverlay component** to render pegs positioned over the board
   - **Add coordinate mapping utilities** to convert peg positions to board SVG coordinates
   - **Integrate PegOverlay into GamePlayScreen** with interactive board pegs
@@ -322,7 +322,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 ### Phase Completion
 - ✅ Phase 1: Foundation (12/12 tasks) - 100% Complete
 - ✅ Phase 2: Core Mechanics (11/11 tasks) - 100% Complete
-- [ ] Phase 2.5: Game Integration (0/3 tasks) - Ready to Begin
+- [ ] Phase 2.5: Game Integration (1/3 tasks) - 33% Complete
 - [ ] Phase 3: Special Features (1/10 tasks) - 10% Complete
 - [ ] Phase 4: Polish & UX (0/9 tasks)
 - [ ] Phase 5: Testing & Optimization (0/4 tasks)
@@ -334,7 +334,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 ### Milestones
 - ✅ **Milestone 1:** MVP Foundation - Basic navigation and state (100% complete)
 - ✅ **Milestone 2:** Core mechanics working (100% complete)
-- [ ] **Milestone 2.5:** Integrated Playable Demo - Basic game fully functional
+- [ ] **Milestone 2.5:** Integrated Playable Demo - Basic game fully functional (33% complete - Task #24 done)
 - [ ] **Milestone 3:** Feature Complete - All special rules implemented
 - [ ] **Milestone 4:** Polished MVP - Ready for beta testing
 
@@ -389,6 +389,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 - ✅ **#22** Add roll of 6 extra turn logic (Completed 2025-08-29)
 - ✅ **#23** Create turn timeout handling (Completed 2025-08-29)
 - ✅ **#31** Implement roll of 1 special rule (Completed 2025-08-30)
+- ✅ **#24** Create integrated playable demo with 2-4 players (Completed 2025-08-30)
 
 **Navigation & Routing Section: 100% Complete**
 **State Management Section: 100% Complete (4/4 tasks)** ✅
@@ -397,4 +398,5 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 **Peg System Section: 100% Complete (4/4 tasks)** ✅
 **Phase 1 Foundation: COMPLETE** ✅
 **Phase 2 Core Mechanics: COMPLETE** ✅ (11/11 tasks - 100% Complete)
-Next: Begin Phase 3 Special Features (#24)
+**Phase 2.5 Game Integration: IN PROGRESS** (1/3 tasks - 33% Complete)
+Next: Continue Phase 2.5 with Tasks #25 and #26
