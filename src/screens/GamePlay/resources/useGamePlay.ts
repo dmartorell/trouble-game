@@ -21,7 +21,6 @@ export const useGamePlay = () => {
     getSelectablePegs,
     isValidMove,
     selectPeg,
-    endTurn,
     executePegMove,
     getMoveValidation,
   } = useGameStore();
@@ -110,21 +109,7 @@ export const useGamePlay = () => {
     }
   }, [currentTurn, isValidMove, selectPeg, executeMoveAsync]);
 
-  const handleEndTurn = useCallback(() => {
-    endTurn();
-  }, [endTurn]);
 
-  const handleSimulateMove = useCallback(() => {
-    if (!currentTurn) return;
-
-    // Simulate that player made a move - set hasMovedSinceRoll to true
-    const { setCurrentTurn } = useGameStore.getState();
-
-    setCurrentTurn({
-      ...currentTurn,
-      hasMovedSinceRoll: true,
-    });
-  }, [currentTurn]);
 
   // Calculate board dimensions once for consistent scaling
   const boardDimensions = useMemo(() => calculateBoardDimensions(), []);
@@ -140,8 +125,6 @@ export const useGamePlay = () => {
     exitGame,
     handleDieRoll,
     handlePegPress,
-    handleEndTurn,
-    handleSimulateMove,
     dieValue,
     rollCount,
     isLocked,

@@ -9,8 +9,6 @@ export const GamePlayScreen = () => {
     exitGame,
     handleDieRoll,
     handlePegPress,
-    handleEndTurn,
-    handleSimulateMove,
     isLocked,
     currentPlayer,
     players,
@@ -89,23 +87,6 @@ export const GamePlayScreen = () => {
             </View>
           )}
 
-          {/* Turn Controls */}
-          <View style={styles.controlsContainer}>
-            <Pressable
-              style={[styles.simulateButton, isLocked && styles.disabledButton]}
-              onPress={handleSimulateMove}
-              disabled={isLocked || !currentDieRoll || hasMovedSinceRoll}
-            >
-              <Text style={styles.simulateButtonText}>Simulate Move</Text>
-            </Pressable>
-            <Pressable
-              style={[styles.endTurnButton, isLocked && styles.disabledButton]}
-              onPress={handleEndTurn}
-              disabled={isLocked}
-            >
-              <Text style={styles.endTurnButtonText}>End Turn</Text>
-            </Pressable>
-          </View>
         </View>
 
         <View style={styles.playerInfo}>
@@ -279,36 +260,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
   },
-  endTurnButton: {
-    backgroundColor: '#FF4757',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    borderWidth: 2,
-    borderColor: '#FF4757',
-  },
   disabledButton: {
     backgroundColor: '#666666',
     borderColor: '#666666',
-  },
-  simulateButton: {
-    backgroundColor: '#2ED573',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    borderWidth: 2,
-    borderColor: '#2ED573',
-  },
-  simulateButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '700',
-    textAlign: 'center',
-  },
-  endTurnButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '700',
-    textAlign: 'center',
   },
 });
