@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { router } from 'expo-router';
 import { useGameStore } from '@/store/gameStore';
 import { Player } from '@/models';
+import { calculateBoardDimensions } from '@/utils/boardCoordinates';
 
 export const useGamePlay = () => {
   const [dieValue, setDieValue] = useState<number | null>(null);
@@ -13,6 +14,7 @@ export const useGamePlay = () => {
     dieState,
     currentTurn,
     players,
+    pegs,
     initializeGame,
     getCurrentPlayer,
     getPlayerPegs,
@@ -117,6 +119,9 @@ export const useGamePlay = () => {
     });
   }, [currentTurn]);
 
+  // Calculate board dimensions once for consistent scaling
+  const boardDimensions = useMemo(() => calculateBoardDimensions(), []);
+
   // Get current player's pegs and their selectability
   const currentPlayerPegs = currentPlayer ? getPlayerPegs(currentPlayer.id) : [];
   const selectablePegIds = currentPlayer && currentTurn?.dieRoll
@@ -136,6 +141,7 @@ export const useGamePlay = () => {
     dieState,
     currentPlayer,
     players,
+    pegs,
     currentPlayerPegs,
     selectablePegIds,
     selectedPegId: currentTurn?.selectedPegId,
@@ -143,5 +149,6 @@ export const useGamePlay = () => {
     extraTurnsRemaining: currentTurn?.extraTurnsRemaining || 0,
     rollsThisTurn: currentTurn?.rollsThisTurn || 0,
     hasMovedSinceRoll: currentTurn?.hasMovedSinceRoll ?? true,
+    boardDimensions,
   };
 };
