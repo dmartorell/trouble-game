@@ -20,7 +20,7 @@ import {
   MoveAnimationConfig,
 } from '@/utils/animationPaths';
 
-interface AnimatedPegProps {
+interface PegProps {
   id: string;
   playerId: string;
   color: PlayerColor;
@@ -40,7 +40,7 @@ interface AnimatedPegProps {
   verticalOffset?: number;
 }
 
-export const AnimatedPeg: FC<AnimatedPegProps> = ({
+export const Peg: FC<PegProps> = ({
   id,
   playerId,
   color,

@@ -1,1 +1,1 @@
-export { AnimatedPeg } from './AnimatedPeg';
+export { Peg } from './Peg';
