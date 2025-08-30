@@ -3,7 +3,7 @@ import { GameState, Player, Peg, Turn, GameStore, DieRollCallback, MoveValidatio
 import { GAME_CONFIG, ANIMATION_DURATION, TIMEOUT_CONFIG } from '@/constants/game';
 import { createPersistMiddleware, PersistApi } from './middleware/persistence';
 import { generateDiceRoll, applyStreakBreaker, createDieRollResult } from '@/utils/diceUtils';
-import { validatePegMove, getValidMoves, hasValidMoves as checkHasValidMoves } from '@/utils/moveValidation';
+import { validatePegMove, getValidMoves, hasValidMoves as checkHasValidMoves, canMoveFromHomeToStart } from '@/utils/moveValidation';
 import { useSettingsStore } from './settingsStore';
 
 export const useGameStore = create<GameStore & PersistApi>(
@@ -171,26 +171,43 @@ export const useGameStore = create<GameStore & PersistApi>(
                 currentTurn: updatedTurn,
               });
 
-              // Check if player has any valid moves with this die roll FIRST
-              const { hasValidMoves, endTurn, startTurnTimer } = get();
+              // Special handling for Roll of 1 - auto-move other players' pegs
+              if (result === 1) {
+                const { handleRollOfOne } = get();
 
-              if (!hasValidMoves(latestTurn.playerId, result)) {
-                // Don't start timer - auto-end turn immediately
-                // Use setTimeout to allow UI to update with the die roll first
-                setTimeout(() => {
-                  endTurn();
-                }, 1000); // 1 second delay to show the die roll result
-              } else {
-                // Player has valid moves - start fresh timer for each roll
-                // Always create a clean timer state to avoid warning persistence
-                const timerUpdatedTurn: Turn = {
+                // Keep timer invisible by not setting startTime
+                const rollOfOneTurn: Turn = {
                   ...updatedTurn,
-                  startTime: Date.now(),
-                  timeoutWarning: false, // Always ensure warning state is clear
+                  startTime: 0, // Keep timer invisible for Roll of 1
+                  timeoutWarning: false,
                 };
 
-                set({ currentTurn: timerUpdatedTurn });
-                startTurnTimer();
+                set({ currentTurn: rollOfOneTurn });
+
+                // Execute Roll of 1 rule - this will handle turn ending
+                handleRollOfOne(latestTurn.playerId);
+              } else {
+                // Normal roll logic - check if player has any valid moves
+                const { hasValidMoves, endTurn, startTurnTimer } = get();
+
+                if (!hasValidMoves(latestTurn.playerId, result)) {
+                  // Don't start timer - auto-end turn immediately
+                  // Use setTimeout to allow UI to update with the die roll first
+                  setTimeout(() => {
+                    endTurn();
+                  }, 1000); // 1 second delay to show the die roll result
+                } else {
+                  // Player has valid moves - start fresh timer for each roll
+                  // Always create a clean timer state to avoid warning persistence
+                  const timerUpdatedTurn: Turn = {
+                    ...updatedTurn,
+                    startTime: Date.now(),
+                    timeoutWarning: false, // Always ensure warning state is clear
+                  };
+
+                  set({ currentTurn: timerUpdatedTurn });
+                  startTurnTimer();
+                }
               }
             }
 
@@ -555,6 +572,64 @@ export const useGameStore = create<GameStore & PersistApi>(
 
         // End the turn
         endTurn();
+      },
+
+      // Handle Roll of 1 rule - automatically move other players' pegs from HOME to START
+      handleRollOfOne: (currentPlayerId: string): void => {
+        const { players, pegs, animatePegMove, endTurn } = get();
+
+        // Get all other players (exclude the current player who rolled 1)
+        const otherPlayers = players.filter(player => player.id !== currentPlayerId);
+
+        const movements: { playerId: string; pegId: string; playerColor: string }[] = [];
+
+        // Check each other player for possible movements
+        otherPlayers.forEach(player => {
+          const result = canMoveFromHomeToStart(player.id, player.color, pegs);
+
+          if (result.canMove && result.pegId) {
+            movements.push({
+              playerId: player.id,
+              pegId: result.pegId,
+              playerColor: player.color,
+            });
+          }
+        });
+
+        // If no movements are possible, just end the turn
+        if (movements.length === 0) {
+          setTimeout(() => {
+            endTurn();
+          }, ANIMATION_DURATION.rollOfOneMessage);
+
+          return;
+        }
+
+        // Execute movements sequentially with animations
+        let delay = ANIMATION_DURATION.rollOfOneMessage; // Initial delay to show message
+
+        for (const movement of movements) {
+          setTimeout(() => {
+            // Get player's START position
+            const colorIndex = ['red', 'blue', 'green', 'yellow'].indexOf(movement.playerColor);
+
+            if (colorIndex !== -1) {
+              const startPosition = [25, 4, 11, 18][colorIndex]; // Red=25, Blue=4, Green=11, Yellow=18
+
+              // Animate the peg movement
+              animatePegMove(movement.pegId, startPosition).catch(error => {
+                console.error(`Failed to animate peg ${movement.pegId}:`, error);
+              });
+            }
+          }, delay);
+
+          delay += ANIMATION_DURATION.rollOfOnePegMove + ANIMATION_DURATION.rollOfOneDelay;
+        }
+
+        // End turn after all animations complete
+        setTimeout(() => {
+          endTurn();
+        }, delay);
       },
 
       resetGame: () => {

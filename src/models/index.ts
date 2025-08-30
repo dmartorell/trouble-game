@@ -110,6 +110,7 @@ export interface GameStore {
   clearTurnTimer: () => void;
   resetTurnTimer: () => void;
   handleTurnTimeout: () => void;
+  handleRollOfOne: (currentPlayerId: string) => void;
 
   // Getters
   getActivePlayers: () => Player[];

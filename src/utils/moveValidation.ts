@@ -290,3 +290,44 @@ export function hasValidMoves(
 
   return validMoves.length > 0;
 }
+
+/**
+ * Check if a player can move a peg from HOME to START for Roll of 1 rule
+ * Returns the first available peg that can be moved
+ */
+export function canMoveFromHomeToStart(
+  playerId: string,
+  playerColor: string,
+  allPegs: Peg[],
+): { canMove: boolean; pegId?: string } {
+  // Find player's pegs that are in HOME
+  const homePegs = allPegs.filter(peg =>
+    peg.playerId === playerId && peg.isInHome,
+  );
+
+  if (homePegs.length === 0) {
+    return { canMove: false };
+  }
+
+  // Get player's START position based on color
+  const colorIndex = ['red', 'blue', 'green', 'yellow'].indexOf(playerColor);
+
+  if (colorIndex === -1) {
+    return { canMove: false };
+  }
+
+  const startPosition = BOARD_POSITIONS.playerStarts[colorIndex];
+
+  // Check if START space is blocked by player's own peg
+  const { blocked } = isDestinationBlocked(startPosition, playerId, allPegs);
+
+  if (blocked) {
+    return { canMove: false };
+  }
+
+  // Return the first available peg to move
+  return {
+    canMove: true,
+    pegId: homePegs[0].id,
+  };
+}
