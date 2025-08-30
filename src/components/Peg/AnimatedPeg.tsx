@@ -26,8 +26,6 @@ interface AnimatedPegProps {
   color: PlayerColor;
   position: number; // -1 for HOME, 0-27 for track, 28+ for FINISH
   size?: number;
-  isSelected?: boolean;
-  isHighlighted?: boolean;
   isMovable?: boolean;
   onPress?: (pegId: string) => void;
   onMoveComplete?: (pegId: string) => void;
@@ -48,8 +46,6 @@ export const AnimatedPeg: FC<AnimatedPegProps> = ({
   color,
   position,
   size = 24,
-  isSelected = false,
-  isHighlighted = false,
   isMovable = false,
   onPress,
   onMoveComplete,
@@ -196,10 +192,10 @@ export const AnimatedPeg: FC<AnimatedPegProps> = ({
   const darkColor = adjustColorBrightness(pegColor, -30);
   const shadowColor = adjustColorBrightness(pegColor, -60);
 
-  // Selection and highlight styling
-  const strokeColor = isSelected ? '#FFFFFF' : isHighlighted ? '#FFD700' : 'transparent';
-  const strokeWidth = isSelected ? 3 : isHighlighted ? 2 : 0;
-  const shadowOpacity = isSelected ? 0.8 : isHighlighted ? 0.6 : 0.4;
+  // Highlight styling for movable pegs
+  const strokeColor = isMovable ? '#FFD700' : 'transparent';
+  const strokeWidth = isMovable ? 2 : 0;
+  const shadowOpacity = isMovable ? 0.6 : 0.4;
 
   // Animated style
   const animatedStyle = useAnimatedStyle(() => {
@@ -292,7 +288,7 @@ export const AnimatedPeg: FC<AnimatedPegProps> = ({
   );
 };
 
-// Helper function to adjust color brightness (copied from original Peg)
+// Helper function to adjust color brightness
 function adjustColorBrightness(hexColor: string, amount: number): string {
   // Remove # if present
   const color = hexColor.replace('#', '');

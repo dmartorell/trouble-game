@@ -15,7 +15,6 @@ interface PegOverlayProps {
   pegs: Peg[];
   players: Array<{ id: string; color: PlayerColor }>;
   selectablePegIds?: string[];
-  selectedPegId?: string;
   onPegPress?: (pegId: string) => void;
   pegSize?: number;
   disabled?: boolean;
@@ -26,7 +25,6 @@ export const PegOverlay: FC<PegOverlayProps> = ({
   pegs,
   players,
   selectablePegIds = [],
-  selectedPegId,
   onPegPress,
   pegSize = 24,
   disabled = false,
@@ -48,7 +46,6 @@ export const PegOverlay: FC<PegOverlayProps> = ({
 
   const renderPeg = (pegData: PegOverlayData) => {
     const isSelectable = selectablePegIds.includes(pegData.id);
-    const isSelected = selectedPegId === pegData.id;
     const isMovable = isSelectable && !disabled;
 
     // Apply same offset corrections as DebugOverlay for proper alignment
@@ -63,7 +60,7 @@ export const PegOverlay: FC<PegOverlayProps> = ({
       position: 'absolute' as const,
       left: pegData.coordinate.x + horizontalOffset - (pegSize + 8) / 2, // Center the peg on coordinate with offset
       top: pegData.coordinate.y + verticalOffset - (pegSize + 8) / 2,
-      zIndex: isSelected ? 10 : isSelectable ? 5 : 1, // Selected pegs appear on top
+      zIndex: isSelectable ? 5 : 1, // Movable pegs appear on top
     };
 
     return (
@@ -74,8 +71,6 @@ export const PegOverlay: FC<PegOverlayProps> = ({
           color={pegData.playerColor}
           position={pegData.position}
           size={pegSize}
-          isSelected={isSelected}
-          isHighlighted={isSelectable && !isSelected}
           isMovable={isMovable}
           onPress={onPegPress}
           onMoveComplete={pegData.animationCallback}

@@ -14,8 +14,6 @@ export const GamePlayScreen = () => {
     players,
     pegs,
     selectablePegIds,
-    selectedPegId,
-    currentDieRoll,
     extraTurnsRemaining,
     rollsThisTurn,
     hasMovedSinceRoll,
@@ -36,12 +34,25 @@ export const GamePlayScreen = () => {
           <Text style={styles.backButtonText}>Exit</Text>
         </Pressable>
         <View style={styles.turnInfo}>
-          <Text style={[
-            styles.turnIndicator,
-            currentPlayer && { color: PLAYER_COLORS[currentPlayer.color] },
+          <View style={[
+            styles.currentPlayerContainer,
+            currentPlayer && { borderColor: PLAYER_COLORS[currentPlayer.color] },
           ]}>
-            {currentPlayer ? `${currentPlayer.name}'s Turn` : 'Loading...'}
-          </Text>
+            {currentPlayer && (
+              <View
+                style={[
+                  styles.currentPlayerColorDot,
+                  { backgroundColor: PLAYER_COLORS[currentPlayer.color] },
+                ]}
+              />
+            )}
+            <Text style={[
+              styles.turnIndicator,
+              currentPlayer && { color: PLAYER_COLORS[currentPlayer.color] },
+            ]}>
+              {currentPlayer ? `${currentPlayer.name}'s Turn` : 'Loading...'}
+            </Text>
+          </View>
           {extraTurnsRemaining > 0 && (
             <Text style={styles.extraTurnsIndicator}>
               Extra Turns: {extraTurnsRemaining} | Roll {rollsThisTurn}/2
@@ -61,7 +72,6 @@ export const GamePlayScreen = () => {
             pegs={pegs}
             players={players}
             selectablePegIds={selectablePegIds}
-            selectedPegId={selectedPegId || undefined}
             onPegPress={handlePegPress}
             pegSize={24}
             disabled={isLocked}
@@ -75,20 +85,6 @@ export const GamePlayScreen = () => {
             onRoll={handleDieRoll}
             disabled={rollsThisTurn >= 2 || (rollsThisTurn > 0 && (!hasMovedSinceRoll || extraTurnsRemaining === 0))}
           />
-
-          {/* Current Die Roll Display */}
-          {currentDieRoll && (
-            <View style={styles.gameStatusContainer}>
-              <Text style={styles.gameStatusText}>Die Roll: {currentDieRoll}</Text>
-              <Text style={styles.gameStatusHint}>
-                {currentDieRoll === 1
-                  ? 'Roll of 1! Moving other players\' pegs from HOME to START...'
-                  : selectablePegIds.length > 0
-                    ? 'Tap a highlighted peg on the board to move it'
-                    : 'No valid moves available'}
-              </Text>
-            </View>
-          )}
 
         </View>
 
@@ -156,9 +152,27 @@ const styles = StyleSheet.create({
   turnInfo: {
     alignItems: 'center',
   },
+  currentPlayerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#FFA502',
+    backgroundColor: 'rgba(255, 165, 2, 0.1)',
+    gap: 8,
+  },
+  currentPlayerColorDot: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    borderWidth: 1.5,
+    borderColor: '#FFFFFF',
+  },
   turnIndicator: {
     color: '#FFA502',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '700',
   },
   extraTurnsIndicator: {
@@ -234,28 +248,6 @@ const styles = StyleSheet.create({
     color: '#2ED573',
     fontSize: 16,
     fontWeight: '700',
-  },
-  gameStatusContainer: {
-    marginTop: 20,
-    padding: 15,
-    backgroundColor: 'rgba(255, 165, 2, 0.1)',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#FFA502',
-    alignItems: 'center',
-  },
-  gameStatusText: {
-    color: '#FFA502',
-    fontSize: 16,
-    fontWeight: '700',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  gameStatusHint: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    textAlign: 'center',
-    opacity: 0.8,
   },
   controlsContainer: {
     marginTop: 15,
