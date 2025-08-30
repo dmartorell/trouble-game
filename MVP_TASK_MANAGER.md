@@ -209,7 +209,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
   - Materialize animation
 
 ### Special Rules
-- [ ] **#31** Implement roll of 1 special rule
+- ✅ **#31** Implement roll of 1 special rule
   - Detect roll of 1
   - Allow opponents to move to START
   - Handle blocked START spaces
@@ -323,12 +323,12 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 - ✅ Phase 1: Foundation (12/12 tasks) - 100% Complete
 - ✅ Phase 2: Core Mechanics (11/11 tasks) - 100% Complete
 - [ ] Phase 2.5: Game Integration (0/3 tasks) - Ready to Begin
-- [ ] Phase 3: Special Features (0/10 tasks)
+- [ ] Phase 3: Special Features (1/10 tasks) - 10% Complete
 - [ ] Phase 4: Polish & UX (0/9 tasks)
 - [ ] Phase 5: Testing & Optimization (0/4 tasks)
 
 ### Overall Progress
-**Completed:** 23/49 tasks (47%)
+**Completed:** 24/49 tasks (49%)
 **In Progress:** 0/49 tasks (0%)
 
 ### Milestones
@@ -388,6 +388,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 - ✅ **#21** Implement basic turn switching (Completed 2025-08-29)
 - ✅ **#22** Add roll of 6 extra turn logic (Completed 2025-08-29)
 - ✅ **#23** Create turn timeout handling (Completed 2025-08-29)
+- ✅ **#31** Implement roll of 1 special rule (Completed 2025-08-30)
 
 **Navigation & Routing Section: 100% Complete**
 **State Management Section: 100% Complete (4/4 tasks)** ✅
