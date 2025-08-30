@@ -114,7 +114,7 @@ export const useGamePlay = () => {
 
   // Get current player's pegs and their selectability
   const currentPlayerPegs = currentPlayer ? getPlayerPegs(currentPlayer.id) : [];
-  const selectablePegIds = currentPlayer && currentTurn?.dieRoll
+  const selectablePegIds = currentPlayer && currentTurn?.dieRoll && currentTurn.dieRoll.value !== 1
     ? getSelectablePegs(currentPlayer.id, currentTurn.dieRoll.value).map(p => p.id)
     : [];
 
@@ -137,6 +137,7 @@ export const useGamePlay = () => {
     extraTurnsRemaining: currentTurn?.extraTurnsRemaining || 0,
     rollsThisTurn: currentTurn?.rollsThisTurn || 0,
     hasMovedSinceRoll: currentTurn?.hasMovedSinceRoll ?? true,
+    startTime: currentTurn?.startTime || 0,
     boardDimensions,
   };
 };

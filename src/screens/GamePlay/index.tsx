@@ -19,13 +19,14 @@ export const GamePlayScreen = () => {
     extraTurnsRemaining,
     rollsThisTurn,
     hasMovedSinceRoll,
+    startTime,
     boardDimensions,
   } = useGamePlay();
 
   return (
     <View style={styles.container}>
       {/* Turn Timer */}
-      <TurnTimer visible={!!currentPlayer} />
+      <TurnTimer visible={!!currentPlayer && startTime > 0} />
 
       <View style={styles.header}>
         <Pressable
@@ -80,9 +81,11 @@ export const GamePlayScreen = () => {
             <View style={styles.gameStatusContainer}>
               <Text style={styles.gameStatusText}>Die Roll: {currentDieRoll}</Text>
               <Text style={styles.gameStatusHint}>
-                {selectablePegIds.length > 0
-                  ? 'Tap a highlighted peg on the board to move it'
-                  : 'No valid moves available'}
+                {currentDieRoll === 1
+                  ? 'Roll of 1! Moving other players\' pegs from HOME to START...'
+                  : selectablePegIds.length > 0
+                    ? 'Tap a highlighted peg on the board to move it'
+                    : 'No valid moves available'}
               </Text>
             </View>
           )}
