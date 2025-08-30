@@ -16,8 +16,6 @@ import { useGameStore } from '@/store/gameStore';
 import { getSpacePosition } from '@/constants/board';
 import { getHomePosition } from '@/utils/boardCoordinates';
 import {
-  calculateAnimationPath,
-  getEasingFunction,
   calculateMoveDuration,
   MoveAnimationConfig,
 } from '@/utils/animationPaths';
@@ -64,7 +62,6 @@ export const AnimatedPeg: FC<AnimatedPegProps> = ({
   const animatedX = useSharedValue(0);
   const animatedY = useSharedValue(0);
   const animatedScale = useSharedValue(1);
-  const animationProgress = useSharedValue(0);
 
   // Calculate current position coordinates
   const getCurrentPosition = (pos: number) => {
@@ -98,17 +95,20 @@ export const AnimatedPeg: FC<AnimatedPegProps> = ({
     animatedY.value = 0;
   }, []);
 
-  // Reset position when not animating and position changes (after animation completes)
+  // Reset position when not animating (after animation completes)
   useEffect(() => {
     if (!isAnimating) {
       animatedX.value = 0;
       animatedY.value = 0;
     }
-  }, [isAnimating, position]);
+  }, [isAnimating]);
 
   // Handle animation when target position changes
   useEffect(() => {
     if (!isAnimating || targetPosition === undefined) return;
+
+    console.log(`Starting animation for peg ${id}: ${position} -> ${targetPosition}`);
+
     const config: MoveAnimationConfig = {
       startPosition: position,
       endPosition: targetPosition,
@@ -117,91 +117,37 @@ export const AnimatedPeg: FC<AnimatedPegProps> = ({
       ...animationConfig,
     };
 
-    // Calculate animation path
-    const path = calculateAnimationPath(config.startPosition, config.endPosition);
-
-    // Get current and target positions
+    // Get current and target positions in absolute coordinates
     const currentPos = getCurrentPosition(position);
     const targetPos = getCurrentPosition(targetPosition);
 
-    if (path.length === 0) {
-      // No path calculated, move directly
-      // Calculate the offset from current wrapper position to target
-      const offsetX = targetPos.x - currentPos.x;
-      const offsetY = targetPos.y - currentPos.y;
+    console.log(`Animation coordinates - from: (${currentPos.x}, ${currentPos.y}) to: (${targetPos.x}, ${targetPos.y})`);
 
-      animatedX.value = withTiming(offsetX, {
-        duration: config.duration,
-        easing: Easing.out(Easing.cubic),
-      });
-      animatedY.value = withTiming(offsetY, {
-        duration: config.duration,
-        easing: Easing.out(Easing.cubic),
-      }, () => {
-        // Reset position to (0,0) so PegOverlay can position correctly
-        animatedX.value = 0;
-        animatedY.value = 0;
+    // Calculate the offset needed to animate from current to target position
+    // Since PegOverlay positions the container at currentPos, we need to animate to the relative offset
+    const offsetX = targetPos.x - currentPos.x;
+    const offsetY = targetPos.y - currentPos.y;
 
-        // Animation complete callback
-        if (onMoveComplete) {
-          runOnJS(onMoveComplete)(id);
-        }
-      });
+    console.log(`Animation offset: (${offsetX}, ${offsetY})`);
 
-      return;
-    }
+    // Simple direct animation (no complex path for now)
+    animatedX.value = withTiming(offsetX, {
+      duration: config.duration,
+      easing: Easing.out(Easing.cubic),
+    });
 
-    // Animate along the calculated path
-    const easingFn = getEasingFunction(config.easing);
-
-    // Reset and start animation progress
-    animationProgress.value = 0;
-    animationProgress.value = withTiming(1, {
+    animatedY.value = withTiming(offsetY, {
       duration: config.duration,
       easing: Easing.out(Easing.cubic),
     }, (finished) => {
       if (finished) {
-        // Reset position to (0,0) so PegOverlay can position correctly
-        animatedX.value = 0;
-        animatedY.value = 0;
-
+        console.log(`Animation finished for peg ${id}`);
+        // Animation complete - call callback
         if (onMoveComplete) {
           runOnJS(onMoveComplete)(id);
         }
       }
     });
-
-    // Update position based on progress
-    const updatePosition = (progressValue: number) => {
-      const easedProgress = easingFn(progressValue);
-      const pathIndex = Math.floor(easedProgress * (path.length - 1));
-      const nextPathIndex = Math.min(pathIndex + 1, path.length - 1);
-
-      const currentPoint = path[pathIndex];
-      const nextPoint = path[nextPathIndex];
-
-      if (currentPoint && nextPoint) {
-        const localProgress = (easedProgress * (path.length - 1)) - pathIndex;
-        const x = currentPoint.x + (nextPoint.x - currentPoint.x) * localProgress;
-        const y = currentPoint.y + (nextPoint.y - currentPoint.y) * localProgress;
-
-        // Calculate offset from current wrapper position
-        animatedX.value = x - currentPos.x;
-        animatedY.value = y - currentPos.y;
-      }
-    };
-
-    // Start position interpolation
-    const startAnimation = () => {
-      const interval = setInterval(() => {
-        updatePosition(animationProgress.value);
-        if (animationProgress.value >= 1) {
-          clearInterval(interval);
-        }
-      }, 16); // ~60fps
-    };
-
-    runOnJS(startAnimation)();
 
     // Add slight scale animation for movement feedback
     animatedScale.value = withTiming(1.1, { duration: 100 }, () => {

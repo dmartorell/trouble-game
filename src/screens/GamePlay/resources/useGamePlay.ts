@@ -109,8 +109,6 @@ export const useGamePlay = () => {
     }
   }, [currentTurn, isValidMove, selectPeg, executeMoveAsync]);
 
-
-
   // Calculate board dimensions once for consistent scaling
   const boardDimensions = useMemo(() => calculateBoardDimensions(), []);
 
