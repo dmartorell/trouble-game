@@ -5,6 +5,7 @@ import {
   validatePegMove,
   getValidMoves,
   hasValidMoves,
+  canMoveFromHomeToStart,
 } from '../moveValidation';
 import { Peg } from '@/models';
 
@@ -311,6 +312,66 @@ describe('Move Validation Utils', () => {
       const peg = createPeg('red-peg-1', 'player1', 27); // Last position
       const result = calculateDestinationPosition(peg, 3, 'red');
       expect(result).toBe(2); // Should wrap to position 2
+    });
+  });
+
+  describe('canMoveFromHomeToStart (Roll of 1 rule)', () => {
+    it('should return true when player has pegs in HOME and START is free', () => {
+      const pegs = [
+        createPeg('red-peg-1', 'player1', -1, true), // In HOME
+        createPeg('blue-peg-1', 'player2', 5), // On track, not blocking
+      ];
+      const result = canMoveFromHomeToStart('player1', 'red', pegs);
+      expect(result.canMove).toBe(true);
+      expect(result.pegId).toBe('red-peg-1');
+    });
+
+    it('should return false when player has no pegs in HOME', () => {
+      const pegs = [
+        createPeg('red-peg-1', 'player1', 5), // On track
+        createPeg('red-peg-2', 'player1', 10), // On track
+      ];
+      const result = canMoveFromHomeToStart('player1', 'red', pegs);
+      expect(result.canMove).toBe(false);
+      expect(result.pegId).toBeUndefined();
+    });
+
+    it('should return false when START space is blocked by own peg', () => {
+      const pegs = [
+        createPeg('red-peg-1', 'player1', -1, true), // In HOME
+        createPeg('red-peg-2', 'player1', 25), // Blocking red START (position 25)
+      ];
+      const result = canMoveFromHomeToStart('player1', 'red', pegs);
+      expect(result.canMove).toBe(false);
+      expect(result.pegId).toBeUndefined();
+    });
+
+    it('should work correctly for different player colors', () => {
+      const pegs = [
+        createPeg('blue-peg-1', 'player2', -1, true), // Blue player in HOME
+        createPeg('red-peg-1', 'player1', 25), // Red peg not blocking blue START
+      ];
+      const result = canMoveFromHomeToStart('player2', 'blue', pegs);
+      expect(result.canMove).toBe(true);
+      expect(result.pegId).toBe('blue-peg-1');
+    });
+
+    it('should handle invalid player color', () => {
+      const pegs = [createPeg('test-peg-1', 'player1', -1, true)];
+      const result = canMoveFromHomeToStart('player1', 'invalid' as any, pegs);
+      expect(result.canMove).toBe(false);
+      expect(result.pegId).toBeUndefined();
+    });
+
+    it('should return first available HOME peg when multiple exist', () => {
+      const pegs = [
+        createPeg('red-peg-1', 'player1', -1, true), // First HOME peg
+        createPeg('red-peg-2', 'player1', -1, true), // Second HOME peg
+        createPeg('red-peg-3', 'player1', 10), // On track
+      ];
+      const result = canMoveFromHomeToStart('player1', 'red', pegs);
+      expect(result.canMove).toBe(true);
+      expect(result.pegId).toBe('red-peg-1'); // Should return first one
     });
   });
 });
