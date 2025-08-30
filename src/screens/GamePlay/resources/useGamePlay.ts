@@ -71,12 +71,19 @@ export const useGamePlay = () => {
 
     const validation = getMoveValidation(pegId, currentTurn.dieRoll.value);
 
+    console.log('Move validation:', { pegId, validation });
+
     if (validation.isValid && validation.newPosition !== undefined) {
+      console.log(`Executing move for peg ${pegId} to position ${validation.newPosition}`);
       const success = await executePegMove(pegId, validation.newPosition);
 
       if (success) {
-        console.log(`Move executed for peg ${pegId}`);
+        console.log(`Move executed successfully for peg ${pegId}`);
+      } else {
+        console.log(`Move failed for peg ${pegId}`);
       }
+    } else {
+      console.log('Move not valid or no new position:', validation);
     }
   }, [currentTurn, getMoveValidation, executePegMove]);
 

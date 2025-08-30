@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Peg as PegComponent } from '@/components/Peg/Peg';
+import { AnimatedPeg } from '@/components/Peg/AnimatedPeg';
 import { Peg, PlayerColor } from '@/models';
 import {
   preparePegOverlayData,
@@ -68,16 +68,20 @@ export const PegOverlay: FC<PegOverlayProps> = ({
 
     return (
       <View key={pegData.id} style={pegStyle}>
-        <PegComponent
+        <AnimatedPeg
           id={pegData.id}
           playerId={pegData.playerId}
           color={pegData.playerColor}
+          position={pegData.position}
           size={pegSize}
           isSelected={isSelected}
           isHighlighted={isSelectable && !isSelected}
           isMovable={isMovable}
           onPress={onPegPress}
+          onMoveComplete={pegData.animationCallback}
           testID={`overlay-peg-${pegData.id}`}
+          isAnimating={pegData.isAnimating || false}
+          targetPosition={pegData.targetPosition}
         />
       </View>
     );

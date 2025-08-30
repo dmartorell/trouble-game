@@ -12,7 +12,9 @@ import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 import { PlayerColor } from '@/models';
 import { PLAYER_COLORS } from '@/constants/game';
 import { useSettingsStore } from '@/store/settingsStore';
+import { useGameStore } from '@/store/gameStore';
 import { getSpacePosition } from '@/constants/board';
+import { getHomePosition } from '@/utils/boardCoordinates';
 import {
   calculateAnimationPath,
   getEasingFunction,
@@ -40,6 +42,7 @@ interface AnimatedPegProps {
 
 export const AnimatedPeg: FC<AnimatedPegProps> = ({
   id,
+  playerId,
   color,
   position,
   size = 24,
@@ -54,19 +57,27 @@ export const AnimatedPeg: FC<AnimatedPegProps> = ({
   animationConfig = {},
 }) => {
   const { settings } = useSettingsStore();
+  const { players } = useGameStore();
   const pegColor = PLAYER_COLORS[color];
 
   // Animated values for position
   const animatedX = useSharedValue(0);
   const animatedY = useSharedValue(0);
   const animatedScale = useSharedValue(1);
+  const animationProgress = useSharedValue(0);
 
   // Calculate current position coordinates
   const getCurrentPosition = (pos: number) => {
     if (pos === -1) {
-      // HOME position - return center of board for now
-      // TODO: Calculate actual HOME positions based on player color
-      return { x: 200, y: 200 };
+      // HOME position - calculate actual HOME coordinates
+      const player = players.find(p => p.id === playerId);
+
+      if (!player) return { x: 200, y: 200 }; // fallback
+
+      // Extract peg index from ID format: player-id-peg-index
+      const pegIndex = parseInt(id.split('-')[3]) || 0;
+
+      return getHomePosition(player.color, pegIndex);
     }
 
     if (pos >= 28) {
@@ -81,18 +92,23 @@ export const AnimatedPeg: FC<AnimatedPegProps> = ({
     return spacePos || { x: 200, y: 200 };
   };
 
-  // Initialize position
+  // Initialize position - start at 0,0 since PegOverlay handles positioning
   useEffect(() => {
-    const currentPos = getCurrentPosition(position);
-
-    animatedX.value = currentPos.x;
-    animatedY.value = currentPos.y;
+    animatedX.value = 0;
+    animatedY.value = 0;
   }, []);
+
+  // Reset position when not animating and position changes (after animation completes)
+  useEffect(() => {
+    if (!isAnimating) {
+      animatedX.value = 0;
+      animatedY.value = 0;
+    }
+  }, [isAnimating, position]);
 
   // Handle animation when target position changes
   useEffect(() => {
     if (!isAnimating || targetPosition === undefined) return;
-
     const config: MoveAnimationConfig = {
       startPosition: position,
       endPosition: targetPosition,
@@ -104,18 +120,28 @@ export const AnimatedPeg: FC<AnimatedPegProps> = ({
     // Calculate animation path
     const path = calculateAnimationPath(config.startPosition, config.endPosition);
 
+    // Get current and target positions
+    const currentPos = getCurrentPosition(position);
+    const targetPos = getCurrentPosition(targetPosition);
+
     if (path.length === 0) {
       // No path calculated, move directly
-      const endPos = getCurrentPosition(config.endPosition);
+      // Calculate the offset from current wrapper position to target
+      const offsetX = targetPos.x - currentPos.x;
+      const offsetY = targetPos.y - currentPos.y;
 
-      animatedX.value = withTiming(endPos.x, {
+      animatedX.value = withTiming(offsetX, {
         duration: config.duration,
         easing: Easing.out(Easing.cubic),
       });
-      animatedY.value = withTiming(endPos.y, {
+      animatedY.value = withTiming(offsetY, {
         duration: config.duration,
         easing: Easing.out(Easing.cubic),
       }, () => {
+        // Reset position to (0,0) so PegOverlay can position correctly
+        animatedX.value = 0;
+        animatedY.value = 0;
+
         // Animation complete callback
         if (onMoveComplete) {
           runOnJS(onMoveComplete)(id);
@@ -128,15 +154,20 @@ export const AnimatedPeg: FC<AnimatedPegProps> = ({
     // Animate along the calculated path
     const easingFn = getEasingFunction(config.easing);
 
-    // Use a single timing animation with path interpolation
-    const progress = useSharedValue(0);
-
-    progress.value = withTiming(1, {
+    // Reset and start animation progress
+    animationProgress.value = 0;
+    animationProgress.value = withTiming(1, {
       duration: config.duration,
       easing: Easing.out(Easing.cubic),
     }, (finished) => {
-      if (finished && onMoveComplete) {
-        runOnJS(onMoveComplete)(id);
+      if (finished) {
+        // Reset position to (0,0) so PegOverlay can position correctly
+        animatedX.value = 0;
+        animatedY.value = 0;
+
+        if (onMoveComplete) {
+          runOnJS(onMoveComplete)(id);
+        }
       }
     });
 
@@ -154,16 +185,17 @@ export const AnimatedPeg: FC<AnimatedPegProps> = ({
         const x = currentPoint.x + (nextPoint.x - currentPoint.x) * localProgress;
         const y = currentPoint.y + (nextPoint.y - currentPoint.y) * localProgress;
 
-        animatedX.value = x;
-        animatedY.value = y;
+        // Calculate offset from current wrapper position
+        animatedX.value = x - currentPos.x;
+        animatedY.value = y - currentPos.y;
       }
     };
 
     // Start position interpolation
     const startAnimation = () => {
       const interval = setInterval(() => {
-        updatePosition(progress.value);
-        if (progress.value >= 1) {
+        updatePosition(animationProgress.value);
+        if (animationProgress.value >= 1) {
           clearInterval(interval);
         }
       }, 16); // ~60fps
@@ -206,8 +238,8 @@ export const AnimatedPeg: FC<AnimatedPegProps> = ({
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [
-        { translateX: animatedX.value - (size + 8) / 2 },
-        { translateY: animatedY.value - (size + 8) / 2 },
+        { translateX: animatedX.value },
+        { translateY: animatedY.value },
         { scale: animatedScale.value },
       ],
     };
@@ -328,6 +360,6 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   disabled: {
-    opacity: 0.4,
+    // Removed opacity to keep pegs fully visible
   },
 });

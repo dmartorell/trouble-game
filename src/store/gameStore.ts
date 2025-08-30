@@ -257,52 +257,66 @@ export const useGameStore = create<GameStore & PersistApi>(
 
       animatePegMove: (pegId: string, targetPosition: number): Promise<void> => {
         return new Promise((resolve) => {
+          console.log(`animatePegMove called: pegId=${pegId}, targetPosition=${targetPosition}`);
           const { pegs } = get();
           const peg = pegs.find(p => p.id === pegId);
 
           if (!peg) {
+            console.warn(`Peg not found: ${pegId}`);
             resolve();
 
             return;
           }
 
-          // Mark peg as animating
-          set({
-            pegs: pegs.map(p =>
-              p.id === pegId
-                ? { ...p, isAnimating: true, targetPosition }
-                : p,
-            ),
-          });
+          console.log(`Found peg, current position: ${peg.position}, isInHome: ${peg.isInHome}`);
 
           // Complete the move after animation
           const handleMoveComplete = () => {
-            const { movePeg } = get();
+            const { pegs } = get();
 
-            movePeg(pegId, targetPosition);
-
-            // Clear animation state
-            const { pegs: currentPegs } = get();
+            // Update peg position AND clear animation state in a single update
+            const isInFinish = targetPosition >= GAME_CONFIG.BOARD_SPACES;
+            const finishPosition = isInFinish ? targetPosition - GAME_CONFIG.BOARD_SPACES : undefined;
 
             set({
-              pegs: currentPegs.map(p =>
-                p.id === pegId
-                  ? { ...p, isAnimating: false, targetPosition: undefined }
-                  : p,
-              ),
+              pegs: pegs.map(peg => {
+                if (peg.id === pegId) {
+                  return {
+                    ...peg,
+                    position: targetPosition,
+                    isInHome: targetPosition === -1,
+                    isInFinish,
+                    finishPosition,
+                    // Clear animation state
+                    isAnimating: false,
+                    targetPosition: undefined,
+                    animationCallback: undefined,
+                  };
+                }
+
+                return peg;
+              }),
             });
 
             resolve();
           };
 
-          // Store callback for the animated peg component
+          // Mark peg as animating AND store callback in one update
           set({
             pegs: pegs.map(p =>
               p.id === pegId
-                ? { ...p, animationCallback: handleMoveComplete }
+                ? {
+                  ...p,
+                  isAnimating: true,
+                  targetPosition,
+                  animationCallback: handleMoveComplete,
+                }
                 : p,
             ),
           });
+
+          // Don't resolve immediately - the callback will resolve when animation completes
+          console.log('Animation setup complete, waiting for callback...');
         });
       },
 
@@ -435,16 +449,27 @@ export const useGameStore = create<GameStore & PersistApi>(
           await animatePegMove(pegId, targetPosition);
 
           // Decrement moves available and mark that a move was made
+          const newMovesAvailable = currentTurn.movesAvailable - currentTurn.dieRoll.value;
+
+          // If moves are exhausted but player has extra turns, prepare for next roll
+          const shouldPrepareForNextRoll = newMovesAvailable <= 0 && currentTurn.extraTurnsRemaining > 0;
+
           set({
             currentTurn: {
               ...currentTurn,
-              movesAvailable: currentTurn.movesAvailable - currentTurn.dieRoll.value,
+              movesAvailable: newMovesAvailable,
               selectedPegId: null,
               hasMovedSinceRoll: true,
+              // If preparing for next roll, clear the die roll to force a new roll
+              dieRoll: shouldPrepareForNextRoll ? null : currentTurn.dieRoll,
             },
           });
 
           console.log(`Peg ${pegId} moved to position ${targetPosition}`);
+
+          if (shouldPrepareForNextRoll) {
+            console.log(`Player ${currentTurn.playerId} has extra turns remaining. Cleared die roll for next roll.`);
+          }
 
           // Check if turn should end
           if (checkTurnEnd()) {
