@@ -166,6 +166,10 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
   - **Add coordinate mapping utilities** to convert peg positions to board SVG coordinates
   - **Integrate PegOverlay into GamePlayScreen** with interactive board pegs
   - **Clean up UX** by removing debug containers and improving visual feedback
+  - **Fix peg positioning in HOME spaces** - Resolve coordinate system mismatch between BoardSVG responsive scaling and PegOverlay fixed coordinates
+  - **Make PegOverlay responsive** - Apply same dimension calculation as BoardSVG to ensure consistent scaling
+  - **Update GamePlay screen integration** - Share calculated board dimensions between BoardSVG and PegOverlay components
+  - **Enhance coordinate utilities** - Add scaling transformation helpers to boardCoordinates.ts for proper coordinate mapping
   - **Result**: Fully functional game with pegs visible on board, interactive die rolling, and complete turn-based gameplay
 
 - [ ] **#25** Polish basic gameplay UX and visual feedback
