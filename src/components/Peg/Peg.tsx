@@ -53,14 +53,13 @@ export const Peg: FC<PegProps> = ({
   // Selection and highlight styling
   const strokeColor = isSelected ? '#FFFFFF' : isHighlighted ? '#FFD700' : 'transparent';
   const strokeWidth = isSelected ? 3 : isHighlighted ? 2 : 0;
-  const shadowOpacity = isSelected ? 0.8 : isHighlighted ? 0.6 : 0.4;
+  const shadowOpacity = isSelected ? 0.9 : isHighlighted ? 0.8 : 0.7;
 
   return (
     <Pressable
       style={[
         styles.container,
         { width: size + 8, height: size + 8 },
-        !isMovable && styles.disabled,
       ]}
       onPress={handlePress}
       disabled={!isMovable}
@@ -121,7 +120,7 @@ export const Peg: FC<PegProps> = ({
           cy={(size + 8) / 2 - size * 0.15}
           r={size * 0.15}
           fill="#ffffff"
-          opacity={0.6}
+          opacity={0.8}
         />
       </Svg>
     </Pressable>
@@ -154,8 +153,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 50,
-  },
-  disabled: {
-    opacity: 0.4,
   },
 });
