@@ -176,17 +176,33 @@ export const useGameStore = create<GameStore & PersistApi>(
                 console.log(`Player ${latestTurn.playerId} rolled 6 on extra turn - no additional extra turn granted`);
               }
 
+              const updatedTurn = {
+                ...latestTurn,
+                dieRoll: createDieRollResult(result),
+                movesAvailable: result,
+                selectedPegId: null,
+                extraTurnsRemaining: newExtraTurns,
+                rollsThisTurn: newRollCount,
+                hasMovedSinceRoll: false,
+              };
+
               set({
-                currentTurn: {
-                  ...latestTurn,
-                  dieRoll: createDieRollResult(result),
-                  movesAvailable: result,
-                  selectedPegId: null,
-                  extraTurnsRemaining: newExtraTurns,
-                  rollsThisTurn: newRollCount,
-                  hasMovedSinceRoll: false,
-                },
+                currentTurn: updatedTurn,
               });
+
+              // Check if player has any valid moves with this die roll
+              const { hasValidMoves, endTurn, clearTurnTimer } = get();
+              if (!hasValidMoves(latestTurn.playerId, result)) {
+                console.log(`Player ${latestTurn.playerId} has no valid moves with roll ${result} - auto-ending turn`);
+                
+                // Clear timer and auto-end turn
+                clearTurnTimer();
+                
+                // Use setTimeout to allow UI to update with the die roll first
+                setTimeout(() => {
+                  endTurn();
+                }, 1000); // 1 second delay to show the die roll result
+              }
 
               console.log(`Player ${latestTurn.playerId} roll ${newRollCount}/2, extra turns: ${newExtraTurns}`);
             }
