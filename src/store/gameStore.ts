@@ -3,7 +3,7 @@ import { GameState, Player, Peg, Turn, GameStore, DieRollCallback, MoveValidatio
 import { GAME_CONFIG, ANIMATION_DURATION, TIMEOUT_CONFIG } from '@/constants/game';
 import { createPersistMiddleware, PersistApi } from './middleware/persistence';
 import { generateDiceRoll, applyStreakBreaker, createDieRollResult } from '@/utils/diceUtils';
-import { validatePegMove, getValidMoves, hasValidMoves as checkHasValidMoves } from '@/utils/moveValidation';
+import { validatePegMove, getValidMoves, hasValidMoves as checkHasValidMoves, canMoveFromHomeToStart } from '@/utils/moveValidation';
 import { useSettingsStore } from './settingsStore';
 
 export const useGameStore = create<GameStore & PersistApi>(
@@ -22,14 +22,13 @@ export const useGameStore = create<GameStore & PersistApi>(
         rollCallbacks: [],
       },
       turnTimer: null,
+      warningTimer: null,
 
       // Actions
       initializeGame: (selectedPlayers: Player[]) => {
         const activePlayers = selectedPlayers.filter(p => p.isActive);
 
         if (activePlayers.length < GAME_CONFIG.MIN_PLAYERS) {
-          console.warn('Not enough players to start game');
-
           return;
         }
 
@@ -58,6 +57,7 @@ export const useGameStore = create<GameStore & PersistApi>(
           rollsThisTurn: 0,
           hasMovedSinceRoll: true,
           startTime: 0, // No timer until they roll
+          timeoutWarning: false, // Ensure clean state
         };
 
         set({
@@ -81,7 +81,7 @@ export const useGameStore = create<GameStore & PersistApi>(
 
       rollDie: (): Promise<number> => {
         return new Promise((resolve, reject) => {
-          const { dieState, currentTurn, resetTurnTimer } = get();
+          const { dieState, currentTurn } = get();
 
           // Check if die is already rolling
           if (dieState.isRolling) {
@@ -108,22 +108,7 @@ export const useGameStore = create<GameStore & PersistApi>(
           const initialRoll = generateDiceRoll();
           const { result, consecutiveRepeats } = applyStreakBreaker(initialRoll, dieState);
 
-          // Start or reset turn timer since player is taking action
-          if (currentTurn && currentTurn.startTime === 0) {
-            // First roll of the turn - start timer
-            const { startTurnTimer } = get();
-
-            const updatedTurn: Turn = {
-              ...currentTurn,
-              startTime: Date.now(),
-            };
-
-            set({ currentTurn: updatedTurn });
-            startTurnTimer();
-          } else {
-            // Subsequent roll - reset timer
-            resetTurnTimer();
-          }
+          // Don't start timer yet - wait for die animation to complete
 
           // Lock the die and immediately return the result for animation
           set({
@@ -165,30 +150,65 @@ export const useGameStore = create<GameStore & PersistApi>(
               // Consume extra turn if this is a second+ roll
               if (!isFirstRoll) {
                 newExtraTurns -= 1;
-                console.log(`Player ${latestTurn.playerId} used an extra turn. Remaining: ${newExtraTurns}`);
               }
 
               // Grant extra turn ONLY on first roll of turn sequence
               if (rolledSix && isFirstRoll) {
                 newExtraTurns += 1;
-                console.log(`Player ${latestTurn.playerId} rolled 6 on first roll - extra turn granted!`);
-              } else if (rolledSix && !isFirstRoll) {
-                console.log(`Player ${latestTurn.playerId} rolled 6 on extra turn - no additional extra turn granted`);
               }
 
+              const updatedTurn = {
+                ...latestTurn,
+                dieRoll: createDieRollResult(result),
+                movesAvailable: result,
+                selectedPegId: null,
+                extraTurnsRemaining: newExtraTurns,
+                rollsThisTurn: newRollCount,
+                hasMovedSinceRoll: false,
+              };
+
               set({
-                currentTurn: {
-                  ...latestTurn,
-                  dieRoll: createDieRollResult(result),
-                  movesAvailable: result,
-                  selectedPegId: null,
-                  extraTurnsRemaining: newExtraTurns,
-                  rollsThisTurn: newRollCount,
-                  hasMovedSinceRoll: false,
-                },
+                currentTurn: updatedTurn,
               });
 
-              console.log(`Player ${latestTurn.playerId} roll ${newRollCount}/2, extra turns: ${newExtraTurns}`);
+              // Special handling for Roll of 1 - auto-move other players' pegs
+              if (result === 1) {
+                const { handleRollOfOne } = get();
+
+                // Keep timer invisible by not setting startTime
+                const rollOfOneTurn: Turn = {
+                  ...updatedTurn,
+                  startTime: 0, // Keep timer invisible for Roll of 1
+                  timeoutWarning: false,
+                };
+
+                set({ currentTurn: rollOfOneTurn });
+
+                // Execute Roll of 1 rule - this will handle turn ending
+                handleRollOfOne(latestTurn.playerId);
+              } else {
+                // Normal roll logic - check if player has any valid moves
+                const { hasValidMoves, endTurn, startTurnTimer } = get();
+
+                if (!hasValidMoves(latestTurn.playerId, result)) {
+                  // Don't start timer - auto-end turn immediately
+                  // Use setTimeout to allow UI to update with the die roll first
+                  setTimeout(() => {
+                    endTurn();
+                  }, 1000); // 1 second delay to show the die roll result
+                } else {
+                  // Player has valid moves - start fresh timer for each roll
+                  // Always create a clean timer state to avoid warning persistence
+                  const timerUpdatedTurn: Turn = {
+                    ...updatedTurn,
+                    startTime: Date.now(),
+                    timeoutWarning: false, // Always ensure warning state is clear
+                  };
+
+                  set({ currentTurn: timerUpdatedTurn });
+                  startTurnTimer();
+                }
+              }
             }
 
             // Execute all registered callbacks
@@ -266,43 +286,51 @@ export const useGameStore = create<GameStore & PersistApi>(
             return;
           }
 
-          // Mark peg as animating
-          set({
-            pegs: pegs.map(p =>
-              p.id === pegId
-                ? { ...p, isAnimating: true, targetPosition }
-                : p,
-            ),
-          });
-
           // Complete the move after animation
           const handleMoveComplete = () => {
-            const { movePeg } = get();
+            const { pegs } = get();
 
-            movePeg(pegId, targetPosition);
-
-            // Clear animation state
-            const { pegs: currentPegs } = get();
+            // Update peg position AND clear animation state in a single update
+            const isInFinish = targetPosition >= GAME_CONFIG.BOARD_SPACES;
+            const finishPosition = isInFinish ? targetPosition - GAME_CONFIG.BOARD_SPACES : undefined;
 
             set({
-              pegs: currentPegs.map(p =>
-                p.id === pegId
-                  ? { ...p, isAnimating: false, targetPosition: undefined }
-                  : p,
-              ),
+              pegs: pegs.map(peg => {
+                if (peg.id === pegId) {
+                  return {
+                    ...peg,
+                    position: targetPosition,
+                    isInHome: targetPosition === -1,
+                    isInFinish,
+                    finishPosition,
+                    // Clear animation state
+                    isAnimating: false,
+                    targetPosition: undefined,
+                    animationCallback: undefined,
+                  };
+                }
+
+                return peg;
+              }),
             });
 
             resolve();
           };
 
-          // Store callback for the animated peg component
+          // Mark peg as animating AND store callback in one update
           set({
             pegs: pegs.map(p =>
               p.id === pegId
-                ? { ...p, animationCallback: handleMoveComplete }
+                ? {
+                  ...p,
+                  isAnimating: true,
+                  targetPosition,
+                  animationCallback: handleMoveComplete,
+                }
                 : p,
             ),
           });
+
         });
       },
 
@@ -339,15 +367,10 @@ export const useGameStore = create<GameStore & PersistApi>(
             },
           });
 
-          console.log(`Player ${currentTurn.playerId} continues with ${currentTurn.extraTurnsRemaining} extra turns remaining (roll ${currentTurn.rollsThisTurn}/2)`);
-
           return;
         }
 
         // Reset any unused extra turns when turn ends
-        if (currentTurn.extraTurnsRemaining > 0) {
-          console.log(`Player ${currentTurn.playerId} lost ${currentTurn.extraTurnsRemaining} unused extra turns`);
-        }
 
         // Clear current timer before switching players
         clearTurnTimer();
@@ -366,13 +389,11 @@ export const useGameStore = create<GameStore & PersistApi>(
           rollsThisTurn: 0,
           hasMovedSinceRoll: true,
           startTime: 0, // No timer until they roll
+          timeoutWarning: false, // Ensure clean state for new turn
         };
 
         set({ currentTurn: newTurn });
 
-        // Don't start timer - it will start when player rolls die
-
-        console.log(`Turn switched from ${currentTurn.playerId} to ${nextPlayer.id}`);
       },
 
       // Enhanced method to check if turn should end after a move
@@ -385,14 +406,12 @@ export const useGameStore = create<GameStore & PersistApi>(
         if (currentTurn.movesAvailable <= 0) {
           // Check if player has reached maximum rolls (2) for turn sequence
           if (currentTurn.rollsThisTurn >= 2) {
-            console.log(`Player ${currentTurn.playerId} has reached maximum rolls (2) for this turn`);
 
             return true;
           }
 
           // If player has extra turns remaining, don't end turn yet
           if (currentTurn.extraTurnsRemaining > 0) {
-            console.log(`Player ${currentTurn.playerId} has ${currentTurn.extraTurnsRemaining} extra turns remaining`);
 
             return false;
           }
@@ -403,7 +422,6 @@ export const useGameStore = create<GameStore & PersistApi>(
 
         // Check if player has any valid moves remaining
         if (!hasValidMoves(currentTurn.playerId, currentTurn.movesAvailable)) {
-          console.log(`No valid moves remaining for player ${currentTurn.playerId}`);
 
           return true;
         }
@@ -416,7 +434,6 @@ export const useGameStore = create<GameStore & PersistApi>(
         const { currentTurn, getMoveValidation, animatePegMove, checkTurnEnd, endTurn } = get();
 
         if (!currentTurn || !currentTurn.dieRoll) {
-          console.warn('Cannot execute move: No current turn or die roll');
 
           return false;
         }
@@ -425,26 +442,37 @@ export const useGameStore = create<GameStore & PersistApi>(
         const validation = getMoveValidation(pegId, currentTurn.dieRoll.value);
 
         if (!validation.isValid) {
-          console.warn('Invalid move:', validation.reason);
 
           return false;
         }
 
         try {
+          // Clear and hide timer immediately when player makes a move
+          const { clearTurnTimer } = get();
+
+          clearTurnTimer();
+
           // Animate the move
           await animatePegMove(pegId, targetPosition);
 
           // Decrement moves available and mark that a move was made
+          const newMovesAvailable = currentTurn.movesAvailable - currentTurn.dieRoll.value;
+
+          // If moves are exhausted but player has extra turns, prepare for next roll
+          const shouldPrepareForNextRoll = newMovesAvailable <= 0 && currentTurn.extraTurnsRemaining > 0;
+
           set({
             currentTurn: {
               ...currentTurn,
-              movesAvailable: currentTurn.movesAvailable - currentTurn.dieRoll.value,
+              movesAvailable: newMovesAvailable,
               selectedPegId: null,
               hasMovedSinceRoll: true,
+              startTime: 0, // Reset timer to make it invisible
+              timeoutWarning: false, // Clear warning state
+              // If preparing for next roll, clear the die roll to force a new roll
+              dieRoll: shouldPrepareForNextRoll ? null : currentTurn.dieRoll,
             },
           });
-
-          console.log(`Peg ${pegId} moved to position ${targetPosition}`);
 
           // Check if turn should end
           if (checkTurnEnd()) {
@@ -452,13 +480,10 @@ export const useGameStore = create<GameStore & PersistApi>(
           }
 
           return true;
-        } catch (error) {
-          console.error('Error executing peg move:', error);
-
+        } catch  {
           return false;
         }
       },
-
       startTurnTimer: () => {
         const { currentTurn, clearTurnTimer } = get();
 
@@ -473,7 +498,7 @@ export const useGameStore = create<GameStore & PersistApi>(
         const warningThreshold = TIMEOUT_CONFIG.WARNING_THRESHOLD * 1000;
 
         // Set warning timer
-        setTimeout(() => {
+        const warningTimer = setTimeout(() => {
           const { currentTurn: latestTurn } = get();
 
           if (latestTurn && latestTurn.playerId === currentTurn.playerId) {
@@ -493,17 +518,28 @@ export const useGameStore = create<GameStore & PersistApi>(
           handleTurnTimeout();
         }, timeoutDuration);
 
-        // Store the main timer (we don't need to track warning timer separately)
-        set({ turnTimer: mainTimer });
+        // Store both timers so they can be cleared together
+        set({
+          turnTimer: mainTimer,
+          warningTimer,
+        });
       },
 
       clearTurnTimer: () => {
-        const { turnTimer } = get();
+        const { turnTimer, warningTimer } = get();
 
         if (turnTimer) {
           clearTimeout(turnTimer);
-          set({ turnTimer: null });
         }
+
+        if (warningTimer) {
+          clearTimeout(warningTimer);
+        }
+
+        set({
+          turnTimer: null,
+          warningTimer: null,
+        });
       },
 
       resetTurnTimer: () => {
@@ -531,13 +567,69 @@ export const useGameStore = create<GameStore & PersistApi>(
 
         if (!currentTurn) return;
 
-        console.log(`Turn timeout for player ${currentTurn.playerId} - auto-passing turn`);
-
         // Clear the timer
         clearTurnTimer();
 
         // End the turn
         endTurn();
+      },
+
+      // Handle Roll of 1 rule - automatically move other players' pegs from HOME to START
+      handleRollOfOne: (currentPlayerId: string): void => {
+        const { players, pegs, animatePegMove, endTurn } = get();
+
+        // Get all other players (exclude the current player who rolled 1)
+        const otherPlayers = players.filter(player => player.id !== currentPlayerId);
+
+        const movements: { playerId: string; pegId: string; playerColor: string }[] = [];
+
+        // Check each other player for possible movements
+        otherPlayers.forEach(player => {
+          const result = canMoveFromHomeToStart(player.id, player.color, pegs);
+
+          if (result.canMove && result.pegId) {
+            movements.push({
+              playerId: player.id,
+              pegId: result.pegId,
+              playerColor: player.color,
+            });
+          }
+        });
+
+        // If no movements are possible, just end the turn
+        if (movements.length === 0) {
+          setTimeout(() => {
+            endTurn();
+          }, ANIMATION_DURATION.rollOfOneMessage);
+
+          return;
+        }
+
+        // Execute movements sequentially with animations
+        let delay = ANIMATION_DURATION.rollOfOneMessage; // Initial delay to show message
+
+        for (const movement of movements) {
+          setTimeout(() => {
+            // Get player's START position
+            const colorIndex = ['red', 'blue', 'green', 'yellow'].indexOf(movement.playerColor);
+
+            if (colorIndex !== -1) {
+              const startPosition = [25, 4, 11, 18][colorIndex]; // Red=25, Blue=4, Green=11, Yellow=18
+
+              // Animate the peg movement
+              animatePegMove(movement.pegId, startPosition).catch(error => {
+                console.error(`Failed to animate peg ${movement.pegId}:`, error);
+              });
+            }
+          }, delay);
+
+          delay += ANIMATION_DURATION.rollOfOnePegMove + ANIMATION_DURATION.rollOfOneDelay;
+        }
+
+        // End turn after all animations complete
+        setTimeout(() => {
+          endTurn();
+        }, delay);
       },
 
       resetGame: () => {
@@ -554,6 +646,7 @@ export const useGameStore = create<GameStore & PersistApi>(
           winner: null,
           dieState: { lastRoll: null, consecutiveRepeats: 0, isRolling: false, rollCallbacks: [] },
           turnTimer: null,
+          warningTimer: null,
         });
       },
 

@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 
 import { useGamePlay } from './resources/useGamePlay';
-import { BoardSVG, PopOMatic, Peg, TurnTimer } from '@/components';
+import { BoardSVG, PopOMatic, PegOverlay, TurnTimer } from '@/components';
 import { PLAYER_COLORS } from '@/constants/game';
 
 export const GamePlayScreen = () => {
@@ -9,27 +9,24 @@ export const GamePlayScreen = () => {
     exitGame,
     handleDieRoll,
     handlePegPress,
-    handleEndTurn,
-    handleSimulateMove,
-    dieValue,
-    rollCount,
     isLocked,
-    dieState,
     currentPlayer,
     players,
-    currentPlayerPegs,
+    pegs,
     selectablePegIds,
     selectedPegId,
     currentDieRoll,
     extraTurnsRemaining,
     rollsThisTurn,
     hasMovedSinceRoll,
+    startTime,
+    boardDimensions,
   } = useGamePlay();
 
   return (
     <View style={styles.container}>
       {/* Turn Timer */}
-      <TurnTimer visible={!!currentPlayer} />
+      <TurnTimer visible={!!currentPlayer && startTime > 0} />
 
       <View style={styles.header}>
         <Pressable
@@ -39,17 +36,11 @@ export const GamePlayScreen = () => {
           <Text style={styles.backButtonText}>Exit</Text>
         </Pressable>
         <View style={styles.turnInfo}>
-          <Text style={styles.turnIndicator}>
-            {currentPlayer ? (
-              <>
-                <Text style={[styles.playerColor, { color: PLAYER_COLORS[currentPlayer.color] }]}>
-                  {currentPlayer.name}
-                </Text>
-                &apos;s Turn
-              </>
-            ) : (
-              'Loading...'
-            )}
+          <Text style={[
+            styles.turnIndicator,
+            currentPlayer && { color: PLAYER_COLORS[currentPlayer.color] },
+          ]}>
+            {currentPlayer ? `${currentPlayer.name}'s Turn` : 'Loading...'}
           </Text>
           {extraTurnsRemaining > 0 && (
             <Text style={styles.extraTurnsIndicator}>
@@ -61,7 +52,21 @@ export const GamePlayScreen = () => {
 
       <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.gameBoard}>
-          <BoardSVG showSpaceNumbers={false} />
+          <BoardSVG
+            width={boardDimensions.width}
+            height={boardDimensions.height}
+            showSpaceNumbers={false}
+          />
+          <PegOverlay
+            pegs={pegs}
+            players={players}
+            selectablePegIds={selectablePegIds}
+            selectedPegId={selectedPegId || undefined}
+            onPegPress={handlePegPress}
+            pegSize={24}
+            disabled={isLocked}
+            boardDimensions={boardDimensions}
+          />
         </View>
 
         <View style={styles.dieContainer}>
@@ -71,81 +76,20 @@ export const GamePlayScreen = () => {
             disabled={rollsThisTurn >= 2 || (rollsThisTurn > 0 && (!hasMovedSinceRoll || extraTurnsRemaining === 0))}
           />
 
-          {/* Current Player's Pegs */}
-          <View style={styles.pegTestContainer}>
-            <Text style={styles.pegTestTitle}>
-              Current Player Pegs ({currentPlayer?.name || 'Unknown'})
-            </Text>
-            {currentDieRoll && (
-              <Text style={styles.dieRollInfo}>Die Roll: {currentDieRoll}</Text>
-            )}
-            <View style={styles.pegTestRow}>
-              {currentPlayerPegs.map((peg) => {
-                const isSelectable = selectablePegIds.includes(peg.id);
-                const isSelected = selectedPegId === peg.id;
-
-                return (
-                  <View key={peg.id} style={styles.pegContainer}>
-                    <Peg
-                      id={peg.id}
-                      playerId={peg.playerId}
-                      color={currentPlayer?.color || 'red'}
-                      size={32}
-                      isMovable={isSelectable}
-                      isSelected={isSelected}
-                      isHighlighted={isSelectable && !isSelected}
-                      onPress={handlePegPress}
-                      testID={`peg-${peg.id}`}
-                    />
-                    <Text style={styles.pegLabel}>
-                      {peg.isInHome ? 'HOME' : peg.isInFinish ? 'FINISH' : `${peg.position}`}
-                    </Text>
-                  </View>
-                );
-              })}
+          {/* Current Die Roll Display */}
+          {currentDieRoll && (
+            <View style={styles.gameStatusContainer}>
+              <Text style={styles.gameStatusText}>Die Roll: {currentDieRoll}</Text>
+              <Text style={styles.gameStatusHint}>
+                {currentDieRoll === 1
+                  ? 'Roll of 1! Moving other players\' pegs from HOME to START...'
+                  : selectablePegIds.length > 0
+                    ? 'Tap a highlighted peg on the board to move it'
+                    : 'No valid moves available'}
+              </Text>
             </View>
-            <Text style={styles.pegTestDescription}>
-              {currentDieRoll
-                ? `Roll: ${currentDieRoll} | Selectable pegs are highlighted`
-                : 'Roll the die to select pegs'}
-            </Text>
-          </View>
+          )}
 
-          {/* Debug Information */}
-          <View style={styles.debugContainer}>
-            <Text style={styles.debugTitle}>Die State Testing</Text>
-            <Text style={styles.debugText}>Last Roll: {dieValue || 'None'}</Text>
-            <Text style={styles.debugText}>Roll Count: {rollCount}</Text>
-            <Text style={styles.debugText}>Is Rolling: {dieState.isRolling ? 'Yes 🎲' : 'No'}</Text>
-            <Text style={styles.debugText}>Is Locked: {isLocked ? 'Yes 🔒' : 'No 🔓'}</Text>
-            <Text style={styles.debugText}>Consecutive: {dieState.consecutiveRepeats}</Text>
-            <Text style={styles.debugText}>Callbacks: {dieState.rollCallbacks.length}</Text>
-            <Text style={styles.debugText}>Selected Peg: {selectedPegId || 'None'}</Text>
-            <Text style={styles.debugText}>Selectable Pegs: {selectablePegIds.length}</Text>
-            <Text style={[styles.debugText, extraTurnsRemaining > 0 && styles.highlightedDebugText]}>
-              Extra Turns: {extraTurnsRemaining} {extraTurnsRemaining > 0 ? '⭐' : ''}
-            </Text>
-            <Text style={styles.debugText}>Rolls This Turn: {rollsThisTurn}/2</Text>
-            <Text style={styles.debugText}>Can Roll: {rollsThisTurn < 2 && (rollsThisTurn === 0 || (hasMovedSinceRoll && extraTurnsRemaining > 0)) ? 'Yes ✅' : 'No ❌'}</Text>
-          </View>
-
-          {/* Turn Controls */}
-          <View style={styles.controlsContainer}>
-            <Pressable
-              style={[styles.simulateButton, isLocked && styles.disabledButton]}
-              onPress={handleSimulateMove}
-              disabled={isLocked || !currentDieRoll || hasMovedSinceRoll}
-            >
-              <Text style={styles.simulateButtonText}>Simulate Move</Text>
-            </Pressable>
-            <Pressable
-              style={[styles.endTurnButton, isLocked && styles.disabledButton]}
-              onPress={handleEndTurn}
-              disabled={isLocked}
-            >
-              <Text style={styles.endTurnButtonText}>End Turn</Text>
-            </Pressable>
-          </View>
         </View>
 
         <View style={styles.playerInfo}>
@@ -291,78 +235,27 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
   },
-  playerColor: {
-    fontWeight: '700',
-  },
-  debugContainer: {
-    marginTop: 15,
-    padding: 10,
-    backgroundColor: 'rgba(255, 165, 2, 0.1)',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#FFA502',
-  },
-  debugTitle: {
-    color: '#FFA502',
-    fontSize: 13,
-    fontWeight: '700',
-    marginBottom: 6,
-    textAlign: 'center',
-  },
-  debugText: {
-    color: '#FFFFFF',
-    fontSize: 11,
-    marginBottom: 2,
-  },
-  highlightedDebugText: {
-    color: '#2ED573',
-    fontWeight: '700',
-  },
-  pegTestContainer: {
+  gameStatusContainer: {
     marginTop: 20,
     padding: 15,
-    backgroundColor: 'rgba(46, 213, 115, 0.1)',
+    backgroundColor: 'rgba(255, 165, 2, 0.1)',
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#2ED573',
+    borderColor: '#FFA502',
     alignItems: 'center',
   },
-  pegTestTitle: {
-    color: '#2ED573',
-    fontSize: 14,
+  gameStatusText: {
+    color: '#FFA502',
+    fontSize: 16,
     fontWeight: '700',
-    marginBottom: 12,
+    marginBottom: 8,
     textAlign: 'center',
   },
-  pegTestRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    width: '100%',
-    marginBottom: 8,
-  },
-  pegTestDescription: {
+  gameStatusHint: {
     color: '#FFFFFF',
-    fontSize: 11,
+    fontSize: 12,
     textAlign: 'center',
     opacity: 0.8,
-  },
-  pegContainer: {
-    alignItems: 'center',
-    gap: 4,
-  },
-  pegLabel: {
-    color: '#FFFFFF',
-    fontSize: 10,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  dieRollInfo: {
-    color: '#FFA502',
-    fontSize: 12,
-    fontWeight: '600',
-    marginBottom: 8,
-    textAlign: 'center',
   },
   controlsContainer: {
     marginTop: 15,
@@ -370,36 +263,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
   },
-  endTurnButton: {
-    backgroundColor: '#FF4757',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    borderWidth: 2,
-    borderColor: '#FF4757',
-  },
   disabledButton: {
     backgroundColor: '#666666',
     borderColor: '#666666',
-  },
-  simulateButton: {
-    backgroundColor: '#2ED573',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    borderWidth: 2,
-    borderColor: '#2ED573',
-  },
-  simulateButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '700',
-    textAlign: 'center',
-  },
-  endTurnButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '700',
-    textAlign: 'center',
   },
 });

@@ -12,10 +12,10 @@ import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 import { PlayerColor } from '@/models';
 import { PLAYER_COLORS } from '@/constants/game';
 import { useSettingsStore } from '@/store/settingsStore';
+import { useGameStore } from '@/store/gameStore';
 import { getSpacePosition } from '@/constants/board';
+import { getHomePosition, BoardDimensions } from '@/utils/boardCoordinates';
 import {
-  calculateAnimationPath,
-  getEasingFunction,
   calculateMoveDuration,
   MoveAnimationConfig,
 } from '@/utils/animationPaths';
@@ -36,10 +36,15 @@ interface AnimatedPegProps {
   isAnimating?: boolean;
   targetPosition?: number;
   animationConfig?: Partial<MoveAnimationConfig>;
+  // Positioning props for alignment with PegOverlay
+  boardDimensions?: BoardDimensions;
+  horizontalOffset?: number;
+  verticalOffset?: number;
 }
 
 export const AnimatedPeg: FC<AnimatedPegProps> = ({
   id,
+  playerId,
   color,
   position,
   size = 24,
@@ -52,8 +57,12 @@ export const AnimatedPeg: FC<AnimatedPegProps> = ({
   isAnimating = false,
   targetPosition,
   animationConfig = {},
+  boardDimensions,
+  horizontalOffset = 0,
+  verticalOffset = 0,
 }) => {
   const { settings } = useSettingsStore();
+  const { players } = useGameStore();
   const pegColor = PLAYER_COLORS[color];
 
   // Animated values for position
@@ -61,37 +70,65 @@ export const AnimatedPeg: FC<AnimatedPegProps> = ({
   const animatedY = useSharedValue(0);
   const animatedScale = useSharedValue(1);
 
-  // Calculate current position coordinates
+  // Calculate current position coordinates with scale factor and offset corrections
   const getCurrentPosition = (pos: number) => {
-    if (pos === -1) {
-      // HOME position - return center of board for now
-      // TODO: Calculate actual HOME positions based on player color
-      return { x: 200, y: 200 };
-    }
+    let baseCoordinate = { x: 200, y: 200 }; // fallback
 
-    if (pos >= 28) {
+    if (pos === -1) {
+      // HOME position - calculate actual HOME coordinates
+      const player = players.find(p => p.id === playerId);
+
+      if (player) {
+        // Extract peg index from ID format: player-id-peg-index
+        const pegIndex = parseInt(id.split('-')[3]) || 0;
+
+        baseCoordinate = getHomePosition(player.color, pegIndex);
+      }
+    } else if (pos >= 28) {
       // FINISH position - return center for now
       // TODO: Calculate actual FINISH positions based on player color
-      return { x: 200, y: 200 };
+      baseCoordinate = { x: 200, y: 200 };
+    } else {
+      // Track position
+      const spacePos = getSpacePosition(pos);
+
+      baseCoordinate = spacePos || { x: 200, y: 200 };
     }
 
-    // Track position
-    const spacePos = getSpacePosition(pos);
+    // Apply the same scaling and offset corrections as PegOverlay
+    const scaleFactor = boardDimensions?.scaleFactor || 1;
+    const scaledX = baseCoordinate.x * scaleFactor;
+    const scaledY = baseCoordinate.y * scaleFactor;
 
-    return spacePos || { x: 200, y: 200 };
+    return {
+      x: scaledX + horizontalOffset,
+      y: scaledY + verticalOffset,
+    };
   };
 
-  // Initialize position
+  // Initialize position - start at 0,0 since PegOverlay handles positioning
   useEffect(() => {
-    const currentPos = getCurrentPosition(position);
-
-    animatedX.value = currentPos.x;
-    animatedY.value = currentPos.y;
+    animatedX.value = 0;
+    animatedY.value = 0;
   }, []);
+
+  // Reset position when not animating (after animation completes)
+  // Now that we use the same coordinate system, reset to 0,0 should align perfectly
+  useEffect(() => {
+    if (!isAnimating) {
+      // Reset to 0,0 relative to the PegOverlay container position
+      // Since getCurrentPosition now uses the same scale and offsets as PegOverlay,
+      // this should align perfectly with the static position
+      animatedX.value = 0;
+      animatedY.value = 0;
+    }
+  }, [isAnimating]);
 
   // Handle animation when target position changes
   useEffect(() => {
     if (!isAnimating || targetPosition === undefined) return;
+
+    console.log(`Starting animation for peg ${id}: ${position} -> ${targetPosition}`);
 
     const config: MoveAnimationConfig = {
       startPosition: position,
@@ -101,75 +138,37 @@ export const AnimatedPeg: FC<AnimatedPegProps> = ({
       ...animationConfig,
     };
 
-    // Calculate animation path
-    const path = calculateAnimationPath(config.startPosition, config.endPosition);
+    // Get current and target positions in absolute coordinates
+    const currentPos = getCurrentPosition(position);
+    const targetPos = getCurrentPosition(targetPosition);
 
-    if (path.length === 0) {
-      // No path calculated, move directly
-      const endPos = getCurrentPosition(config.endPosition);
+    console.log(`Animation coordinates - from: (${currentPos.x}, ${currentPos.y}) to: (${targetPos.x}, ${targetPos.y})`);
 
-      animatedX.value = withTiming(endPos.x, {
-        duration: config.duration,
-        easing: Easing.out(Easing.cubic),
-      });
-      animatedY.value = withTiming(endPos.y, {
-        duration: config.duration,
-        easing: Easing.out(Easing.cubic),
-      }, () => {
-        // Animation complete callback
-        if (onMoveComplete) {
-          runOnJS(onMoveComplete)(id);
-        }
-      });
+    // Calculate the offset needed to animate from current to target position
+    // Since PegOverlay positions the container at currentPos, we need to animate to the relative offset
+    const offsetX = targetPos.x - currentPos.x;
+    const offsetY = targetPos.y - currentPos.y;
 
-      return;
-    }
+    console.log(`Animation offset: (${offsetX}, ${offsetY})`);
 
-    // Animate along the calculated path
-    const easingFn = getEasingFunction(config.easing);
+    // Simple direct animation (no complex path for now)
+    animatedX.value = withTiming(offsetX, {
+      duration: config.duration,
+      easing: Easing.out(Easing.cubic),
+    });
 
-    // Use a single timing animation with path interpolation
-    const progress = useSharedValue(0);
-
-    progress.value = withTiming(1, {
+    animatedY.value = withTiming(offsetY, {
       duration: config.duration,
       easing: Easing.out(Easing.cubic),
     }, (finished) => {
-      if (finished && onMoveComplete) {
-        runOnJS(onMoveComplete)(id);
+      if (finished) {
+        console.log(`Animation finished for peg ${id}`);
+        // Animation complete - call callback
+        if (onMoveComplete) {
+          runOnJS(onMoveComplete)(id);
+        }
       }
     });
-
-    // Update position based on progress
-    const updatePosition = (progressValue: number) => {
-      const easedProgress = easingFn(progressValue);
-      const pathIndex = Math.floor(easedProgress * (path.length - 1));
-      const nextPathIndex = Math.min(pathIndex + 1, path.length - 1);
-
-      const currentPoint = path[pathIndex];
-      const nextPoint = path[nextPathIndex];
-
-      if (currentPoint && nextPoint) {
-        const localProgress = (easedProgress * (path.length - 1)) - pathIndex;
-        const x = currentPoint.x + (nextPoint.x - currentPoint.x) * localProgress;
-        const y = currentPoint.y + (nextPoint.y - currentPoint.y) * localProgress;
-
-        animatedX.value = x;
-        animatedY.value = y;
-      }
-    };
-
-    // Start position interpolation
-    const startAnimation = () => {
-      const interval = setInterval(() => {
-        updatePosition(progress.value);
-        if (progress.value >= 1) {
-          clearInterval(interval);
-        }
-      }, 16); // ~60fps
-    };
-
-    runOnJS(startAnimation)();
 
     // Add slight scale animation for movement feedback
     animatedScale.value = withTiming(1.1, { duration: 100 }, () => {
@@ -206,8 +205,8 @@ export const AnimatedPeg: FC<AnimatedPegProps> = ({
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [
-        { translateX: animatedX.value - (size + 8) / 2 },
-        { translateY: animatedY.value - (size + 8) / 2 },
+        { translateX: animatedX.value },
+        { translateY: animatedY.value },
         { scale: animatedScale.value },
       ],
     };
@@ -328,6 +327,6 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   disabled: {
-    opacity: 0.4,
+    // Removed opacity to keep pegs fully visible
   },
 });

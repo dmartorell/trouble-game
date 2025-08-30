@@ -30,10 +30,13 @@ export const ANIMATION_DURATION = {
   slow: 600,
   verySlow: 1000,
   dieRoll: 1500,
+  rollOfOnePegMove: 800, // Duration for each peg movement in Roll of 1
+  rollOfOneDelay: 300, // Delay between each peg movement
+  rollOfOneMessage: 1500, // How long to show "Roll of 1" message
 } as const;
 
 export const TIMEOUT_CONFIG = {
-  DEFAULT_TURN_TIMEOUT: 20, // seconds
+  DEFAULT_TURN_TIMEOUT: 30, // seconds
   WARNING_THRESHOLD: 5, // seconds remaining when to show warning
   WARNING_FLASH_INTERVAL: 500, // milliseconds
 } as const;

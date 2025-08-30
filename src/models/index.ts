@@ -90,6 +90,7 @@ export interface GameStore {
   winner: string | null;
   dieState: DieState;
   turnTimer: ReturnType<typeof setTimeout> | null;
+  warningTimer: ReturnType<typeof setTimeout> | null;
 
   // Actions
   initializeGame: (selectedPlayers: Player[]) => void;
@@ -109,6 +110,7 @@ export interface GameStore {
   clearTurnTimer: () => void;
   resetTurnTimer: () => void;
   handleTurnTimeout: () => void;
+  handleRollOfOne: (currentPlayerId: string) => void;
 
   // Getters
   getActivePlayers: () => Player[];

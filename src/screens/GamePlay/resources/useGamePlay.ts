@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { router } from 'expo-router';
 import { useGameStore } from '@/store/gameStore';
 import { Player } from '@/models';
+import { calculateBoardDimensions } from '@/utils/boardCoordinates';
 
 export const useGamePlay = () => {
   const [dieValue, setDieValue] = useState<number | null>(null);
@@ -13,13 +14,13 @@ export const useGamePlay = () => {
     dieState,
     currentTurn,
     players,
+    pegs,
     initializeGame,
     getCurrentPlayer,
     getPlayerPegs,
     getSelectablePegs,
     isValidMove,
     selectPeg,
-    endTurn,
     executePegMove,
     getMoveValidation,
   } = useGameStore();
@@ -69,12 +70,19 @@ export const useGamePlay = () => {
 
     const validation = getMoveValidation(pegId, currentTurn.dieRoll.value);
 
+    console.log('Move validation:', { pegId, validation });
+
     if (validation.isValid && validation.newPosition !== undefined) {
+      console.log(`Executing move for peg ${pegId} to position ${validation.newPosition}`);
       const success = await executePegMove(pegId, validation.newPosition);
 
       if (success) {
-        console.log(`Move executed for peg ${pegId}`);
+        console.log(`Move executed successfully for peg ${pegId}`);
+      } else {
+        console.log(`Move failed for peg ${pegId}`);
       }
+    } else {
+      console.log('Move not valid or no new position:', validation);
     }
   }, [currentTurn, getMoveValidation, executePegMove]);
 
@@ -101,25 +109,12 @@ export const useGamePlay = () => {
     }
   }, [currentTurn, isValidMove, selectPeg, executeMoveAsync]);
 
-  const handleEndTurn = useCallback(() => {
-    endTurn();
-  }, [endTurn]);
-
-  const handleSimulateMove = useCallback(() => {
-    if (!currentTurn) return;
-
-    // Simulate that player made a move - set hasMovedSinceRoll to true
-    const { setCurrentTurn } = useGameStore.getState();
-
-    setCurrentTurn({
-      ...currentTurn,
-      hasMovedSinceRoll: true,
-    });
-  }, [currentTurn]);
+  // Calculate board dimensions once for consistent scaling
+  const boardDimensions = useMemo(() => calculateBoardDimensions(), []);
 
   // Get current player's pegs and their selectability
   const currentPlayerPegs = currentPlayer ? getPlayerPegs(currentPlayer.id) : [];
-  const selectablePegIds = currentPlayer && currentTurn?.dieRoll
+  const selectablePegIds = currentPlayer && currentTurn?.dieRoll && currentTurn.dieRoll.value !== 1
     ? getSelectablePegs(currentPlayer.id, currentTurn.dieRoll.value).map(p => p.id)
     : [];
 
@@ -128,14 +123,13 @@ export const useGamePlay = () => {
     exitGame,
     handleDieRoll,
     handlePegPress,
-    handleEndTurn,
-    handleSimulateMove,
     dieValue,
     rollCount,
     isLocked,
     dieState,
     currentPlayer,
     players,
+    pegs,
     currentPlayerPegs,
     selectablePegIds,
     selectedPegId: currentTurn?.selectedPegId,
@@ -143,5 +137,7 @@ export const useGamePlay = () => {
     extraTurnsRemaining: currentTurn?.extraTurnsRemaining || 0,
     rollsThisTurn: currentTurn?.rollsThisTurn || 0,
     hasMovedSinceRoll: currentTurn?.hasMovedSinceRoll ?? true,
+    startTime: currentTurn?.startTime || 0,
+    boardDimensions,
   };
 };
