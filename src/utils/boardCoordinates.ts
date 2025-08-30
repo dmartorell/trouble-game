@@ -76,8 +76,8 @@ export const scaleCoordinate = (coordinate: BoardCoordinate, scaleFactor: number
  */
 export const getHomePosition = (playerColor: PlayerColor, pegIndex: number): BoardCoordinate => {
   const size = BOARD_CONFIG.VIEWPORT_SIZE; // 400
-  const spacing = 30;
-  const margin = 30;
+  const spacing = 40;
+  const margin = 20;
 
   // Position arrays for 2x2 grid in each corner
   const allPlayerPositions = {

@@ -37,17 +37,11 @@ export const GamePlayScreen = () => {
           <Text style={styles.backButtonText}>Exit</Text>
         </Pressable>
         <View style={styles.turnInfo}>
-          <Text style={styles.turnIndicator}>
-            {currentPlayer ? (
-              <>
-                <Text style={[styles.playerColor, { color: PLAYER_COLORS[currentPlayer.color] }]}>
-                  {currentPlayer.name}
-                </Text>
-                &apos;s Turn
-              </>
-            ) : (
-              'Loading...'
-            )}
+          <Text style={[
+            styles.turnIndicator,
+            currentPlayer && { color: PLAYER_COLORS[currentPlayer.color] },
+          ]}>
+            {currentPlayer ? `${currentPlayer.name}'s Turn` : 'Loading...'}
           </Text>
           {extraTurnsRemaining > 0 && (
             <Text style={styles.extraTurnsIndicator}>
@@ -255,9 +249,6 @@ const styles = StyleSheet.create({
   currentPlayerBadge: {
     color: '#2ED573',
     fontSize: 16,
-    fontWeight: '700',
-  },
-  playerColor: {
     fontWeight: '700',
   },
   gameStatusContainer: {

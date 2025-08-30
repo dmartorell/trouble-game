@@ -350,8 +350,8 @@ function renderHomeAreas() {
 
   // Position circles within the triangular boundaries
   // For each triangle, we need to stay within the diagonal constraint
-  const spacing = 30; // Increased space between circles for better padding
-  const margin = 30; // Increased margin from triangle edges
+  const spacing = 40;
+  const margin = 20;
 
   // Red Player HOME (top-left triangular corner)
   // Triangle points: (0,0), (cornerSize,0), (0,cornerSize)
