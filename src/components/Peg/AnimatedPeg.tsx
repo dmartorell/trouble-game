@@ -14,7 +14,7 @@ import { PLAYER_COLORS } from '@/constants/game';
 import { useSettingsStore } from '@/store/settingsStore';
 import { useGameStore } from '@/store/gameStore';
 import { getSpacePosition } from '@/constants/board';
-import { getHomePosition } from '@/utils/boardCoordinates';
+import { getHomePosition, BoardDimensions } from '@/utils/boardCoordinates';
 import {
   calculateMoveDuration,
   MoveAnimationConfig,
@@ -36,6 +36,10 @@ interface AnimatedPegProps {
   isAnimating?: boolean;
   targetPosition?: number;
   animationConfig?: Partial<MoveAnimationConfig>;
+  // Positioning props for alignment with PegOverlay
+  boardDimensions?: BoardDimensions;
+  horizontalOffset?: number;
+  verticalOffset?: number;
 }
 
 export const AnimatedPeg: FC<AnimatedPegProps> = ({
@@ -53,6 +57,9 @@ export const AnimatedPeg: FC<AnimatedPegProps> = ({
   isAnimating = false,
   targetPosition,
   animationConfig = {},
+  boardDimensions,
+  horizontalOffset = 0,
+  verticalOffset = 0,
 }) => {
   const { settings } = useSettingsStore();
   const { players } = useGameStore();
@@ -63,30 +70,40 @@ export const AnimatedPeg: FC<AnimatedPegProps> = ({
   const animatedY = useSharedValue(0);
   const animatedScale = useSharedValue(1);
 
-  // Calculate current position coordinates
+  // Calculate current position coordinates with scale factor and offset corrections
   const getCurrentPosition = (pos: number) => {
+    let baseCoordinate = { x: 200, y: 200 }; // fallback
+
     if (pos === -1) {
       // HOME position - calculate actual HOME coordinates
       const player = players.find(p => p.id === playerId);
 
-      if (!player) return { x: 200, y: 200 }; // fallback
+      if (player) {
+        // Extract peg index from ID format: player-id-peg-index
+        const pegIndex = parseInt(id.split('-')[3]) || 0;
 
-      // Extract peg index from ID format: player-id-peg-index
-      const pegIndex = parseInt(id.split('-')[3]) || 0;
-
-      return getHomePosition(player.color, pegIndex);
-    }
-
-    if (pos >= 28) {
+        baseCoordinate = getHomePosition(player.color, pegIndex);
+      }
+    } else if (pos >= 28) {
       // FINISH position - return center for now
       // TODO: Calculate actual FINISH positions based on player color
-      return { x: 200, y: 200 };
+      baseCoordinate = { x: 200, y: 200 };
+    } else {
+      // Track position
+      const spacePos = getSpacePosition(pos);
+
+      baseCoordinate = spacePos || { x: 200, y: 200 };
     }
 
-    // Track position
-    const spacePos = getSpacePosition(pos);
+    // Apply the same scaling and offset corrections as PegOverlay
+    const scaleFactor = boardDimensions?.scaleFactor || 1;
+    const scaledX = baseCoordinate.x * scaleFactor;
+    const scaledY = baseCoordinate.y * scaleFactor;
 
-    return spacePos || { x: 200, y: 200 };
+    return {
+      x: scaledX + horizontalOffset,
+      y: scaledY + verticalOffset,
+    };
   };
 
   // Initialize position - start at 0,0 since PegOverlay handles positioning
@@ -96,8 +113,12 @@ export const AnimatedPeg: FC<AnimatedPegProps> = ({
   }, []);
 
   // Reset position when not animating (after animation completes)
+  // Now that we use the same coordinate system, reset to 0,0 should align perfectly
   useEffect(() => {
     if (!isAnimating) {
+      // Reset to 0,0 relative to the PegOverlay container position
+      // Since getCurrentPosition now uses the same scale and offsets as PegOverlay,
+      // this should align perfectly with the static position
       animatedX.value = 0;
       animatedY.value = 0;
     }

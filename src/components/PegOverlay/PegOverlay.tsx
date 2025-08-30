@@ -82,6 +82,9 @@ export const PegOverlay: FC<PegOverlayProps> = ({
           testID={`overlay-peg-${pegData.id}`}
           isAnimating={pegData.isAnimating || false}
           targetPosition={pegData.targetPosition}
+          boardDimensions={dimensions}
+          horizontalOffset={horizontalOffset}
+          verticalOffset={verticalOffset}
         />
       </View>
     );
