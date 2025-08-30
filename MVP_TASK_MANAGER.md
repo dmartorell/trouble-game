@@ -3,7 +3,7 @@
 ## Overview
 This document tracks all development tasks for the Trouble Game MVP. Each task is designed to be completed in 1-3 hours of focused work.
 
-**Total Tasks:** 45
+**Total Tasks:** 46
 **Estimated Duration:** 8 weeks
 **Target:** 2-player fully functional game
 
@@ -243,43 +243,51 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 
 ## Phase 4: Polish & UX (Week 6-7)
 ### Visual Polish
-- [ ] **#34** Add peg movement trail effects
+- [ ] **#34** Replace golden rim with glowing peg animation for movable pegs
+  - Remove current golden border (`#FFD700`) highlighting system
+  - Implement subtle pulsing scale animation (1.0 → 1.05 → 1.0) for movable pegs
+  - Add soft glow effect using opacity and shadow properties
+  - Ensure animation is smooth and non-intrusive (2-3 second cycle)
+  - Maintain performance by using React Native Reanimated shared values
+  - **Result**: More elegant and eye-catching visual feedback for interactive pegs
+
+- [ ] **#35** Add peg movement trail effects
   - Motion blur trail
   - Glowing path
   - Fade animation
 
-- [ ] **#35** Create capture particle effects
+- [ ] **#36** Create capture particle effects
   - Explosion particles
   - Color burst
   - Dispersion animation
 
-- [ ] **#36** Implement victory celebration animation
+- [ ] **#37** Implement victory celebration animation
   - Confetti system
   - Peg dance animation
   - Screen effects
 
-- [ ] **#37** Add board lighting/shadow effects
+- [ ] **#38** Add board lighting/shadow effects
   - Dynamic shadows
   - Space highlighting
   - Ambient lighting
 
 ### Audio & Feedback
-- [ ] **#38** Integrate sound effects system
+- [ ] **#39** Integrate sound effects system
   - Load audio assets
   - Create sound manager
   - Implement playback system
 
-- [ ] **#39** Add background music tracks
+- [ ] **#40** Add background music tracks
   - Menu music
   - Game music
   - Victory fanfare
 
-- [ ] **#40** Implement comprehensive haptic patterns
+- [ ] **#41** Implement comprehensive haptic patterns
   - Movement feedback
   - Capture vibration
   - Victory celebration
 
-- [ ] **#41** Create visual move hints system
+- [ ] **#42** Create visual move hints system
   - Highlight valid moves
   - Show path preview
   - Indicate special effects
@@ -287,22 +295,22 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 ---
 
 ## Phase 5: Testing & Optimization (Week 8)
-- [ ] **#42** Add unit tests for game logic
+- [ ] **#43** Add unit tests for game logic
   - Test move validation
   - Test special rules
   - Test win conditions
 
-- [ ] **#43** Create integration tests for game flow
+- [ ] **#44** Create integration tests for game flow
   - Full game simulation
   - Edge case handling
   - State persistence
 
-- [ ] **#44** Optimize animation performance
+- [ ] **#45** Optimize animation performance
   - Profile frame rates
   - Reduce re-renders
   - Optimize SVG updates
 
-- [ ] **#45** Fix critical bugs from testing
+- [ ] **#46** Fix critical bugs from testing
   - Address crash issues
   - Fix game logic bugs
   - Polish UI glitches
@@ -316,12 +324,12 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 - ✅ Phase 2: Core Mechanics (11/11 tasks) - 100% Complete
 - [ ] Phase 2.5: Game Integration (0/3 tasks) - Ready to Begin
 - [ ] Phase 3: Special Features (0/10 tasks)
-- [ ] Phase 4: Polish & UX (0/8 tasks)
+- [ ] Phase 4: Polish & UX (0/9 tasks)
 - [ ] Phase 5: Testing & Optimization (0/4 tasks)
 
 ### Overall Progress
-**Completed:** 23/48 tasks (48%)
-**In Progress:** 0/48 tasks (0%)
+**Completed:** 23/49 tasks (47%)
+**In Progress:** 0/49 tasks (0%)
 
 ### Milestones
 - ✅ **Milestone 1:** MVP Foundation - Basic navigation and state (100% complete)
