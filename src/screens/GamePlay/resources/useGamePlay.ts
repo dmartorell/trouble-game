@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { router } from 'expo-router';
 import { useGameStore } from '@/store/gameStore';
-import { Player } from '@/models';
 import { calculateBoardDimensions } from '@/utils/boardCoordinates';
 
 export const useGamePlay = () => {
@@ -15,7 +14,6 @@ export const useGamePlay = () => {
     currentTurn,
     players,
     pegs,
-    initializeGame,
     getCurrentPlayer,
     getPlayerPegs,
     getSelectablePegs,
@@ -27,20 +25,13 @@ export const useGamePlay = () => {
   const currentPlayer = getCurrentPlayer();
   const currentTurnText = currentPlayer?.name || 'Unknown';
 
-  // Initialize game if not already playing
+  // Validate game is properly initialized, redirect if not
   useEffect(() => {
-    if (gameState !== 'playing') {
-      // Create test players with 4 players for better testing
-      const testPlayers: Player[] = [
-        { id: 'p1', name: 'Red Player', color: 'red', isActive: true },
-        { id: 'p2', name: 'Blue Player', color: 'blue', isActive: true },
-        { id: 'p3', name: 'Yellow Player', color: 'yellow', isActive: true },
-        { id: 'p4', name: 'Green Player', color: 'green', isActive: true },
-      ];
-
-      initializeGame(testPlayers);
+    if (gameState !== 'playing' || players.length < 2) {
+      // Game not properly initialized, redirect to setup
+      router.replace('/game/setup');
     }
-  }, [gameState, initializeGame]);
+  }, [gameState, players.length]);
 
   // Track die value changes from the store
   useEffect(() => {

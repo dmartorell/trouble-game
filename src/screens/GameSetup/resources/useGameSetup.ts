@@ -30,8 +30,8 @@ export const useGameSetup = () => {
     const activePlayers = players.filter(p => p.isActive);
 
     if (activePlayers.length >= 2) {
-      // Initialize game state in store
-      initializeGame(players);
+      // Initialize game state in store with only active players
+      initializeGame(activePlayers);
 
       // Navigate to game
       router.replace('/game/play');
