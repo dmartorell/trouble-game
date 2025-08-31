@@ -59,7 +59,15 @@ Be the first player to move all four of your colored pegs around the game board 
 
 ### Double Trouble (XX) Spaces
 - Landing on these spaces grants an additional roll
-- Maximum of 2 extra turns per turn total
+- **No limit on Double Trouble extra turns** - you can chain multiple XX spaces indefinitely
+- The "Maximum 2 extra turns per turn" rule **only applies to rolling consecutive 6s**
+- Double Trouble bonuses are **separate** from the 6-roll limit
+
+**Example Scenarios:**
+1. Player rolls 6 → moves → rolls another 6 → moves → **no more rolls from 6s** (2-roll limit reached)
+2. Player rolls 6 → moves → rolls another 6 → moves to XX space → **gets bonus roll from XX**
+3. Player moves to XX space → gets bonus roll → moves to another XX space → **gets another bonus roll**
+4. Player can theoretically get unlimited turns by landing on XX spaces repeatedly
 
 ### Warp Spaces
 - Landing on a Warp space instantly transports your peg to the matching Warp space on the opposite side of the board
@@ -100,7 +108,7 @@ When you roll a **1**:
    - **6**: Move peg from HOME to START OR move existing peg 6 spaces, then pop again
 3. Apply space effects:
    - **Opponent's peg**: Send it HOME
-   - **Double Trouble (XX)**: Roll again (max 2 extra turns total)
+   - **Double Trouble (XX)**: Roll again (unlimited - separate from 6-roll limit)
    - **Warp space**: Transport to matching Warp on opposite side
 4. End turn (unless you have extra rolls)
 
@@ -113,8 +121,8 @@ When you roll a **1**:
 
 ## Quick Reference
 - **Roll 1**: All others move peg to START
-- **Roll 6**: Extra turn after move
-- **Double Trouble**: Extra turn (max 2 per turn)
+- **Roll 6**: Extra turn after move (max 2 consecutive 6-rolls)
+- **Double Trouble**: Extra turn (unlimited chaining possible)
 - **Warp**: Instant transport across board
 - **Opponent's space**: Send them HOME
 - **FINISH**: Exact count required

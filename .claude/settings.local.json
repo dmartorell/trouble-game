@@ -38,9 +38,10 @@
       "Bash(~/.claude-code-docs/claude-docs-helper.sh:*)",
       "Bash(git push:*)",
       "Bash(npm test:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(npm run test:*)"
     ],
-    "deny": [],
-    "ask": []
+    "ask": [],
+    "deny": []
   }
 }
