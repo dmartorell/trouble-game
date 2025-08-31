@@ -98,8 +98,8 @@ export const useGameStore = create<GameStore & PersistApi>(
             return;
           }
 
-          // Enforce maximum 2 rolls per turn sequence
-          // BUT allow XX bonuses to override this limit
+          // Enforce maximum 2 rolls per turn sequence for 6-roll bonuses only
+          // Double Trouble (XX) bonuses can override this limit
           if (currentTurn && currentTurn.rollsThisTurn >= 2 && currentTurn.extraTurnsRemaining === 0) {
             reject(new Error('Maximum 2 rolls per turn sequence reached'));
 
@@ -447,8 +447,9 @@ export const useGameStore = create<GameStore & PersistApi>(
 
         // If no moves available after using the die roll, check if turn should end
         if (currentTurn.movesAvailable <= 0) {
-          // Check if player has reached maximum rolls (2) for turn sequence
-          if (currentTurn.rollsThisTurn >= 2) {
+          // Check if player has reached maximum rolls (2) for turn sequence AND has no extra turns
+          // Double Trouble (XX) extra turns can override the 2-roll limit
+          if (currentTurn.rollsThisTurn >= 2 && currentTurn.extraTurnsRemaining === 0) {
 
             return true;
           }
@@ -604,7 +605,9 @@ export const useGameStore = create<GameStore & PersistApi>(
           }
 
           return true;
-        } catch  {
+        } catch (error) {
+          console.error('Error executing peg move:', error);
+
           return false;
         }
       },
