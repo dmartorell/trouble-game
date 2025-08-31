@@ -9,6 +9,7 @@ import Animated, {
   Easing,
   withRepeat,
   cancelAnimation,
+  withSequence,
 } from 'react-native-reanimated';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 import { PlayerColor } from '@/models';
@@ -35,6 +36,7 @@ interface PegProps {
   // Animation props
   isAnimating?: boolean;
   targetPosition?: number;
+  animationType?: 'normal' | 'warp';
   animationConfig?: Partial<MoveAnimationConfig>;
   // Positioning props for alignment with PegOverlay
   boardDimensions?: BoardDimensions;
@@ -54,6 +56,7 @@ export const Peg: FC<PegProps> = ({
   testID,
   isAnimating = false,
   targetPosition,
+  animationType = 'normal',
   animationConfig = {},
   boardDimensions,
   horizontalOffset = 0,
@@ -70,6 +73,10 @@ export const Peg: FC<PegProps> = ({
 
   // Animated values for pulse effect
   const pulseScale = useSharedValue(1);
+
+  // Animated values for warp effects
+  const animatedOpacity = useSharedValue(1);
+  const warpGlowOpacity = useSharedValue(0);
 
   // Calculate current position coordinates with scale factor and offset corrections
   const getCurrentPosition = (pos: number) => {
@@ -129,54 +136,91 @@ export const Peg: FC<PegProps> = ({
   useEffect(() => {
     if (!isAnimating || targetPosition === undefined) return;
 
-    console.log(`Starting animation for peg ${id}: ${position} -> ${targetPosition}`);
+    console.log(`Starting ${animationType} animation for peg ${id}: ${position} -> ${targetPosition}`);
 
-    const config: MoveAnimationConfig = {
-      startPosition: position,
-      endPosition: targetPosition,
-      duration: calculateMoveDuration(Math.abs(targetPosition - position)),
-      easing: 'easeOut',
-      ...animationConfig,
-    };
+    if (animationType === 'warp') {
+      // Warp teleportation animation
+      const currentPos = getCurrentPosition(position);
+      const targetPos = getCurrentPosition(targetPosition);
+      const offsetX = targetPos.x - currentPos.x;
+      const offsetY = targetPos.y - currentPos.y;
 
-    // Get current and target positions in absolute coordinates
-    const currentPos = getCurrentPosition(position);
-    const targetPos = getCurrentPosition(targetPosition);
+      // Phase 1: Dissolve effect with glow
+      animatedOpacity.value = withTiming(0, { duration: 400, easing: Easing.in(Easing.cubic) });
+      warpGlowOpacity.value = withSequence(
+        withTiming(0.8, { duration: 200 }),
+        withTiming(0, { duration: 200 }),
+      );
+      animatedScale.value = withTiming(0.5, { duration: 400, easing: Easing.in(Easing.cubic) });
 
-    console.log(`Animation coordinates - from: (${currentPos.x}, ${currentPos.y}) to: (${targetPos.x}, ${targetPos.y})`);
+      // Phase 2: Instant teleport (happens while dissolved)
+      setTimeout(() => {
+        animatedX.value = offsetX;
+        animatedY.value = offsetY;
 
-    // Calculate the offset needed to animate from current to target position
-    // Since PegOverlay positions the container at currentPos, we need to animate to the relative offset
-    const offsetX = targetPos.x - currentPos.x;
-    const offsetY = targetPos.y - currentPos.y;
+        // Phase 3: Materialize at destination
+        animatedOpacity.value = withTiming(1, { duration: 400, easing: Easing.out(Easing.cubic) });
+        animatedScale.value = withSequence(
+          withTiming(1.3, { duration: 200, easing: Easing.out(Easing.cubic) }),
+          withTiming(1, { duration: 200, easing: Easing.inOut(Easing.cubic) }),
+        );
+        warpGlowOpacity.value = withSequence(
+          withTiming(0.6, { duration: 200 }),
+          withTiming(0, { duration: 400 }),
+        );
+      }, 400);
 
-    console.log(`Animation offset: (${offsetX}, ${offsetY})`);
-
-    // Simple direct animation (no complex path for now)
-    animatedX.value = withTiming(offsetX, {
-      duration: config.duration,
-      easing: Easing.out(Easing.cubic),
-    });
-
-    animatedY.value = withTiming(offsetY, {
-      duration: config.duration,
-      easing: Easing.out(Easing.cubic),
-    }, (finished) => {
-      if (finished) {
-        console.log(`Animation finished for peg ${id}`);
-        // Animation complete - call callback
+      // Complete animation after materialize
+      setTimeout(() => {
+        console.log(`Warp animation finished for peg ${id}`);
         if (onMoveComplete) {
           runOnJS(onMoveComplete)(id);
         }
-      }
-    });
+      }, 800);
 
-    // Add slight scale animation for movement feedback
-    animatedScale.value = withTiming(1.1, { duration: 100 }, () => {
-      animatedScale.value = withTiming(1, { duration: 200 });
-    });
+    } else {
+      // Normal movement animation
+      const config: MoveAnimationConfig = {
+        startPosition: position,
+        endPosition: targetPosition,
+        duration: calculateMoveDuration(Math.abs(targetPosition - position)),
+        easing: 'easeOut',
+        ...animationConfig,
+      };
 
-  }, [isAnimating, targetPosition]);
+      const currentPos = getCurrentPosition(position);
+      const targetPos = getCurrentPosition(targetPosition);
+      const offsetX = targetPos.x - currentPos.x;
+      const offsetY = targetPos.y - currentPos.y;
+
+      console.log(`Animation coordinates - from: (${currentPos.x}, ${currentPos.y}) to: (${targetPos.x}, ${targetPos.y})`);
+      console.log(`Animation offset: (${offsetX}, ${offsetY})`);
+
+      // Simple direct animation
+      animatedX.value = withTiming(offsetX, {
+        duration: config.duration,
+        easing: Easing.out(Easing.cubic),
+      });
+
+      animatedY.value = withTiming(offsetY, {
+        duration: config.duration,
+        easing: Easing.out(Easing.cubic),
+      }, (finished) => {
+        if (finished) {
+          console.log(`Animation finished for peg ${id}`);
+          if (onMoveComplete) {
+            runOnJS(onMoveComplete)(id);
+          }
+        }
+      });
+
+      // Add slight scale animation for movement feedback
+      animatedScale.value = withTiming(1.1, { duration: 100 }, () => {
+        animatedScale.value = withTiming(1, { duration: 200 });
+      });
+    }
+
+  }, [isAnimating, targetPosition, animationType]);
 
   // Pulse effect for movable pegs
   useEffect(() => {
@@ -233,6 +277,22 @@ export const Peg: FC<PegProps> = ({
         { translateY: animatedY.value },
         { scale: animatedScale.value * pulseScale.value },
       ],
+      opacity: animatedOpacity.value,
+    };
+  });
+
+  // Warp glow style
+  const warpGlowStyle = useAnimatedStyle(() => {
+    return {
+      position: 'absolute' as const,
+      width: size + 20,
+      height: size + 20,
+      borderRadius: (size + 20) / 2,
+      backgroundColor: '#6C5CE7',
+      opacity: warpGlowOpacity.value,
+      transform: [{ scale: 1.5 }],
+      left: -6,
+      top: -6,
     };
   });
 
@@ -244,6 +304,7 @@ export const Peg: FC<PegProps> = ({
         animatedStyle,
       ]}
     >
+      <Animated.View style={warpGlowStyle} pointerEvents="none" />
       <Pressable
         style={[
           styles.pressable,

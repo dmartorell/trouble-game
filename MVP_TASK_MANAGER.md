@@ -431,3 +431,13 @@ This section contains additional tasks that arise during development and don't f
   - Force a roll of 1 after 6 consecutive non-special rolls
   - Reset counter when 6 or 1 is rolled naturally
   - Update die roll logic in gameStore
+
+- [ ] **Refactor: Extract Functions from Constants Files**
+  - Move utility functions out of constants files (e.g., board.ts)
+  - Constants files should only contain static data/configurations
+  - Create separate utility files for functions like:
+    - Board position calculations
+    - Space type checking
+    - Warp space utilities
+  - Update imports throughout the codebase
+  - Improves code organization and separation of concerns

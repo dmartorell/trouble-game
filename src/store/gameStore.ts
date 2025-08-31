@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { GameState, Player, Peg, Turn, GameStore, DieRollCallback, MoveValidationResult } from '@/models';
 import { GAME_CONFIG, ANIMATION_DURATION, TIMEOUT_CONFIG } from '@/constants/game';
-import { BOARD_CONFIG } from '@/constants/board';
+import { BOARD_CONFIG, isWarpSpace, getWarpDestination } from '@/constants/board';
 import { createPersistMiddleware, PersistApi } from './middleware/persistence';
 import { generateDiceRoll, applyStreakBreaker, createDieRollResult } from '@/utils/diceUtils';
 import { validatePegMove, getValidMoves, hasValidMoves as checkHasValidMoves, canMoveFromHomeToStart } from '@/utils/moveValidation';
@@ -277,7 +277,7 @@ export const useGameStore = create<GameStore & PersistApi>(
         });
       },
 
-      animatePegMove: (pegId: string, targetPosition: number): Promise<void> => {
+      animatePegMove: (pegId: string, targetPosition: number, animationType: 'normal' | 'warp' = 'normal'): Promise<void> => {
         return new Promise((resolve) => {
           const { pegs } = get();
           const peg = pegs.find(p => p.id === pegId);
@@ -309,6 +309,7 @@ export const useGameStore = create<GameStore & PersistApi>(
                     isAnimating: false,
                     targetPosition: undefined,
                     animationCallback: undefined,
+                    animationType: undefined,
                   };
                 }
 
@@ -328,6 +329,7 @@ export const useGameStore = create<GameStore & PersistApi>(
                   isAnimating: true,
                   targetPosition,
                   animationCallback: handleMoveComplete,
+                  animationType, // Add animation type for warp effects
                 }
                 : p,
             ),
@@ -454,11 +456,49 @@ export const useGameStore = create<GameStore & PersistApi>(
 
           clearTurnTimer();
 
-          // Animate the move
-          await animatePegMove(pegId, targetPosition);
+          // Check if peg will land on a Warp space
+          const landsOnWarp = isWarpSpace(targetPosition);
+          let finalPosition = targetPosition;
+
+          if (landsOnWarp) {
+            // Animate to the Warp space first with normal animation
+            await animatePegMove(pegId, targetPosition, 'normal');
+
+            // Get the warp destination
+            const warpDestination = getWarpDestination(targetPosition);
+
+            if (warpDestination !== null) {
+              finalPosition = warpDestination;
+              console.log(`🌀 Warp teleportation! From space ${targetPosition} to space ${warpDestination}`);
+
+              // Trigger warp trail effect by updating peg with warp info
+              set({
+                pegs: get().pegs.map(p =>
+                  p.id === pegId
+                    ? { ...p, warpFrom: targetPosition, warpTo: warpDestination }
+                    : p,
+                ),
+              });
+
+              // Then do the warp teleportation animation
+              await animatePegMove(pegId, warpDestination, 'warp');
+
+              // Clear warp info after animation
+              set({
+                pegs: get().pegs.map(p =>
+                  p.id === pegId
+                    ? { ...p, warpFrom: undefined, warpTo: undefined }
+                    : p,
+                ),
+              });
+            }
+          } else {
+            // Normal move animation
+            await animatePegMove(pegId, targetPosition, 'normal');
+          }
 
           // Check if peg landed on a Double Trouble space
-          const landedOnDoubleTrouble = BOARD_CONFIG.DOUBLE_TROUBLE_POSITIONS.includes(targetPosition as 0 | 7 | 14 | 21);
+          const landedOnDoubleTrouble = BOARD_CONFIG.DOUBLE_TROUBLE_POSITIONS.includes(finalPosition as 0 | 7 | 14 | 21);
 
           // Decrement moves available and mark that a move was made
           const newMovesAvailable = currentTurn.movesAvailable - currentTurn.dieRoll.value;

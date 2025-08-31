@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 
 import { useGamePlay } from './resources/useGamePlay';
 import { BoardSVG, PopOMatic, PegOverlay, TurnTimer } from '@/components';
+import { WarpTrail } from '@/components/WarpTrail';
 import { PLAYER_COLORS } from '@/constants/game';
 
 export const GamePlayScreen = () => {
@@ -77,6 +78,17 @@ export const GamePlayScreen = () => {
             disabled={isLocked}
             boardDimensions={boardDimensions}
           />
+          {/* Render WarpTrail for any peg that's warping */}
+          {pegs.filter(p => p.warpFrom !== undefined && p.warpTo !== undefined).map(peg => (
+            <WarpTrail
+              key={`warp-${peg.id}`}
+              fromSpace={peg.warpFrom!}
+              toSpace={peg.warpTo!}
+              isActive={true}
+              duration={800}
+              scaleFactor={boardDimensions.scaleFactor}
+            />
+          ))}
         </View>
 
         <View style={styles.dieContainer}>

@@ -31,6 +31,10 @@ export interface Peg {
   isAnimating?: boolean;
   targetPosition?: number;
   animationCallback?: () => void;
+  animationType?: 'normal' | 'warp';
+  // Warp trail properties
+  warpFrom?: number;
+  warpTo?: number;
 }
 
 export interface Space {
@@ -100,7 +104,7 @@ export interface GameStore {
   setDieRolling: (isRolling: boolean) => void;
   registerDieCallback: (callback: DieRollCallback) => () => void;
   movePeg: (pegId: string, newPosition: number) => void;
-  animatePegMove: (pegId: string, targetPosition: number) => Promise<void>;
+  animatePegMove: (pegId: string, targetPosition: number, animationType?: 'normal' | 'warp') => Promise<void>;
   selectPeg: (pegId: string | null) => void;
   endTurn: () => void;
   checkTurnEnd: () => boolean;
