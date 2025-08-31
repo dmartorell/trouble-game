@@ -33,6 +33,7 @@ export const ANIMATION_DURATION = {
   rollOfOnePegMove: 800, // Duration for each peg movement in Roll of 1
   rollOfOneDelay: 300, // Delay between each peg movement
   rollOfOneMessage: 1500, // How long to show "Roll of 1" message
+  pegCapture: 800, // Duration for capture animation
 } as const;
 
 export const TIMEOUT_CONFIG = {
