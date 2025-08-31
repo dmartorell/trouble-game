@@ -4,7 +4,7 @@ import { GAME_CONFIG, ANIMATION_DURATION, TIMEOUT_CONFIG } from '@/constants/gam
 import { BOARD_CONFIG, isWarpSpace, getWarpDestination } from '@/constants/board';
 import { createPersistMiddleware, PersistApi } from './middleware/persistence';
 import { generateDiceRoll, applyStreakBreaker, createDieRollResult } from '@/utils/diceUtils';
-import { validatePegMove, getValidMoves, hasValidMoves as checkHasValidMoves, canMoveFromHomeToStart } from '@/utils/moveValidation';
+import { validatePegMove, getValidMoves, hasValidMoves as checkHasValidMoves, canMoveFromHomeToStart, checkForCapture } from '@/utils/moveValidation';
 import { useSettingsStore } from './settingsStore';
 
 export const useGameStore = create<GameStore & PersistApi>(
@@ -277,7 +277,7 @@ export const useGameStore = create<GameStore & PersistApi>(
         });
       },
 
-      animatePegMove: (pegId: string, targetPosition: number, animationType: 'normal' | 'warp' = 'normal'): Promise<void> => {
+      animatePegMove: (pegId: string, targetPosition: number, animationType: 'normal' | 'warp' | 'capture' = 'normal'): Promise<void> => {
         return new Promise((resolve) => {
           const { pegs } = get();
           const peg = pegs.find(p => p.id === pegId);
@@ -335,6 +335,45 @@ export const useGameStore = create<GameStore & PersistApi>(
             ),
           });
 
+        });
+      },
+
+      // Animate a peg being captured and sent home
+      animateCapture: (capturedPegId: string): Promise<void> => {
+        return new Promise((resolve) => {
+          const { pegs } = get();
+
+          // Mark peg as captured for animation
+          set({
+            pegs: pegs.map(peg =>
+              peg.id === capturedPegId
+                ? { ...peg, isCaptured: true, isAnimating: true, animationType: 'capture' }
+                : peg,
+            ),
+          });
+
+          // After capture animation, send peg home
+          setTimeout(() => {
+            set({
+              pegs: get().pegs.map(peg => {
+                if (peg.id === capturedPegId) {
+                  return {
+                    ...peg,
+                    position: -1,
+                    isInHome: true,
+                    isInFinish: false,
+                    finishPosition: undefined,
+                    isCaptured: false,
+                    isAnimating: false,
+                    animationType: undefined,
+                  };
+                }
+
+                return peg;
+              }),
+            });
+            resolve();
+          }, ANIMATION_DURATION.pegCapture); // 800ms capture animation
         });
       },
 
@@ -435,7 +474,7 @@ export const useGameStore = create<GameStore & PersistApi>(
 
       // Enhanced method to execute a peg move and handle turn logic
       executePegMove: async (pegId: string, targetPosition: number) => {
-        const { currentTurn, getMoveValidation, animatePegMove, checkTurnEnd, endTurn } = get();
+        const { currentTurn, getMoveValidation, animatePegMove, animateCapture, checkTurnEnd, endTurn } = get();
 
         if (!currentTurn || !currentTurn.dieRoll) {
 
@@ -456,6 +495,14 @@ export const useGameStore = create<GameStore & PersistApi>(
 
           clearTurnTimer();
 
+          // Handle opponent capture first if there's one
+          if (validation.capturedPegId) {
+            console.log(`⚔️ Capture! Peg ${pegId} captures ${validation.capturedPegId} at position ${targetPosition}`);
+
+            // Animate the capture - this will send the peg home after animation
+            await animateCapture(validation.capturedPegId);
+          }
+
           // Check if peg will land on a Warp space
           const landsOnWarp = isWarpSpace(targetPosition);
           let finalPosition = targetPosition;
@@ -470,6 +517,21 @@ export const useGameStore = create<GameStore & PersistApi>(
             if (warpDestination !== null) {
               finalPosition = warpDestination;
               console.log(`🌀 Warp teleportation! From space ${targetPosition} to space ${warpDestination}`);
+
+              // Check if warp destination has an opponent that needs to be captured
+              const { pegs } = get();
+              const movingPeg = pegs.find(p => p.id === pegId);
+
+              if (movingPeg) {
+                const captureResult = checkForCapture(warpDestination, movingPeg.playerId, pegs);
+
+                if (captureResult.canCapture && captureResult.capturedPegId) {
+                  console.log(`⚔️ Warp Capture! Peg ${pegId} captures ${captureResult.capturedPegId} at warp destination ${warpDestination}`);
+
+                  // Animate the capture at the warp destination
+                  await animateCapture(captureResult.capturedPegId);
+                }
+              }
 
               // Trigger warp trail effect by updating peg with warp info
               set({

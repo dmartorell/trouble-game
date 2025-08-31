@@ -85,7 +85,7 @@ Important guidelines:
 - Validate that the task is actually ready to be worked on
 - If no tasks are available, inform the user that all tasks are complete
 - If a task has dependencies that aren't met, explain what needs to be completed first
-- Do not commit or push any code until user approval is given
+- DO NOT COMMIT OR PUSH any code until user approval is given
 
 Error handling:
 - If MVP_TASK_MANAGER.md is not found, report the error

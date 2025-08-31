@@ -36,7 +36,7 @@ interface PegProps {
   // Animation props
   isAnimating?: boolean;
   targetPosition?: number;
-  animationType?: 'normal' | 'warp';
+  animationType?: 'normal' | 'warp' | 'capture';
   animationConfig?: Partial<MoveAnimationConfig>;
   // Positioning props for alignment with PegOverlay
   boardDimensions?: BoardDimensions;
@@ -132,11 +132,62 @@ export const Peg: FC<PegProps> = ({
     }
   }, [isAnimating]);
 
+  // Reset animation values when peg position changes (e.g., sent back to HOME after capture)
+  useEffect(() => {
+    if (!isAnimating) {
+      // Reset all animated values to normal state
+      animatedOpacity.value = 1;
+      animatedScale.value = 1;
+      warpGlowOpacity.value = 0;
+      animatedX.value = 0;
+      animatedY.value = 0;
+    }
+  }, [position, isAnimating]);
+
   // Handle animation when target position changes
   useEffect(() => {
-    if (!isAnimating || targetPosition === undefined) return;
+    if (!isAnimating) return;
+
+    // For capture animation, targetPosition is not needed
+    if (animationType !== 'capture' && targetPosition === undefined) return;
 
     console.log(`Starting ${animationType} animation for peg ${id}: ${position} -> ${targetPosition}`);
+
+    if (animationType === 'capture') {
+      // Capture animation: shrink, bounce, and fade before removing
+      console.log(`Starting capture animation for peg ${id}`);
+
+      // Phase 1: Quick impact scale up
+      animatedScale.value = withTiming(1.2, { duration: 100, easing: Easing.out(Easing.cubic) });
+
+      // Phase 2: Dramatic shrink with spin effect
+      setTimeout(() => {
+        animatedScale.value = withTiming(0, {
+          duration: 500,
+          easing: Easing.in(Easing.cubic),
+        });
+        animatedOpacity.value = withTiming(0, {
+          duration: 500,
+          easing: Easing.in(Easing.cubic),
+        });
+
+        // Add a slight upward movement as peg "gets sent home"
+        animatedY.value = withTiming(animatedY.value - 20, {
+          duration: 300,
+          easing: Easing.out(Easing.quad),
+        });
+      }, 100);
+
+      // Phase 3: Complete animation and trigger callback
+      setTimeout(() => {
+        console.log(`Capture animation finished for peg ${id}`);
+        if (onMoveComplete) {
+          runOnJS(onMoveComplete)(id);
+        }
+      }, 600);
+
+      return; // Exit early for capture animation
+    }
 
     if (animationType === 'warp') {
       // Warp teleportation animation

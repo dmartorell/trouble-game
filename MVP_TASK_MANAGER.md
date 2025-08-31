@@ -3,7 +3,7 @@
 ## Overview
 This document tracks all development tasks for the Trouble Game MVP. Each task is designed to be completed in 1-3 hours of focused work.
 
-**Total Tasks:** 51
+**Total Tasks:** 52
 **Estimated Duration:** 8 weeks
 **Target:** 2-player fully functional game
 
@@ -221,10 +221,18 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
   - Allow opponents to move to START
   - Handle blocked START spaces
 
-- [ ] **#32** Add opponent capture mechanics
-  - Detect landing on opponent
-  - Send opponent home
-  - Trigger capture animation
+- ✅ **#32** Add opponent capture mechanics (GitHub Issue #54 - COMPLETED 2025-08-31)
+  - ✅ Detect landing on opponent
+  - ✅ Send opponent home
+  - ✅ Trigger capture animation
+
+- [ ] **#32.5** Implement lap completion tracking for FINISH entry validation
+  - Add hasCompletedLap boolean field to Peg model
+  - Track when pegs pass their START position to mark lap completion
+  - Update shouldEnterFinish logic to require lap completion
+  - Fix conflict between WARP spaces and FINISH entry points
+  - Ensure pegs can use WARP spaces before completing a lap
+  - **Priority: High** - Fixes bug where pegs cannot move to WARP spaces that coincide with FINISH entries
 
 - [ ] **#33** Create FINISH zone entry validation
   - Check if peg can enter
@@ -331,13 +339,13 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 - ✅ Phase 1: Foundation (12/12 tasks) - 100% Complete
 - ✅ Phase 2: Core Mechanics (11/11 tasks) - 100% Complete
 - ✅ Phase 2.5: Game Integration (3/3 tasks) - 100% Complete
-- [ ] Phase 3: Special Features (5/10 tasks) - 50% Complete
+- [ ] Phase 3: Special Features (6/11 tasks) - 55% Complete
 - [ ] Phase 4: Polish & UX (0/9 tasks)
 - [ ] Phase 5: Testing & Optimization (0/4 tasks)
 
 ### Overall Progress
-**Completed:** 30/51 tasks (59%)
-**In Progress:** 0/51 tasks (0%)
+**Completed:** 31/52 tasks (60%)
+**In Progress:** 0/52 tasks (0%)
 
 ### Milestones
 - ✅ **Milestone 1:** MVP Foundation - Basic navigation and state (100% complete)
@@ -404,6 +412,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 - ✅ **#28** Add extra turn logic for Double Trouble (Completed 2025-08-31)
 - ✅ **#29** Create Warp space pairs (Completed 2025-08-31)
 - ✅ **#30** Implement Warp teleportation animation (Completed 2025-08-31)
+- ✅ **#32** Add opponent capture mechanics (Completed 2025-08-31)
 
 **Navigation & Routing Section: 100% Complete**
 **State Management Section: 100% Complete (4/4 tasks)** ✅
