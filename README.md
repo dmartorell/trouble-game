@@ -161,6 +161,9 @@ For complete rules, see [ai_docs/troubleRules.md](ai_docs/troubleRules.md)
 - ✅ Roll of 6 extra turn logic with correct TROUBLE game rules
 - ✅ Turn timeout handling with 15-second timer and visual warnings
 - ✅ Double Trouble (XX) spaces with unlimited chaining implementation
+- ✅ Roll of 1 special rule allowing all other players to move to START
+- ✅ Warp space pairs with teleportation mechanics and animations
+- ✅ Opponent capture mechanics with dramatic shrink/fade animations
 
 ### Phase 1: Foundation (100% Complete - 12/12 tasks) ✅
 - ✅ Navigation structure with Expo Router
@@ -191,18 +194,18 @@ For complete rules, see [ai_docs/troubleRules.md](ai_docs/troubleRules.md)
 - ✅ Polished basic gameplay UX and visual feedback (Issue #44 - Completed)
 - ✅ Tested and refined basic game flow integration (Issue #46 - Completed)
 
-### Phase 3: Special Features (50% Complete - 5/10 tasks) 🚧
+### Phase 3: Special Features (60% Complete - 6/10 tasks) 🚧
 - ✅ Double Trouble (XX) spaces with unlimited chaining (Issue #48 - Completed)
 - ✅ Roll of 1 special rule for all players (Issue #31 - Completed)
 - ✅ Extra turn logic integration for Double Trouble spaces (Completed)
 - ✅ Warp space pairs and teleportation mechanics (Issue #50 - Completed)
 - ✅ Warp teleportation animation with dissolve/materialize effects (Issue #52 - Completed)
-- [ ] Opponent capture mechanics and animations
+- ✅ Opponent capture mechanics with visual animations (Issue #54 - Completed)
 - [ ] FINISH zone entry validation with exact count
 - [ ] Victory condition checking and celebration
 
-**Current Progress: 30/51 tasks completed (59%)**
-**Next Focus: Task #32 - Add opponent capture mechanics**
+**Current Progress: 31/52 tasks completed (60%)**
+**Next Focus: Task #32.5 - Implement lap completion tracking for FINISH entry validation**
 
 ## 🎨 Design Guidelines
 
