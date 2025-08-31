@@ -20,7 +20,6 @@ export const useGamePlay = () => {
     getPlayerPegs,
     getSelectablePegs,
     isValidMove,
-    selectPeg,
     executePegMove,
     getMoveValidation,
   } = useGameStore();
@@ -100,14 +99,9 @@ export const useGamePlay = () => {
       return;
     }
 
-    // If peg is already selected, execute the move asynchronously
-    if (currentTurn.selectedPegId === pegId) {
-      executeMoveAsync(pegId).catch(console.error);
-    } else {
-      // Select the peg
-      selectPeg(pegId);
-    }
-  }, [currentTurn, isValidMove, selectPeg, executeMoveAsync]);
+    // Execute move immediately on first click
+    executeMoveAsync(pegId).catch(console.error);
+  }, [currentTurn, isValidMove, executeMoveAsync]);
 
   // Calculate board dimensions once for consistent scaling
   const boardDimensions = useMemo(() => calculateBoardDimensions(), []);
@@ -132,7 +126,6 @@ export const useGamePlay = () => {
     pegs,
     currentPlayerPegs,
     selectablePegIds,
-    selectedPegId: currentTurn?.selectedPegId,
     currentDieRoll: currentTurn?.dieRoll?.value,
     extraTurnsRemaining: currentTurn?.extraTurnsRemaining || 0,
     rollsThisTurn: currentTurn?.rollsThisTurn || 0,

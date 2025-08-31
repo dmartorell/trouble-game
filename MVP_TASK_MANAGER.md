@@ -3,7 +3,7 @@
 ## Overview
 This document tracks all development tasks for the Trouble Game MVP. Each task is designed to be completed in 1-3 hours of focused work.
 
-**Total Tasks:** 46
+**Total Tasks:** 51
 **Estimated Duration:** 8 weeks
 **Target:** 2-player fully functional game
 
@@ -172,11 +172,18 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
   - **Enhance coordinate utilities** - Add scaling transformation helpers to boardCoordinates.ts for proper coordinate mapping
   - **Result**: Fully functional game with pegs visible on board, interactive die rolling, and complete turn-based gameplay
 
-- [ ] **#25** Polish basic gameplay UX and visual feedback
+- ✅ **#25** Polish basic gameplay UX and visual feedback (GitHub Issue #44 - COMPLETED 2025-08-31)
   - Improve visual feedback for valid peg moves
   - Add clear current player indicators and turn display
   - Enhance peg selection highlighting and hover states
   - Add move confirmation/cancellation options
+  - **Task #37 Integration**: Replace golden rim with glowing peg animation for movable pegs
+    - Remove current golden border (`#FFD700`) highlighting system
+    - Implement subtle pulsing scale animation (1.0 → 1.05 → 1.0) for movable pegs
+    - Add soft glow effect using opacity and shadow properties
+    - Ensure animation is smooth and non-intrusive (2-3 second cycle)
+    - Maintain performance by using React Native Reanimated shared values
+    - **Result**: More elegant and eye-catching visual feedback for interactive pegs
 
 - [ ] **#26** Test and refine basic game flow integration
   - Validate turn switching works correctly with all mechanics
@@ -243,13 +250,14 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 
 ## Phase 4: Polish & UX (Week 6-7)
 ### Visual Polish
-- [ ] **#34** Replace golden rim with glowing peg animation for movable pegs
+- [ ] **#37** Replace golden rim with glowing peg animation for movable pegs *(INTEGRATED INTO TASK #25)*
   - Remove current golden border (`#FFD700`) highlighting system
   - Implement subtle pulsing scale animation (1.0 → 1.05 → 1.0) for movable pegs
   - Add soft glow effect using opacity and shadow properties
   - Ensure animation is smooth and non-intrusive (2-3 second cycle)
   - Maintain performance by using React Native Reanimated shared values
   - **Result**: More elegant and eye-catching visual feedback for interactive pegs
+  - **NOTE**: This task has been integrated into Task #25 for better UX coherence
 
 - [ ] **#35** Add peg movement trail effects
   - Motion blur trail
@@ -261,33 +269,33 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
   - Color burst
   - Dispersion animation
 
-- [ ] **#37** Implement victory celebration animation
+- [ ] **#38** Implement victory celebration animation
   - Confetti system
   - Peg dance animation
   - Screen effects
 
-- [ ] **#38** Add board lighting/shadow effects
+- [ ] **#39** Add board lighting/shadow effects
   - Dynamic shadows
   - Space highlighting
   - Ambient lighting
 
 ### Audio & Feedback
-- [ ] **#39** Integrate sound effects system
+- [ ] **#40** Integrate sound effects system
   - Load audio assets
   - Create sound manager
   - Implement playback system
 
-- [ ] **#40** Add background music tracks
+- [ ] **#41** Add background music tracks
   - Menu music
   - Game music
   - Victory fanfare
 
-- [ ] **#41** Implement comprehensive haptic patterns
+- [ ] **#42** Implement comprehensive haptic patterns
   - Movement feedback
   - Capture vibration
   - Victory celebration
 
-- [ ] **#42** Create visual move hints system
+- [ ] **#43** Create visual move hints system
   - Highlight valid moves
   - Show path preview
   - Indicate special effects
@@ -295,22 +303,22 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 ---
 
 ## Phase 5: Testing & Optimization (Week 8)
-- [ ] **#43** Add unit tests for game logic
+- [ ] **#48** Add unit tests for game logic
   - Test move validation
   - Test special rules
   - Test win conditions
 
-- [ ] **#44** Create integration tests for game flow
+- [ ] **#49** Create integration tests for game flow
   - Full game simulation
   - Edge case handling
   - State persistence
 
-- [ ] **#45** Optimize animation performance
+- [ ] **#50** Optimize animation performance
   - Profile frame rates
   - Reduce re-renders
   - Optimize SVG updates
 
-- [ ] **#46** Fix critical bugs from testing
+- [ ] **#51** Fix critical bugs from testing
   - Address crash issues
   - Fix game logic bugs
   - Polish UI glitches
@@ -322,19 +330,19 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 ### Phase Completion
 - ✅ Phase 1: Foundation (12/12 tasks) - 100% Complete
 - ✅ Phase 2: Core Mechanics (11/11 tasks) - 100% Complete
-- [ ] Phase 2.5: Game Integration (1/3 tasks) - 33% Complete
+- [ ] Phase 2.5: Game Integration (2/3 tasks) - 67% Complete
 - [ ] Phase 3: Special Features (1/10 tasks) - 10% Complete
 - [ ] Phase 4: Polish & UX (0/9 tasks)
 - [ ] Phase 5: Testing & Optimization (0/4 tasks)
 
 ### Overall Progress
-**Completed:** 24/49 tasks (49%)
-**In Progress:** 0/49 tasks (0%)
+**Completed:** 25/51 tasks (49%)
+**In Progress:** 0/51 tasks (0%)
 
 ### Milestones
 - ✅ **Milestone 1:** MVP Foundation - Basic navigation and state (100% complete)
 - ✅ **Milestone 2:** Core mechanics working (100% complete)
-- [ ] **Milestone 2.5:** Integrated Playable Demo - Basic game fully functional (33% complete - Task #24 done)
+- [ ] **Milestone 2.5:** Integrated Playable Demo - Basic game fully functional (67% complete - Tasks #24 & #25 done)
 - [ ] **Milestone 3:** Feature Complete - All special rules implemented
 - [ ] **Milestone 4:** Polished MVP - Ready for beta testing
 
@@ -390,6 +398,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 - ✅ **#23** Create turn timeout handling (Completed 2025-08-29)
 - ✅ **#31** Implement roll of 1 special rule (Completed 2025-08-30)
 - ✅ **#24** Create integrated playable demo with 2-4 players (Completed 2025-08-30)
+- ✅ **#25** Polish basic gameplay UX and visual feedback (Completed 2025-08-31)
 
 **Navigation & Routing Section: 100% Complete**
 **State Management Section: 100% Complete (4/4 tasks)** ✅
