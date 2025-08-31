@@ -193,7 +193,7 @@ For complete rules, see [ai_docs/troubleRules.md](ai_docs/troubleRules.md)
 
 ### Phase 3: Special Features (30% Complete - 3/10 tasks) 🚧
 - ✅ Double Trouble (XX) spaces with unlimited chaining (Issue #48 - Completed)
-- ✅ Roll of 1 special rule for all players (Issue #31 - Completed) 
+- ✅ Roll of 1 special rule for all players (Issue #31 - Completed)
 - ✅ Extra turn logic integration for Double Trouble spaces (Completed)
 - [ ] Warp space pairs and teleportation mechanics
 - [ ] Opponent capture mechanics and animations
