@@ -39,9 +39,10 @@
       "Bash(git push:*)",
       "Bash(npm test:*)",
       "Bash(grep:*)",
-      "Bash(npm run test:*)"
+      "Bash(npm run test:*)",
+      "Bash(gh label:*)"
     ],
-    "ask": [],
-    "deny": []
+    "deny": [],
+    "ask": []
   }
 }

@@ -66,6 +66,9 @@ export const BoardSVG: FC<BoardSVGProps> = ({
         {/* Main Track Path with white background */}
         {renderMainTrack()}
 
+        {/* Warp Connection Indicators (behind spaces) */}
+        {renderWarpConnections()}
+
         {/* Track Spaces */}
         {renderTrackSpaces(showSpaceNumbers)}
 
@@ -146,6 +149,46 @@ function renderPlayerCorners() {
       />
     </G>
   );
+}
+
+// Render visual connection indicators between paired warp spaces
+function renderWarpConnections() {
+  const connections: React.ReactElement[] = [];
+  const positions = calculateTrackSpacePositions();
+
+  BOARD_CONFIG.WARP_POSITIONS.forEach((warpPair, index) => {
+    const fromPos = positions.find(p => p.index === warpPair.from);
+    const toPos = positions.find(p => p.index === warpPair.to);
+
+    if (fromPos && toPos) {
+      // Create a subtle connecting line between warp pairs
+      connections.push(
+        <G key={`warp-connection-${index}`}>
+          {/* Main connection line */}
+          <Path
+            d={`M ${fromPos.x} ${fromPos.y} L ${toPos.x} ${toPos.y}`}
+            stroke="#6C5CE7"
+            strokeWidth={2}
+            strokeDasharray="5,5"
+            opacity={0.4}
+          />
+
+          {/* Animated pulse effect along the connection */}
+          <Path
+            d={`M ${fromPos.x} ${fromPos.y} L ${toPos.x} ${toPos.y}`}
+            stroke="#A29BFE"
+            strokeWidth={1}
+            strokeDasharray="3,7"
+            opacity={0.6}
+          >
+            {/* Simple animated dash offset for pulsing effect */}
+          </Path>
+        </G>,
+      );
+    }
+  });
+
+  return <G opacity={0.7}>{connections}</G>;
 }
 
 // Render the main white track path
@@ -265,34 +308,55 @@ function renderTrackSpaces(showNumbers: boolean = false) {
         </G>,
       );
     } else if (isWarp) {
-      // Warp spaces - positioned right before START spaces, diagonal pairs
+      // Warp spaces - distinct hexagonal design with portal effect
+      const hexSize = 12;
+      const hexPoints = [
+        { x: x + hexSize, y },
+        { x: x + hexSize / 2, y: y + hexSize * 0.866 },
+        { x: x - hexSize / 2, y: y + hexSize * 0.866 },
+        { x: x - hexSize, y },
+        { x: x - hexSize / 2, y: y - hexSize * 0.866 },
+        { x: x + hexSize / 2, y: y - hexSize * 0.866 },
+      ];
+      const hexPath = `${hexPoints.map((point, i) =>
+        `${i === 0 ? 'M' : 'L'} ${point.x} ${point.y}`,
+      ).join(' ')} Z`;
+
       spaces.push(
         <G key={`space-${index}`}>
-          <Ellipse
+          {/* Outer hexagonal border */}
+          <Path
+            d={hexPath}
+            fill="#6C5CE7"
+            stroke="#A29BFE"
+            strokeWidth={2}
+          />
+          {/* Inner portal effect */}
+          <Circle
             cx={x}
             cy={y}
-            rx={14}
-            ry={10}
-            fill="#6C5CE7"
-            stroke="#ffffff"
-            strokeWidth={2}
+            r={8}
+            fill="#2D3436"
+            stroke="#6C5CE7"
+            strokeWidth={1}
           />
           <Circle
             cx={x}
             cy={y}
-            r={6}
-            fill="#1a1a1a"
+            r={5}
+            fill="#0984E3"
+            opacity={0.7}
           />
-          {/* Warp indicator */}
+          {/* Warp symbol */}
           <Text
             x={x}
-            y={y + 3}
-            fontSize="8"
-            fill="#ffffff"
+            y={y + 2}
+            fontSize="6"
+            fill="#DDD6FE"
             textAnchor="middle"
             fontWeight="bold"
           >
-            ⚡
+            ⟲
           </Text>
         </G>,
       );

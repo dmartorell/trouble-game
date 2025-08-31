@@ -20,10 +20,10 @@ export const BOARD_CONFIG = {
   // START spaces are part of the main 28-space track
   START_POSITIONS: [4, 11, 18, 25], // One per player corner, 3 spaces after each XX
 
-  // WARP spaces - positioned right before START spaces, diagonal pairs
+  // WARP spaces - positioned right before START spaces, diagonal pairs (authentic TROUBLE layout)
   WARP_POSITIONS: [
-    { from: 3, to: 17 }, // Space before START 4 connects to space before START 18 (diagonal)
-    { from: 10, to: 24 }, // Space before START 11 connects to space before START 25 (diagonal)
+    { from: 3, to: 17, id: 'warp1' }, // Space before RED START (4) connects to space before YELLOW START (18) - diagonal pair
+    { from: 10, to: 24, id: 'warp2' }, // Space before GREEN START (11) connects to space before BLUE START (25) - diagonal pair
   ],
 } as const;
 
@@ -104,6 +104,109 @@ export const getSpecialSpacePositions = () => {
   );
 
   return { doubleTrouble, warpSpaces, startSpaces };
+};
+
+// Warp space utilities for game logic
+export const isWarpSpace = (spaceIndex: number): boolean => {
+  return BOARD_CONFIG.WARP_POSITIONS.some(warp =>
+    warp.from === spaceIndex || warp.to === spaceIndex,
+  );
+};
+
+export const getWarpDestination = (spaceIndex: number): number | null => {
+  const warpPair = BOARD_CONFIG.WARP_POSITIONS.find(warp =>
+    warp.from === spaceIndex || warp.to === spaceIndex,
+  );
+
+  if (!warpPair) return null;
+
+  // Return the opposite space in the pair
+  return warpPair.from === spaceIndex ? warpPair.to : warpPair.from;
+};
+
+export const getWarpPairId = (spaceIndex: number): string | null => {
+  const warpPair = BOARD_CONFIG.WARP_POSITIONS.find(warp =>
+    warp.from === spaceIndex || warp.to === spaceIndex,
+  );
+
+  return warpPair?.id || null;
+};
+
+export const getAllWarpSpaces = (): number[] => {
+  const warpSpaces: number[] = [];
+
+  BOARD_CONFIG.WARP_POSITIONS.forEach(warp => {
+    warpSpaces.push(warp.from, warp.to);
+  });
+
+  return warpSpaces;
+};
+
+// Space type identification for game logic
+export type SpaceType = 'regular' | 'start' | 'double_trouble' | 'warp' | 'home' | 'finish';
+
+export const getSpaceType = (spaceIndex: number): SpaceType => {
+  // Check if it's a START space
+  if (BOARD_CONFIG.START_POSITIONS.includes(spaceIndex as 4 | 11 | 18 | 25)) {
+    return 'start';
+  }
+
+  // Check if it's a Double Trouble space
+  if (BOARD_CONFIG.DOUBLE_TROUBLE_POSITIONS.includes(spaceIndex as 0 | 7 | 14 | 21)) {
+    return 'double_trouble';
+  }
+
+  // Check if it's a Warp space
+  if (isWarpSpace(spaceIndex)) {
+    return 'warp';
+  }
+
+  // Default to regular track space
+  return 'regular';
+};
+
+export const isSpecialSpace = (spaceIndex: number): boolean => {
+  const spaceType = getSpaceType(spaceIndex);
+
+  return spaceType !== 'regular';
+};
+
+export const getSpaceInfo = (spaceIndex: number) => {
+  const spaceType = getSpaceType(spaceIndex);
+  const position = getSpacePosition(spaceIndex);
+
+  const info = {
+    index: spaceIndex,
+    type: spaceType,
+    position,
+    isSpecial: isSpecialSpace(spaceIndex),
+  };
+
+  // Add type-specific information
+  switch (spaceType) {
+  case 'warp':
+    return {
+      ...info,
+      warpDestination: getWarpDestination(spaceIndex),
+      warpPairId: getWarpPairId(spaceIndex),
+    };
+  case 'start': {
+    // Determine which player's START space this is
+    const playerStartMap: { [key: number]: 'red' | 'blue' | 'green' | 'yellow' } = {
+      25: 'red',
+      4: 'blue',
+      11: 'green',
+      18: 'yellow',
+    };
+
+    return {
+      ...info,
+      playerColor: playerStartMap[spaceIndex],
+    };
+  }
+  default:
+    return info;
+  }
 };
 
 // Helper to get FINISH track positions for each player
