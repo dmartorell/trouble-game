@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { GameState, Player, Peg, Turn, GameStore, DieRollCallback, MoveValidationResult } from '@/models';
 import { GAME_CONFIG, ANIMATION_DURATION, TIMEOUT_CONFIG } from '@/constants/game';
+import { BOARD_CONFIG } from '@/constants/board';
 import { createPersistMiddleware, PersistApi } from './middleware/persistence';
 import { generateDiceRoll, applyStreakBreaker, createDieRollResult } from '@/utils/diceUtils';
 import { validatePegMove, getValidMoves, hasValidMoves as checkHasValidMoves, canMoveFromHomeToStart } from '@/utils/moveValidation';
@@ -98,7 +99,8 @@ export const useGameStore = create<GameStore & PersistApi>(
           }
 
           // Enforce maximum 2 rolls per turn sequence
-          if (currentTurn && currentTurn.rollsThisTurn >= 2) {
+          // BUT allow XX bonuses to override this limit
+          if (currentTurn && currentTurn.rollsThisTurn >= 2 && currentTurn.extraTurnsRemaining === 0) {
             reject(new Error('Maximum 2 rolls per turn sequence reached'));
 
             return;
@@ -455,11 +457,24 @@ export const useGameStore = create<GameStore & PersistApi>(
           // Animate the move
           await animatePegMove(pegId, targetPosition);
 
+          // Check if peg landed on a Double Trouble space
+          const landedOnDoubleTrouble = BOARD_CONFIG.DOUBLE_TROUBLE_POSITIONS.includes(targetPosition as 0 | 7 | 14 | 21);
+
           // Decrement moves available and mark that a move was made
           const newMovesAvailable = currentTurn.movesAvailable - currentTurn.dieRoll.value;
 
+          // Calculate extra turns: Double Trouble bonus (unlimited)
+          let extraTurnsToAdd = 0;
+
+          if (landedOnDoubleTrouble) {
+            // Grant 1 extra turn for landing on Double Trouble space
+            // Double Trouble spaces grant unlimited extra turns (not limited by 2-roll rule)
+            // The 2-roll limit only applies to consecutive 6s, not to XX spaces
+            extraTurnsToAdd = 1;
+          }
+
           // If moves are exhausted but player has extra turns, prepare for next roll
-          const shouldPrepareForNextRoll = newMovesAvailable <= 0 && currentTurn.extraTurnsRemaining > 0;
+          const shouldPrepareForNextRoll = newMovesAvailable <= 0 && (currentTurn.extraTurnsRemaining + extraTurnsToAdd) > 0;
 
           set({
             currentTurn: {
@@ -469,10 +484,17 @@ export const useGameStore = create<GameStore & PersistApi>(
               hasMovedSinceRoll: true,
               startTime: 0, // Reset timer to make it invisible
               timeoutWarning: false, // Clear warning state
+              // Apply Double Trouble extra turns
+              extraTurnsRemaining: currentTurn.extraTurnsRemaining + extraTurnsToAdd,
               // If preparing for next roll, clear the die roll to force a new roll
               dieRoll: shouldPrepareForNextRoll ? null : currentTurn.dieRoll,
             },
           });
+
+          // Log Double Trouble activation for debugging
+          if (landedOnDoubleTrouble && extraTurnsToAdd > 0) {
+            console.log(`🎯 Double Trouble! Peg landed on space ${targetPosition}, granted ${extraTurnsToAdd} extra turn(s)`);
+          }
 
           // Check if turn should end
           if (checkTurnEnd()) {

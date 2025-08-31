@@ -410,3 +410,21 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 **Phase 2 Core Mechanics: COMPLETE** ✅ (11/11 tasks - 100% Complete)
 **Phase 2.5 Game Integration: COMPLETE** ✅ (3/3 tasks - 100% Complete)
 Next: Begin Phase 3 with Task #27 - Implement Double Trouble (XX) spaces
+
+---
+
+## Other Minor Tasks
+
+This section contains additional tasks that arise during development and don't fit into the main phases.
+
+- [ ] **User Avatar and Name Selection**
+  - Allow users to pick avatar/profile image
+  - Enable custom name input for players
+  - Store preferences in settings
+  - Display in game UI
+
+- [ ] **Forced Roll Logic for Consecutive Non-Special Rolls**
+  - Track consecutive rolls without 6 or 1
+  - Force a roll of 1 after 6 consecutive non-special rolls
+  - Reset counter when 6 or 1 is rolled naturally
+  - Update die roll logic in gameStore
