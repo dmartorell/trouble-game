@@ -185,7 +185,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
     - Maintain performance by using React Native Reanimated shared values
     - **Result**: More elegant and eye-catching visual feedback for interactive pegs
 
-- [ ] **#26** Test and refine basic game flow integration
+- ✅ **#26** Test and refine basic game flow integration (GitHub Issue #46 - COMPLETED 2025-08-31)
   - Validate turn switching works correctly with all mechanics
   - Ensure die roll → peg selection → movement cycle functions properly
   - Fix any integration issues between completed components
@@ -330,19 +330,19 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 ### Phase Completion
 - ✅ Phase 1: Foundation (12/12 tasks) - 100% Complete
 - ✅ Phase 2: Core Mechanics (11/11 tasks) - 100% Complete
-- [ ] Phase 2.5: Game Integration (2/3 tasks) - 67% Complete
+- ✅ Phase 2.5: Game Integration (3/3 tasks) - 100% Complete
 - [ ] Phase 3: Special Features (1/10 tasks) - 10% Complete
 - [ ] Phase 4: Polish & UX (0/9 tasks)
 - [ ] Phase 5: Testing & Optimization (0/4 tasks)
 
 ### Overall Progress
-**Completed:** 25/51 tasks (49%)
+**Completed:** 26/51 tasks (51%)
 **In Progress:** 0/51 tasks (0%)
 
 ### Milestones
 - ✅ **Milestone 1:** MVP Foundation - Basic navigation and state (100% complete)
 - ✅ **Milestone 2:** Core mechanics working (100% complete)
-- [ ] **Milestone 2.5:** Integrated Playable Demo - Basic game fully functional (67% complete - Tasks #24 & #25 done)
+- ✅ **Milestone 2.5:** Integrated Playable Demo - Basic game fully functional (100% complete)
 - [ ] **Milestone 3:** Feature Complete - All special rules implemented
 - [ ] **Milestone 4:** Polished MVP - Ready for beta testing
 
@@ -399,6 +399,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 - ✅ **#31** Implement roll of 1 special rule (Completed 2025-08-30)
 - ✅ **#24** Create integrated playable demo with 2-4 players (Completed 2025-08-30)
 - ✅ **#25** Polish basic gameplay UX and visual feedback (Completed 2025-08-31)
+- ✅ **#26** Test and refine basic game flow integration (Completed 2025-08-31)
 
 **Navigation & Routing Section: 100% Complete**
 **State Management Section: 100% Complete (4/4 tasks)** ✅
@@ -407,5 +408,5 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 **Peg System Section: 100% Complete (4/4 tasks)** ✅
 **Phase 1 Foundation: COMPLETE** ✅
 **Phase 2 Core Mechanics: COMPLETE** ✅ (11/11 tasks - 100% Complete)
-**Phase 2.5 Game Integration: IN PROGRESS** (1/3 tasks - 33% Complete)
-Next: Continue Phase 2.5 with Tasks #25 and #26
+**Phase 2.5 Game Integration: COMPLETE** ✅ (3/3 tasks - 100% Complete)
+Next: Begin Phase 3 with Task #27 - Implement Double Trouble (XX) spaces
