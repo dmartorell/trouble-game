@@ -250,7 +250,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 
 ## Phase 4: Polish & UX (Week 6-7)
 ### Visual Polish
-- [ ] **#37** Replace golden rim with glowing peg animation for movable pegs *(INTEGRATED INTO TASK #25)*
+- ✅ **#37** Replace golden rim with glowing peg animation for movable pegs *(INTEGRATED INTO TASK #25)*
   - Remove current golden border (`#FFD700`) highlighting system
   - Implement subtle pulsing scale animation (1.0 → 1.05 → 1.0) for movable pegs
   - Add soft glow effect using opacity and shadow properties
