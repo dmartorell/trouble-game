@@ -3,7 +3,7 @@
 ## Overview
 This document tracks all development tasks for the Trouble Game MVP. Each task is designed to be completed in 1-3 hours of focused work.
 
-**Total Tasks:** 50
+**Total Tasks:** 51
 **Estimated Duration:** 8 weeks
 **Target:** 2-player fully functional game
 
@@ -172,7 +172,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
   - **Enhance coordinate utilities** - Add scaling transformation helpers to boardCoordinates.ts for proper coordinate mapping
   - **Result**: Fully functional game with pegs visible on board, interactive die rolling, and complete turn-based gameplay
 
-- [ ] **#25** Polish basic gameplay UX and visual feedback (GitHub Issue #44)
+- ✅ **#25** Polish basic gameplay UX and visual feedback (GitHub Issue #44 - COMPLETED 2025-08-31)
   - Improve visual feedback for valid peg moves
   - Add clear current player indicators and turn display
   - Enhance peg selection highlighting and hover states
@@ -330,19 +330,19 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 ### Phase Completion
 - ✅ Phase 1: Foundation (12/12 tasks) - 100% Complete
 - ✅ Phase 2: Core Mechanics (11/11 tasks) - 100% Complete
-- [ ] Phase 2.5: Game Integration (1/3 tasks) - 33% Complete
+- [ ] Phase 2.5: Game Integration (2/3 tasks) - 67% Complete
 - [ ] Phase 3: Special Features (1/10 tasks) - 10% Complete
 - [ ] Phase 4: Polish & UX (0/9 tasks)
 - [ ] Phase 5: Testing & Optimization (0/4 tasks)
 
 ### Overall Progress
-**Completed:** 24/50 tasks (48%)
-**In Progress:** 0/50 tasks (0%)
+**Completed:** 25/51 tasks (49%)
+**In Progress:** 0/51 tasks (0%)
 
 ### Milestones
 - ✅ **Milestone 1:** MVP Foundation - Basic navigation and state (100% complete)
 - ✅ **Milestone 2:** Core mechanics working (100% complete)
-- [ ] **Milestone 2.5:** Integrated Playable Demo - Basic game fully functional (33% complete - Task #24 done)
+- [ ] **Milestone 2.5:** Integrated Playable Demo - Basic game fully functional (67% complete - Tasks #24 & #25 done)
 - [ ] **Milestone 3:** Feature Complete - All special rules implemented
 - [ ] **Milestone 4:** Polished MVP - Ready for beta testing
 
@@ -398,6 +398,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 - ✅ **#23** Create turn timeout handling (Completed 2025-08-29)
 - ✅ **#31** Implement roll of 1 special rule (Completed 2025-08-30)
 - ✅ **#24** Create integrated playable demo with 2-4 players (Completed 2025-08-30)
+- ✅ **#25** Polish basic gameplay UX and visual feedback (Completed 2025-08-31)
 
 **Navigation & Routing Section: 100% Complete**
 **State Management Section: 100% Complete (4/4 tasks)** ✅

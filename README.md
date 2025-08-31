@@ -185,13 +185,13 @@ For complete rules, see [ai_docs/troubleRules.md](ai_docs/troubleRules.md)
 - ✅ Roll of 6 extra turn logic (Issue #22 - Completed)
 - ✅ Turn timeout handling (Issue #23 - Completed)
 
-### Phase 2.5: Game Integration (1/3 tasks) - 33% Complete
+### Phase 2.5: Game Integration (2/3 tasks) - 67% Complete
 - ✅ **#24** Create integrated playable demo with board peg visualization (Issue #42 - COMPLETED)
-- [ ] **#25** Polish basic gameplay UX and visual feedback (Issue #25 - Planned)
+- ✅ **#25** Polish basic gameplay UX and visual feedback (Issue #44 - COMPLETED)
 - [ ] **#26** Test and refine basic game flow integration (Issue #26 - Planned)
 
-**Major Milestone Achieved: Integrated Playable Demo Complete! 🎯**
-**Next Focus: Task #25 - Polish basic gameplay UX and visual feedback**
+**Major Milestone: Playable Demo with Enhanced UX Complete! 🎯**
+**Next Focus: Task #26 - Test and refine basic game flow integration**
 
 ### Phase 3: Special Features (Planned)
 - [ ] Double Trouble spaces implementation
