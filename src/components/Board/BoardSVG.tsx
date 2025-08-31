@@ -372,8 +372,6 @@ function renderHomeAreas() {
             cy={pos.y}
             r={pegRadius + 2}
             fill="#cc2e2e"
-            stroke="#ffffff"
-            strokeWidth={2}
             opacity={0.9}
           />
           <Circle
@@ -406,8 +404,6 @@ function renderHomeAreas() {
             cy={pos.y}
             r={pegRadius + 2}
             fill="#2e5ecc"
-            stroke="#ffffff"
-            strokeWidth={2}
             opacity={0.9}
           />
           <Circle
@@ -440,8 +436,6 @@ function renderHomeAreas() {
             cy={pos.y}
             r={pegRadius + 2}
             fill="#2ecc2e"
-            stroke="#ffffff"
-            strokeWidth={2}
             opacity={0.9}
           />
           <Circle
@@ -474,8 +468,6 @@ function renderHomeAreas() {
             cy={pos.y}
             r={pegRadius + 2}
             fill="#ccb82e"
-            stroke="#ffffff"
-            strokeWidth={2}
             opacity={0.9}
           />
           <Circle

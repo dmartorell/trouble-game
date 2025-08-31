@@ -7,6 +7,8 @@ import Animated, {
   withTiming,
   runOnJS,
   Easing,
+  withRepeat,
+  cancelAnimation,
 } from 'react-native-reanimated';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 import { PlayerColor } from '@/models';
@@ -65,6 +67,9 @@ export const Peg: FC<PegProps> = ({
   const animatedX = useSharedValue(0);
   const animatedY = useSharedValue(0);
   const animatedScale = useSharedValue(1);
+
+  // Animated values for pulse effect
+  const pulseScale = useSharedValue(1);
 
   // Calculate current position coordinates with scale factor and offset corrections
   const getCurrentPosition = (pos: number) => {
@@ -173,6 +178,29 @@ export const Peg: FC<PegProps> = ({
 
   }, [isAnimating, targetPosition]);
 
+  // Pulse effect for movable pegs
+  useEffect(() => {
+    console.log(`Peg ${id} - isMovable: ${isMovable}, isAnimating: ${isAnimating}`);
+
+    if (isMovable && !isAnimating) {
+      console.log(`Starting pulse animation for peg ${id}`);
+      // Start pulse animation
+      pulseScale.value = withRepeat(
+        withTiming(1.2, {
+          duration: 800,
+          easing: Easing.inOut(Easing.ease),
+        }),
+        -1, // Infinite repeats
+        true, // Reverse animation
+      );
+    } else {
+      console.log(`Stopping pulse animation for peg ${id}`);
+      // Stop pulse animation
+      cancelAnimation(pulseScale);
+      pulseScale.value = withTiming(1, { duration: 200 });
+    }
+  }, [isMovable, isAnimating]);
+
   const handlePress = () => {
     if (!isMovable || !onPress || isAnimating) return;
 
@@ -203,7 +231,7 @@ export const Peg: FC<PegProps> = ({
       transform: [
         { translateX: animatedX.value },
         { translateY: animatedY.value },
-        { scale: animatedScale.value },
+        { scale: animatedScale.value * pulseScale.value },
       ],
     };
   });
