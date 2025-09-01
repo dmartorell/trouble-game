@@ -245,7 +245,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
   - Block invalid moves
   - Suggest alternatives
 
-- [ ] **#35** Add peg sent-home animation
+- ✅ **#35** Add peg sent-home animation
   - Shrink and lift effect
   - Trail to HOME
   - Landing animation
