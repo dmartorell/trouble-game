@@ -4,7 +4,7 @@ import { GAME_CONFIG, ANIMATION_DURATION, TIMEOUT_CONFIG } from '@/constants/gam
 import { BOARD_CONFIG, isWarpSpace, getWarpDestination } from '@/constants/board';
 import { createPersistMiddleware, PersistApi } from './middleware/persistence';
 import { generateDiceRoll, applyStreakBreaker, createDieRollResult } from '@/utils/diceUtils';
-import { validatePegMove, getValidMoves, hasValidMoves as checkHasValidMoves, canMoveFromHomeToStart, checkForCapture } from '@/utils/moveValidation';
+import { validatePegMove, getValidMoves, hasValidMoves as checkHasValidMoves, checkForCapture } from '@/utils/moveValidation';
 import { useSettingsStore } from './settingsStore';
 
 export const useGameStore = create<GameStore & PersistApi>(
@@ -703,23 +703,39 @@ export const useGameStore = create<GameStore & PersistApi>(
 
       // Handle Roll of 1 rule - automatically move other players' pegs from HOME to START
       handleRollOfOne: (currentPlayerId: string): void => {
-        const { players, pegs, animatePegMove, endTurn } = get();
+        const { players, pegs, animatePegMove, animateCapture, endTurn } = get();
 
         // Get all other players (exclude the current player who rolled 1)
         const otherPlayers = players.filter(player => player.id !== currentPlayerId);
 
-        const movements: { playerId: string; pegId: string; playerColor: string }[] = [];
+        const movements: {
+          playerId: string;
+          pegId: string;
+          playerColor: string;
+          targetPosition: number;
+          capturedPegId?: string;
+        }[] = [];
 
-        // Check each other player for possible movements
+        // Check each other player for possible movements using full validation
         otherPlayers.forEach(player => {
-          const result = canMoveFromHomeToStart(player.id, player.color, pegs);
+          // Get pegs in HOME for this player
+          const homePegs = pegs.filter(peg =>
+            peg.playerId === player.id && peg.isInHome,
+          );
 
-          if (result.canMove && result.pegId) {
-            movements.push({
-              playerId: player.id,
-              pegId: result.pegId,
-              playerColor: player.color,
-            });
+          if (homePegs.length > 0) {
+            // Use validatePegMove to get full validation including capture detection
+            const validation = validatePegMove(homePegs[0], 6, player.color, pegs);
+
+            if (validation.isValid && validation.newPosition !== undefined) {
+              movements.push({
+                playerId: player.id,
+                pegId: homePegs[0].id,
+                playerColor: player.color,
+                targetPosition: validation.newPosition,
+                capturedPegId: validation.capturedPegId,
+              });
+            }
           }
         });
 
@@ -737,20 +753,29 @@ export const useGameStore = create<GameStore & PersistApi>(
 
         for (const movement of movements) {
           setTimeout(() => {
-            // Get player's START position
-            const colorIndex = ['red', 'blue', 'green', 'yellow'].indexOf(movement.playerColor);
-
-            if (colorIndex !== -1) {
-              const startPosition = [25, 4, 11, 18][colorIndex]; // Red=25, Blue=4, Green=11, Yellow=18
-
-              // Animate the peg movement
-              animatePegMove(movement.pegId, startPosition).catch(error => {
-                console.error(`Failed to animate peg ${movement.pegId}:`, error);
+            // Handle capture first if there's one
+            if (movement.capturedPegId) {
+              console.log(`⚔️ Roll of 1 Capture! Peg ${movement.pegId} captures ${movement.capturedPegId} at START position ${movement.targetPosition}`);
+              // Chain the promises properly
+              animateCapture(movement.capturedPegId)
+                .then(() => animatePegMove(movement.pegId, movement.targetPosition))
+                .catch(error => {
+                  console.error(`Failed to animate Roll of 1 movement for peg ${movement.pegId}:`, error);
+                });
+            } else {
+              // Just animate the peg movement to START
+              animatePegMove(movement.pegId, movement.targetPosition).catch(error => {
+                console.error(`Failed to animate Roll of 1 movement for peg ${movement.pegId}:`, error);
               });
             }
           }, delay);
 
           delay += ANIMATION_DURATION.rollOfOnePegMove + ANIMATION_DURATION.rollOfOneDelay;
+
+          // Add extra time for capture animation if needed
+          if (movement.capturedPegId) {
+            delay += ANIMATION_DURATION.pegCapture;
+          }
         }
 
         // End turn after all animations complete
