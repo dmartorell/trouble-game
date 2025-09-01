@@ -12,6 +12,8 @@ import { router } from 'expo-router';
 import { Player, Peg } from '@/models';
 import { PLAYER_COLORS } from '@/constants/game';
 import { useGameStore } from '@/store/gameStore';
+import { useSettingsStore } from '@/store/settingsStore';
+import { HapticPatterns } from '@/utils/hapticPatterns';
 
 interface VictoryModalProps {
   visible: boolean;
@@ -33,6 +35,7 @@ export const VictoryModal: FC<VictoryModalProps> = ({
   onPlayAgain,
 }) => {
   const { resetGame } = useGameStore();
+  const { settings } = useSettingsStore();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
@@ -40,6 +43,13 @@ export const VictoryModal: FC<VictoryModalProps> = ({
 
   useEffect(() => {
     if (visible) {
+      // Trigger victory celebration haptic pattern immediately
+      if (settings.hapticsEnabled) {
+        HapticPatterns.victory({ enabled: settings.hapticsEnabled }).catch(() => {
+          // Haptic feedback failed, continue silently
+        });
+      }
+
       // Stagger the entrance animations
       Animated.parallel([
         Animated.timing(fadeAnim, {

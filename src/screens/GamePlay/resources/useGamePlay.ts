@@ -57,7 +57,6 @@ export const useGamePlay = () => {
     router.replace('/game/setup');
   }, [resetGame]);
 
-
   // Get winner as Player object
   const winnerPlayer = winner ? players.find(p => p.id === winner) : null;
 

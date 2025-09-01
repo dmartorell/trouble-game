@@ -1,6 +1,6 @@
 import React, { FC, useEffect } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
-import * as Haptics from 'expo-haptics';
+import { HapticPatterns } from '@/utils/hapticPatterns';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -151,6 +151,13 @@ export const Peg: FC<PegProps> = ({
     if (animationType === 'capture') {
       // Capture animation: shrink, bounce, and fade before removing
 
+      // Trigger capture haptic pattern immediately
+      if (settings.hapticsEnabled) {
+        HapticPatterns.capture({ enabled: settings.hapticsEnabled }).catch(() => {
+          // Haptic feedback failed, continue silently
+        });
+      }
+
       // Phase 1: Quick impact scale up
       animatedScale.value = withTiming(1.2, { duration: 100, easing: Easing.out(Easing.cubic) });
 
@@ -189,6 +196,13 @@ export const Peg: FC<PegProps> = ({
       const targetPos = getCurrentPosition(targetPosition);
       const offsetX = targetPos.x - currentPos.x;
       const offsetY = targetPos.y - currentPos.y;
+
+      // Trigger warp haptic pattern at the start
+      if (settings.hapticsEnabled) {
+        HapticPatterns.warp({ enabled: settings.hapticsEnabled }).catch(() => {
+          // Haptic feedback failed, continue silently
+        });
+      }
 
       // Phase 1: Dissolve effect with glow
       animatedOpacity.value = withTiming(0, { duration: 400, easing: Easing.in(Easing.cubic) });
@@ -231,6 +245,13 @@ export const Peg: FC<PegProps> = ({
         easing: 'easeOut',
         ...animationConfig,
       };
+
+      // Trigger movement haptic pattern
+      if (settings.hapticsEnabled) {
+        HapticPatterns.movement({ enabled: settings.hapticsEnabled }).catch(() => {
+          // Haptic feedback failed, continue silently
+        });
+      }
 
       const currentPos = getCurrentPosition(position);
       const targetPos = getCurrentPosition(targetPosition);
@@ -285,9 +306,9 @@ export const Peg: FC<PegProps> = ({
   const handlePress = () => {
     if (!isMovable || !onPress || isAnimating) return;
 
-    // Haptic feedback for selection
+    // Enhanced haptic feedback for selection
     if (settings.hapticsEnabled) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {
+      HapticPatterns.selection({ enabled: settings.hapticsEnabled }).catch(() => {
         // Haptic feedback failed, but that's okay - just continue
       });
     }

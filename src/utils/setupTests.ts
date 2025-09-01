@@ -12,6 +12,24 @@ jest.mock('expo-haptics', () => ({
   },
 }));
 
+// Mock haptic patterns utility
+jest.mock('@/utils/hapticPatterns', () => ({
+  HapticPatterns: {
+    selection: jest.fn().mockResolvedValue(undefined),
+    movement: jest.fn().mockResolvedValue(undefined),
+    capture: jest.fn().mockResolvedValue(undefined),
+    warp: jest.fn().mockResolvedValue(undefined),
+    doubleTrouble: jest.fn().mockResolvedValue(undefined),
+    victory: jest.fn().mockResolvedValue(undefined),
+    diePress: jest.fn().mockResolvedValue(undefined),
+    dieTumble: jest.fn().mockResolvedValue(undefined),
+    dieLanding: jest.fn().mockResolvedValue(undefined),
+  },
+  triggerHapticPattern: jest.fn().mockResolvedValue(undefined),
+  getHapticPatternDescription: jest.fn().mockReturnValue('Mock description'),
+  getAvailableHapticPatterns: jest.fn().mockReturnValue([]),
+}));
+
 // Mock React Native MMKV
 jest.mock('react-native-mmkv', () => ({
   MMKV: jest.fn().mockImplementation(() => ({

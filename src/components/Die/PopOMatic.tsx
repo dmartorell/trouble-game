@@ -1,6 +1,6 @@
 import React, { FC, useState, useRef, useCallback, useEffect } from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
-import * as Haptics from 'expo-haptics';
+import { HapticPatterns } from '@/utils/hapticPatterns';
 import Svg, { Circle, Rect, G, Defs, RadialGradient, Stop } from 'react-native-svg';
 import Animated, {
   useSharedValue,
@@ -130,10 +130,10 @@ export const PopOMatic: FC<PopOMaticProps> = ({
       }
     }, 60);
 
-    // Haptic feedback during tumble
+    // Enhanced haptic feedback during tumble
     if (settings.hapticsEnabled) {
       hapticTimerRef.current = setInterval(() => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+        HapticPatterns.dieTumble({ enabled: settings.hapticsEnabled }).catch(() => {});
       }, 100);
 
       setTimeout(() => {
@@ -141,8 +141,8 @@ export const PopOMatic: FC<PopOMaticProps> = ({
           clearInterval(hapticTimerRef.current);
           hapticTimerRef.current = null;
         }
-        // Final impact
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy).catch(() => {});
+        // Final landing impact
+        HapticPatterns.dieLanding({ enabled: settings.hapticsEnabled }).catch(() => {});
       }, 800);
     }
   }, [clearAllTimers, settings.hapticsEnabled]);
@@ -152,9 +152,9 @@ export const PopOMatic: FC<PopOMaticProps> = ({
 
     setIsPressed(true);
 
-    // Haptic feedback for pop sensation
+    // Enhanced haptic feedback for pop sensation
     if (settings.hapticsEnabled) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {
+      HapticPatterns.diePress({ enabled: settings.hapticsEnabled }).catch(() => {
         // Haptic feedback failed, but that's okay - just continue
       });
     }
@@ -191,7 +191,7 @@ export const PopOMatic: FC<PopOMaticProps> = ({
     if (!disabled && !isRolling) {
       setIsPressed(true);
       if (settings.hapticsEnabled) {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {
+        HapticPatterns.selection({ enabled: settings.hapticsEnabled }).catch(() => {
           // Haptic feedback failed, but that's okay - just continue
         });
       }

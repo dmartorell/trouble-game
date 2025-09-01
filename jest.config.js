@@ -9,5 +9,9 @@ module.exports = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
+  setupFilesAfterEnv: ['<rootDir>/src/utils/setupTests.ts'],
+  transformIgnorePatterns: [
+    'node_modules/(?!(expo-haptics|expo-modules-core)/)',
+  ],
   verbose: true,
 };

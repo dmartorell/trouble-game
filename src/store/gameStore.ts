@@ -6,6 +6,7 @@ import { createPersistMiddleware, PersistApi } from './middleware/persistence';
 import { generateDiceRoll, applyStreakBreaker, createDieRollResult } from '@/utils/diceUtils';
 import { validatePegMove, getValidMoves, hasValidMoves as checkHasValidMoves } from '@/utils/moveValidation';
 import { useSettingsStore } from './settingsStore';
+import { HapticPatterns } from '@/utils/hapticPatterns';
 
 export const useGameStore = create<GameStore & PersistApi>(
   createPersistMiddleware<GameStore>(
@@ -611,6 +612,15 @@ export const useGameStore = create<GameStore & PersistApi>(
             // Double Trouble spaces grant unlimited extra turns (not limited by 2-roll rule)
             // The 2-roll limit only applies to consecutive 6s, not to XX spaces
             extraTurnsToAdd = 1;
+
+            // Trigger Double Trouble haptic feedback
+            const { settings } = useSettingsStore.getState();
+
+            if (settings.hapticsEnabled) {
+              HapticPatterns.doubleTrouble({ enabled: settings.hapticsEnabled }).catch(() => {
+                // Haptic feedback failed, continue silently
+              });
+            }
           }
 
           // If moves are exhausted but player has extra turns, prepare for next roll
