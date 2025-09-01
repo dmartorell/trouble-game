@@ -119,6 +119,7 @@ export interface GameStore {
   resetTurnTimer: () => void;
   handleTurnTimeout: () => void;
   handleRollOfOne: (currentPlayerId: string) => void;
+  checkVictoryCondition: (playerId: string) => boolean;
 
   // Getters
   getActivePlayers: () => Player[];

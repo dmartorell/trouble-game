@@ -245,12 +245,12 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
   - Block invalid moves
   - Suggest alternatives
 
-- [ ] **#35** Add peg sent-home animation
+- ✅ **#35** Add peg sent-home animation
   - Shrink and lift effect
   - Trail to HOME
   - Landing animation
 
-- [ ] **#36** Create victory condition checking
+- ✅ **#36** Create victory condition checking
   - Check all pegs in FINISH
   - Trigger victory sequence
   - Update game state
@@ -268,12 +268,12 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
   - **Result**: More elegant and eye-catching visual feedback for interactive pegs
   - **NOTE**: This task has been integrated into Task #25 for better UX coherence
 
-- [ ] **#35** Add peg movement trail effects
+- [ ] **#37.5** Add peg movement trail effects
   - Motion blur trail
   - Glowing path
   - Fade animation
 
-- [ ] **#36** Create capture particle effects
+- [ ] **#38.5** Create capture particle effects
   - Explosion particles
   - Color burst
   - Dispersion animation
@@ -340,19 +340,19 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 - ✅ Phase 1: Foundation (12/12 tasks) - 100% Complete
 - ✅ Phase 2: Core Mechanics (11/11 tasks) - 100% Complete
 - ✅ Phase 2.5: Game Integration (3/3 tasks) - 100% Complete
-- [ ] Phase 3: Special Features (9/11 tasks) - 82% Complete
+- ✅ Phase 3: Special Features (10/10 tasks) - 100% Complete
 - [ ] Phase 4: Polish & UX (0/9 tasks)
 - [ ] Phase 5: Testing & Optimization (0/4 tasks)
 
 ### Overall Progress
-**Completed:** 34/52 tasks (65%)
+**Completed:** 36/52 tasks (69%)
 **In Progress:** 0/52 tasks (0%)
 
 ### Milestones
 - ✅ **Milestone 1:** MVP Foundation - Basic navigation and state (100% complete)
 - ✅ **Milestone 2:** Core mechanics working (100% complete)
 - ✅ **Milestone 2.5:** Integrated Playable Demo - Basic game fully functional (100% complete)
-- [ ] **Milestone 3:** Feature Complete - All special rules implemented
+- ✅ **Milestone 3:** Feature Complete - All special rules implemented
 - [ ] **Milestone 4:** Polished MVP - Ready for beta testing
 
 ---
@@ -415,6 +415,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 - ✅ **#30** Implement Warp teleportation animation (Completed 2025-08-31)
 - ✅ **#32** Add opponent capture mechanics (Completed 2025-08-31)
 - ✅ **#32.5** Implement lap completion tracking for FINISH entry validation (Completed 2025-09-01)
+- ✅ **#36** Create victory condition checking (Completed 2025-09-01)
 
 **Navigation & Routing Section: 100% Complete**
 **State Management Section: 100% Complete (4/4 tasks)** ✅
@@ -424,7 +425,8 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 **Phase 1 Foundation: COMPLETE** ✅
 **Phase 2 Core Mechanics: COMPLETE** ✅ (11/11 tasks - 100% Complete)
 **Phase 2.5 Game Integration: COMPLETE** ✅ (3/3 tasks - 100% Complete)
-Next: Continue Phase 3 with Task #33 - Create FINISH zone entry validation
+**Phase 3 Special Features: COMPLETE** ✅ (10/10 tasks - 100% Complete)
+Next: Begin Phase 4 - Polish & UX
 
 ---
 

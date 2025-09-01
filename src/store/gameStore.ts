@@ -317,6 +317,17 @@ export const useGameStore = create<GameStore & PersistApi>(
               }),
             });
 
+            // Check for victory condition if peg moved to FINISH
+            if (isInFinish) {
+              const movingPeg = pegs.find(p => p.id === pegId);
+
+              if (movingPeg) {
+                const { checkVictoryCondition } = get();
+
+                checkVictoryCondition(movingPeg.playerId);
+              }
+            }
+
             resolve();
           };
 
@@ -375,6 +386,38 @@ export const useGameStore = create<GameStore & PersistApi>(
             resolve();
           }, ANIMATION_DURATION.pegCapture); // 800ms capture animation
         });
+      },
+
+      // Check victory condition for a player
+      checkVictoryCondition: (playerId: string) => {
+        const { pegs, players } = get();
+
+        // Get all pegs for this player
+        const playerPegs = pegs.filter(peg => peg.playerId === playerId);
+
+        // Check if all pegs are in FINISH
+        const allPegsInFinish = playerPegs.every(peg => peg.isInFinish);
+
+        if (allPegsInFinish && playerPegs.length === GAME_CONFIG.PEGS_PER_PLAYER) {
+          // Player has won!
+          const player = players.find(p => p.id === playerId);
+
+          if (player) {
+            set({
+              winner: playerId,
+              gameState: 'finished',
+            });
+
+            // Clear any active timers since game is over
+            const { clearTurnTimer } = get();
+
+            clearTurnTimer();
+
+            return true;
+          }
+        }
+
+        return false;
       },
 
       selectPeg: (pegId: string | null) => {
