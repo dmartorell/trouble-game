@@ -30,42 +30,48 @@ describe('Move Validation Utils', () => {
   describe('calculateDestinationPosition', () => {
     it('should move peg from HOME to START with roll of 6', () => {
       const peg = createPeg('red-peg-1', 'player1', -1, true);
-      const result = calculateDestinationPosition(peg, 6, 'red');
+      const allPegs = [peg];
+      const result = calculateDestinationPosition(peg, 6, 'red', allPegs);
 
       expect(result).toBe(25); // Red player starts at position 25
     });
 
     it('should not allow move from HOME with roll other than 6', () => {
       const peg = createPeg('red-peg-1', 'player1', -1, true);
-      const result = calculateDestinationPosition(peg, 4, 'red');
+      const allPegs = [peg];
+      const result = calculateDestinationPosition(peg, 4, 'red', allPegs);
 
       expect(result).toBe(-2); // Invalid
     });
 
     it('should calculate normal board movement', () => {
       const peg = createPeg('red-peg-1', 'player1', 5);
-      const result = calculateDestinationPosition(peg, 3, 'red');
+      const allPegs = [peg];
+      const result = calculateDestinationPosition(peg, 3, 'red', allPegs);
 
       expect(result).toBe(8);
     });
 
     it('should wrap around board correctly', () => {
       const peg = createPeg('red-peg-1', 'player1', 26);
-      const result = calculateDestinationPosition(peg, 4, 'red');
+      const allPegs = [peg];
+      const result = calculateDestinationPosition(peg, 4, 'red', allPegs);
 
       expect(result).toBe(2); // (26 + 4) % 28 = 2
     });
 
     it('should move within FINISH area', () => {
       const peg = createPeg('red-peg-1', 'player1', 56, false, true, 0); // 56 = BOARD_SPACES + 0
-      const result = calculateDestinationPosition(peg, 2, 'red');
+      const allPegs = [peg];
+      const result = calculateDestinationPosition(peg, 2, 'red', allPegs);
 
       expect(result).toBe(58); // 56 + 2
     });
 
     it('should reject move that exceeds FINISH area', () => {
       const peg = createPeg('red-peg-1', 'player1', 59, false, true, 3); // At last FINISH space
-      const result = calculateDestinationPosition(peg, 2, 'red');
+      const allPegs = [peg];
+      const result = calculateDestinationPosition(peg, 2, 'red', allPegs);
 
       expect(result).toBe(-2); // Invalid - would exceed finish
     });
@@ -211,7 +217,7 @@ describe('Move Validation Utils', () => {
       const result = validatePegMove(peg, 2, 'red', allPegs);
 
       expect(result.isValid).toBe(false);
-      expect(result.reason).toBe('Move would exceed available spaces');
+      expect(result.reason).toBe('Move would exceed available spaces or FINISH space is blocked');
     });
 
     it('should validate move within FINISH area', () => {
@@ -296,6 +302,59 @@ describe('Move Validation Utils', () => {
     });
   });
 
+  describe('FINISH entry rules', () => {
+    it('should enter FINISH when passing through entry point', () => {
+      // Red peg at 22, roll 3: 22→23→24(pass through)→FINISH[0]
+      const peg = createPeg('red-peg-1', 'player1', 22);
+      const allPegs = [peg];
+      const result = calculateDestinationPosition(peg, 3, 'red', allPegs);
+      expect(result).toBe(56); // BOARD_SPACES + 0 = 28 + 0 = 28 (but should be 56 based on game config)
+    });
+
+    it('should use WARP when landing exactly on entry/warp space', () => {
+      // Red peg at 23, roll 1: 23→24(land exactly)→WARP to 10
+      const peg = createPeg('red-peg-1', 'player1', 23);
+      const allPegs = [peg];
+      const result = calculateDestinationPosition(peg, 1, 'red', allPegs);
+      expect(result).toBe(24); // Returns warp space position for warp processing
+    });
+
+    it('should reject FINISH entry when space is blocked', () => {
+      // Red peg at 22, roll 3, but FINISH[0] is occupied
+      const peg1 = createPeg('red-peg-1', 'player1', 22);
+      const peg2 = createPeg('red-peg-2', 'player1', 56, false, true, 0); // Blocking FINISH[0]
+      const allPegs = [peg1, peg2];
+      const result = calculateDestinationPosition(peg1, 3, 'red', allPegs);
+      expect(result).toBe(-2); // Blocked, can't move
+    });
+
+    it('should allow FINISH entry to different spaces when available', () => {
+      // Red peg at 21, roll 6: should enter FINISH[2] (skipping blocked spaces)
+      const peg1 = createPeg('red-peg-1', 'player1', 21);
+      const peg2 = createPeg('red-peg-2', 'player1', 56, false, true, 0); // Blocking FINISH[0]
+      const peg3 = createPeg('red-peg-3', 'player1', 57, false, true, 1); // Blocking FINISH[1]
+      const allPegs = [peg1, peg2, peg3];
+      const result = calculateDestinationPosition(peg1, 6, 'red', allPegs);
+      expect(result).toBe(58); // BOARD_SPACES + 2 = FINISH[2]
+    });
+
+    it('should work for different player colors', () => {
+      // Blue peg at 1, roll 3: 1→2→3(pass through)→BLUE FINISH[0]
+      const peg = createPeg('blue-peg-1', 'player2', 1);
+      const allPegs = [peg];
+      const result = calculateDestinationPosition(peg, 3, 'blue', allPegs);
+      expect(result).toBe(56); // BOARD_SPACES + 0
+    });
+
+    it('should not enter wrong color FINISH area', () => {
+      // Blue peg at 22, roll 3: should go to space 25, not enter red FINISH
+      const peg = createPeg('blue-peg-1', 'player2', 22);
+      const allPegs = [peg];
+      const result = calculateDestinationPosition(peg, 3, 'blue', allPegs);
+      expect(result).toBe(25); // Normal movement, not FINISH entry
+    });
+  });
+
   describe('edge cases', () => {
     it('should handle empty peg array', () => {
       const result = hasValidMoves('player1', 6, [], 'red');
@@ -310,7 +369,8 @@ describe('Move Validation Utils', () => {
 
     it('should handle board wraparound correctly', () => {
       const peg = createPeg('red-peg-1', 'player1', 27); // Last position
-      const result = calculateDestinationPosition(peg, 3, 'red');
+      const allPegs = [createPeg('red-peg-1', 'player1', 27)];
+      const result = calculateDestinationPosition(peg, 3, 'red', allPegs);
       expect(result).toBe(2); // Should wrap to position 2
     });
   });

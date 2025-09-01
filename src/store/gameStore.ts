@@ -297,10 +297,10 @@ export const useGameStore = create<GameStore & PersistApi>(
             const finishPosition = isInFinish ? targetPosition - GAME_CONFIG.BOARD_SPACES : undefined;
 
             set({
-              pegs: pegs.map(peg => {
-                if (peg.id === pegId) {
+              pegs: pegs.map(pegToUpdate => {
+                if (pegToUpdate.id === pegId) {
                   return {
-                    ...peg,
+                    ...pegToUpdate,
                     position: targetPosition,
                     isInHome: targetPosition === -1,
                     isInFinish,
@@ -313,7 +313,7 @@ export const useGameStore = create<GameStore & PersistApi>(
                   };
                 }
 
-                return peg;
+                return pegToUpdate;
               }),
             });
 
