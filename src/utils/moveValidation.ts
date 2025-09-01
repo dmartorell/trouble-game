@@ -256,7 +256,53 @@ export function validatePegMove(
   }
 
   // Normal board movement
-  // Check if blocked by own peg
+  // First check if landing on warp space - need special validation
+  const isWarpSpace = BOARD_CONFIG.WARP_POSITIONS.some(warp =>
+    warp.from === newPosition || warp.to === newPosition,
+  );
+
+  if (isWarpSpace) {
+    // Get the warp destination
+    const warpPair = BOARD_CONFIG.WARP_POSITIONS.find(warp =>
+      warp.from === newPosition || warp.to === newPosition,
+    );
+
+    if (warpPair) {
+      const warpDestination = warpPair.from === newPosition ? warpPair.to : warpPair.from;
+
+      // Check if warp destination is blocked by own peg
+      const { blocked: warpBlocked } = isDestinationBlocked(warpDestination, peg.playerId, allPegs);
+
+      if (warpBlocked) {
+        return {
+          isValid: false,
+          reason: 'Cannot use warp - destination is blocked by your own peg',
+        };
+      }
+
+      // Check if the warp space itself is blocked by own peg
+      const { blocked } = isDestinationBlocked(newPosition, peg.playerId, allPegs);
+
+      if (blocked) {
+        return {
+          isValid: false,
+          reason: 'Destination is blocked by your own peg',
+        };
+      }
+
+      // Check for opponent capture at warp destination (will be handled during move execution)
+      const { capturedPegId: warpCapturePegId } = checkForCapture(warpDestination, peg.playerId, allPegs);
+
+      // Return the original position, but note that a capture will occur at warp destination
+      return {
+        isValid: true,
+        newPosition,
+        capturedPegId: warpCapturePegId, // This will be the peg at warp destination if any
+      };
+    }
+  }
+
+  // Non-warp space: Check if blocked by own peg
   const { blocked } = isDestinationBlocked(newPosition, peg.playerId, allPegs);
 
   if (blocked) {
@@ -266,7 +312,7 @@ export function validatePegMove(
     };
   }
 
-  // Check for opponent capture
+  // Check for opponent capture at direct destination
   const { capturedPegId } = checkForCapture(newPosition, peg.playerId, allPegs);
 
   return {
