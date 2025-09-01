@@ -395,8 +395,8 @@ export const useGameStore = create<GameStore & PersistApi>(
 
         if (!currentTurn) return;
 
-        // Check if player has extra turns remaining AND hasn't reached max rolls
-        if (currentTurn.extraTurnsRemaining > 0 && currentTurn.rollsThisTurn < 2) {
+        // Check if player has extra turns remaining (XX bonuses can override 2-roll limit)
+        if (currentTurn.extraTurnsRemaining > 0) {
           // Continue with same player - keep existing timer running
           set({
             currentTurn: {

@@ -95,7 +95,10 @@ export const GamePlayScreen = () => {
           <PopOMatic
             size={120}
             onRoll={handleDieRoll}
-            disabled={rollsThisTurn >= 2 || (rollsThisTurn > 0 && (!hasMovedSinceRoll || extraTurnsRemaining === 0))}
+            disabled={
+              (rollsThisTurn >= 2 && extraTurnsRemaining === 0) ||
+              (rollsThisTurn > 0 && (!hasMovedSinceRoll || extraTurnsRemaining === 0))
+            }
           />
 
         </View>
