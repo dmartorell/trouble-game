@@ -19,7 +19,7 @@ import { BOARD_CONFIG, calculateTrackSpacePositions, getFinishTrackPositions } f
 interface BoardSVGProps {
   width?: number;
   height?: number;
-  showSpaceNumbers?: boolean; // For debugging
+  showSpaceNumbers?: boolean;
 }
 
 export const BoardSVG: FC<BoardSVGProps> = ({
@@ -341,7 +341,7 @@ function renderTrackSpaces(showNumbers: boolean = false) {
       );
     }
 
-    // Debug numbers - show space indices
+    // Show space indices when enabled
     if (showNumbers) {
       spaces.push(
         <Text

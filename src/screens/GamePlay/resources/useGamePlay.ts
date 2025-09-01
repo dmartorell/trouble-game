@@ -14,12 +14,14 @@ export const useGamePlay = () => {
     currentTurn,
     players,
     pegs,
+    winner,
     getCurrentPlayer,
     getPlayerPegs,
     getSelectablePegs,
     isValidMove,
     executePegMove,
     getMoveValidation,
+    resetGame,
   } = useGameStore();
 
   const currentPlayer = getCurrentPlayer();
@@ -27,7 +29,8 @@ export const useGamePlay = () => {
 
   // Validate game is properly initialized, redirect if not
   useEffect(() => {
-    if (gameState !== 'playing' || players.length < 2) {
+    // Only redirect if game state is invalid and no players
+    if (gameState !== 'playing' && gameState !== 'finished' && players.length < 2) {
       // Game not properly initialized, redirect to setup
       router.replace('/game/setup');
     }
@@ -49,6 +52,15 @@ export const useGamePlay = () => {
     router.back();
   };
 
+  const handlePlayAgain = useCallback(() => {
+    resetGame();
+    router.replace('/game/setup');
+  }, [resetGame]);
+
+
+  // Get winner as Player object
+  const winnerPlayer = winner ? players.find(p => p.id === winner) : null;
+
   const handleDieRoll = useCallback((value: number) => {
     // Update local state
     setDieValue(value);
@@ -60,38 +72,25 @@ export const useGamePlay = () => {
 
     const validation = getMoveValidation(pegId, currentTurn.dieRoll.value);
 
-    console.log('Move validation:', { pegId, validation });
-
     if (validation.isValid && validation.newPosition !== undefined) {
-      console.log(`Executing move for peg ${pegId} to position ${validation.newPosition}`);
-      const success = await executePegMove(pegId, validation.newPosition);
-
-      if (success) {
-        console.log(`Move executed successfully for peg ${pegId}`);
-      } else {
-        console.log(`Move failed for peg ${pegId}`);
-      }
-    } else {
-      console.log('Move not valid or no new position:', validation);
+      await executePegMove(pegId, validation.newPosition);
     }
   }, [currentTurn, getMoveValidation, executePegMove]);
 
   const handlePegPress = useCallback((pegId: string) => {
     if (!currentTurn || !currentTurn.dieRoll) {
-      console.log('No die roll available');
-
       return;
     }
 
     // Check if this peg can be moved with current die roll
     if (!isValidMove(pegId, currentTurn.dieRoll.value)) {
-      console.log('Invalid move for peg:', pegId);
-
       return;
     }
 
     // Execute move immediately on first click
-    executeMoveAsync(pegId).catch(console.error);
+    executeMoveAsync(pegId).catch(() => {
+      // Silently handle errors
+    });
   }, [currentTurn, isValidMove, executeMoveAsync]);
 
   // Calculate board dimensions once for consistent scaling
@@ -108,6 +107,7 @@ export const useGamePlay = () => {
     exitGame,
     handleDieRoll,
     handlePegPress,
+    handlePlayAgain,
     dieValue,
     rollCount,
     isLocked,
@@ -115,6 +115,7 @@ export const useGamePlay = () => {
     currentPlayer,
     players,
     pegs,
+    winner: winnerPlayer,
     currentPlayerPegs,
     selectablePegIds,
     currentDieRoll: currentTurn?.dieRoll?.value,

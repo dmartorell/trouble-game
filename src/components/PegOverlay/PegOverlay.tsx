@@ -48,7 +48,7 @@ export const PegOverlay: FC<PegOverlayProps> = ({
     const isSelectable = selectablePegIds.includes(pegData.id);
     const isMovable = isSelectable && !disabled;
 
-    // Apply same offset corrections as DebugOverlay for proper alignment
+    // Apply offset corrections for proper alignment
     const containerMinHeight = 400;
     const boardActualHeight = dimensions.height;
     const verticalOffset = Math.max(0, (containerMinHeight - boardActualHeight) / 2) - 1.5;

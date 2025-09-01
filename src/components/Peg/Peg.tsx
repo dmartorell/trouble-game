@@ -148,11 +148,8 @@ export const Peg: FC<PegProps> = ({
   useEffect(() => {
     if (!isAnimating) return;
 
-    console.log(`Starting ${animationType} animation for peg ${id}: ${position} -> ${targetPosition}`);
-
     if (animationType === 'capture') {
       // Capture animation: shrink, bounce, and fade before removing
-      console.log(`Starting capture animation for peg ${id}`);
 
       // Phase 1: Quick impact scale up
       animatedScale.value = withTiming(1.2, { duration: 100, easing: Easing.out(Easing.cubic) });
@@ -220,7 +217,6 @@ export const Peg: FC<PegProps> = ({
 
       // Complete animation after materialize
       setTimeout(() => {
-        console.log(`Warp animation finished for peg ${id}`);
         if (onMoveComplete) {
           runOnJS(onMoveComplete)(id);
         }
@@ -241,9 +237,6 @@ export const Peg: FC<PegProps> = ({
       const offsetX = targetPos.x - currentPos.x;
       const offsetY = targetPos.y - currentPos.y;
 
-      console.log(`Animation coordinates - from: (${currentPos.x}, ${currentPos.y}) to: (${targetPos.x}, ${targetPos.y})`);
-      console.log(`Animation offset: (${offsetX}, ${offsetY})`);
-
       // Simple direct animation
       animatedX.value = withTiming(offsetX, {
         duration: config.duration,
@@ -255,7 +248,6 @@ export const Peg: FC<PegProps> = ({
         easing: Easing.out(Easing.cubic),
       }, (finished) => {
         if (finished) {
-          console.log(`Animation finished for peg ${id}`);
           if (onMoveComplete) {
             runOnJS(onMoveComplete)(id);
           }
@@ -272,10 +264,8 @@ export const Peg: FC<PegProps> = ({
 
   // Pulse effect for movable pegs
   useEffect(() => {
-    console.log(`Peg ${id} - isMovable: ${isMovable}, isAnimating: ${isAnimating}`);
 
     if (isMovable && !isAnimating) {
-      console.log(`Starting pulse animation for peg ${id}`);
       // Start pulse animation
       pulseScale.value = withRepeat(
         withTiming(1.2, {
@@ -286,7 +276,6 @@ export const Peg: FC<PegProps> = ({
         true, // Reverse animation
       );
     } else {
-      console.log(`Stopping pulse animation for peg ${id}`);
       // Stop pulse animation
       cancelAnimation(pulseScale);
       pulseScale.value = withTiming(1, { duration: 200 });

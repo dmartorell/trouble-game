@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 
 import { useGamePlay } from './resources/useGamePlay';
-import { BoardSVG, PopOMatic, PegOverlay, TurnTimer } from '@/components';
+import { BoardSVG, PopOMatic, PegOverlay, TurnTimer, VictoryModal } from '@/components';
 import { WarpTrail } from '@/components/WarpTrail';
 import { PLAYER_COLORS } from '@/constants/game';
 
@@ -10,10 +10,12 @@ export const GamePlayScreen = () => {
     exitGame,
     handleDieRoll,
     handlePegPress,
+    handlePlayAgain,
     isLocked,
     currentPlayer,
     players,
     pegs,
+    winner,
     selectablePegIds,
     extraTurnsRemaining,
     rollsThisTurn,
@@ -131,6 +133,16 @@ export const GamePlayScreen = () => {
           })}
         </View>
       </ScrollView>
+
+      {/* Victory Modal */}
+      <VictoryModal
+        visible={!!winner}
+        winner={winner || null}
+        players={players}
+        pegs={pegs}
+        gameDuration={startTime > 0 ? Math.floor((Date.now() - startTime) / 1000) : 0}
+        onPlayAgain={handlePlayAgain}
+      />
     </View>
   );
 };
@@ -201,6 +213,7 @@ const styles = StyleSheet.create({
   dieContainer: {
     alignItems: 'center',
     paddingVertical: 20,
+    gap: 15,
   },
   playerInfo: {
     flexDirection: 'row',
