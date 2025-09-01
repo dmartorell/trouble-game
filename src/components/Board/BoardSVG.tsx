@@ -76,9 +76,6 @@ export const BoardSVG: FC<BoardSVGProps> = ({
 
         {/* FINISH Tracks extending toward center */}
         {renderFinishTracks()}
-
-        {/* Pop-O-Matic Die Housing (Center) */}
-        {renderPopOMaticDie()}
       </Svg>
     </View>
   );
@@ -548,60 +545,60 @@ function renderFinishTracks() {
 }
 
 // Render the Pop-O-Matic die housing (rotated 45 degrees like in reference image)
-function renderPopOMaticDie() {
-  const centerX = BOARD_CONFIG.VIEWPORT_SIZE / 2;
-  const centerY = BOARD_CONFIG.VIEWPORT_SIZE / 2;
-  const housingSize = 70;
-  const cornerRadius = 15;
+// function renderPopOMaticDie() {
+//   const centerX = BOARD_CONFIG.VIEWPORT_SIZE / 2;
+//   const centerY = BOARD_CONFIG.VIEWPORT_SIZE / 2;
+//   const housingSize = 70;
+//   const cornerRadius = 15;
 
-  return (
-    <G>
-      {/* Black housing base - rotated 45 degrees */}
-      <Rect
-        x={centerX - housingSize / 2}
-        y={centerY - housingSize / 2}
-        width={housingSize}
-        height={housingSize}
-        fill="url(#popOMaticGradient)"
-        stroke="#000000"
-        strokeWidth={3}
-        rx={cornerRadius}
-        transform={`rotate(45 ${centerX} ${centerY})`}
-      />
+//   return (
+//     <G>
+//       {/* Black housing base - rotated 45 degrees */}
+//       <Rect
+//         x={centerX - housingSize / 2}
+//         y={centerY - housingSize / 2}
+//         width={housingSize}
+//         height={housingSize}
+//         fill="url(#popOMaticGradient)"
+//         stroke="#000000"
+//         strokeWidth={3}
+//         rx={cornerRadius}
+//         transform={`rotate(45 ${centerX} ${centerY})`}
+//       />
 
-      {/* Clear dome effect - circular to match rotated housing */}
-      <Circle
-        cx={centerX}
-        cy={centerY - 3}
-        r={housingSize / 2 - 8}
-        fill="#ffffff"
-        opacity={0.15}
-      />
+//       {/* Clear dome effect - circular to match rotated housing */}
+//       <Circle
+//         cx={centerX}
+//         cy={centerY - 3}
+//         r={housingSize / 2 - 8}
+//         fill="#ffffff"
+//         opacity={0.15}
+//       />
 
-      {/* Die placeholder - kept square, not rotated */}
-      <Rect
-        x={centerX - 12}
-        y={centerY - 12}
-        width={24}
-        height={24}
-        fill="#ffffff"
-        stroke="#000000"
-        strokeWidth={1}
-        rx={3}
-      />
+//       {/* Die placeholder - kept square, not rotated */}
+//       <Rect
+//         x={centerX - 12}
+//         y={centerY - 12}
+//         width={24}
+//         height={24}
+//         fill="#ffffff"
+//         stroke="#000000"
+//         strokeWidth={1}
+//         rx={3}
+//       />
 
-      {/* Die dots (showing 6) - positions unchanged */}
-      <G>
-        <Circle cx={centerX - 6} cy={centerY - 6} r={2} fill="#000" />
-        <Circle cx={centerX - 6} cy={centerY} r={2} fill="#000" />
-        <Circle cx={centerX - 6} cy={centerY + 6} r={2} fill="#000" />
-        <Circle cx={centerX + 6} cy={centerY - 6} r={2} fill="#000" />
-        <Circle cx={centerX + 6} cy={centerY} r={2} fill="#000" />
-        <Circle cx={centerX + 6} cy={centerY + 6} r={2} fill="#000" />
-      </G>
-    </G>
-  );
-}
+//       {/* Die dots (showing 6) - positions unchanged */}
+//       <G>
+//         <Circle cx={centerX - 6} cy={centerY - 6} r={2} fill="#000" />
+//         <Circle cx={centerX - 6} cy={centerY} r={2} fill="#000" />
+//         <Circle cx={centerX - 6} cy={centerY + 6} r={2} fill="#000" />
+//         <Circle cx={centerX + 6} cy={centerY - 6} r={2} fill="#000" />
+//         <Circle cx={centerX + 6} cy={centerY} r={2} fill="#000" />
+//         <Circle cx={centerX + 6} cy={centerY + 6} r={2} fill="#000" />
+//       </G>
+//     </G>
+//   );
+// }
 
 const styles = StyleSheet.create({
   container: {

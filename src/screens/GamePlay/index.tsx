@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useGamePlay } from './resources/useGamePlay';
 import { BoardSVG, PopOMatic, PegOverlay, TurnTimer, VictoryModal } from '@/components';
@@ -6,6 +7,7 @@ import { WarpTrail } from '@/components/WarpTrail';
 import { PLAYER_COLORS } from '@/constants/game';
 
 export const GamePlayScreen = () => {
+  const insets = useSafeAreaInsets();
   const {
     exitGame,
     handleDieRoll,
@@ -25,7 +27,7 @@ export const GamePlayScreen = () => {
   } = useGamePlay();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Turn Timer */}
       <TurnTimer visible={!!currentPlayer && startTime > 0} />
 
@@ -59,80 +61,44 @@ export const GamePlayScreen = () => {
         </View>
       </View>
 
-      <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <View style={styles.gameBoard}>
-          <BoardSVG
-            width={boardDimensions.width}
-            height={boardDimensions.height}
-            showSpaceNumbers={false}
+      <View style={styles.gameBoard}>
+        <BoardSVG
+          width={boardDimensions.width}
+          height={boardDimensions.height}
+          showSpaceNumbers={false}
+        />
+        <PegOverlay
+          pegs={pegs}
+          players={players}
+          selectablePegIds={selectablePegIds}
+          onPegPress={handlePegPress}
+          pegSize={24}
+          disabled={isLocked}
+          boardDimensions={boardDimensions}
+        />
+        {/* Render WarpTrail for any peg that's warping */}
+        {pegs.filter(p => p.warpFrom !== undefined && p.warpTo !== undefined).map(peg => (
+          <WarpTrail
+            key={`warp-${peg.id}`}
+            fromSpace={peg.warpFrom!}
+            toSpace={peg.warpTo!}
+            isActive={true}
+            duration={800}
+            scaleFactor={boardDimensions.scaleFactor}
           />
-          <PegOverlay
-            pegs={pegs}
-            players={players}
-            selectablePegIds={selectablePegIds}
-            onPegPress={handlePegPress}
-            pegSize={24}
-            disabled={isLocked}
-            boardDimensions={boardDimensions}
-          />
-          {/* Render WarpTrail for any peg that's warping */}
-          {pegs.filter(p => p.warpFrom !== undefined && p.warpTo !== undefined).map(peg => (
-            <WarpTrail
-              key={`warp-${peg.id}`}
-              fromSpace={peg.warpFrom!}
-              toSpace={peg.warpTo!}
-              isActive={true}
-              duration={800}
-              scaleFactor={boardDimensions.scaleFactor}
-            />
-          ))}
-        </View>
+        ))}
+      </View>
 
-        <View style={styles.dieContainer}>
-          <PopOMatic
-            size={120}
-            onRoll={handleDieRoll}
-            disabled={
-              (rollsThisTurn >= 2 && extraTurnsRemaining === 0) ||
-              (rollsThisTurn > 0 && (!hasMovedSinceRoll || extraTurnsRemaining === 0))
-            }
-          />
-
-        </View>
-
-        <View style={styles.playerInfo}>
-          {players.map((player) => {
-            const isCurrentPlayer = currentPlayer?.id === player.id;
-
-            return (
-              <View
-                key={player.id}
-                style={[
-                  styles.playerCard,
-                  isCurrentPlayer && styles.activePlayerCard,
-                ]}
-              >
-                <View
-                  style={[
-                    styles.playerIndicator,
-                    { backgroundColor: PLAYER_COLORS[player.color] },
-                    isCurrentPlayer && styles.activePlayerIndicator,
-                  ]}
-                />
-                <Text style={[
-                  styles.playerText,
-                  isCurrentPlayer && styles.activePlayerText,
-                ]}>
-                  {player.name}
-                </Text>
-                {isCurrentPlayer && (
-                  <Text style={styles.currentPlayerBadge}>●</Text>
-                )}
-              </View>
-            );
-          })}
-        </View>
-      </ScrollView>
+      <View style={styles.dieContainer}>
+        <PopOMatic
+          size={120}
+          onRoll={handleDieRoll}
+          disabled={
+            (rollsThisTurn >= 2 && extraTurnsRemaining === 0) ||
+            (rollsThisTurn > 0 && (!hasMovedSinceRoll || extraTurnsRemaining === 0))
+          }
+        />
+      </View>
 
       {/* Victory Modal */}
       <VictoryModal
@@ -151,7 +117,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#16213e',
-    paddingTop: 20,
   },
   header: {
     flexDirection: 'row',
@@ -159,7 +124,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 10,
-    backgroundColor: '#1a1a2e',
   },
   backButton: {
     paddingVertical: 8,
@@ -197,74 +161,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
   },
-  scrollContent: {
-    flex: 1,
-  },
   gameBoard: {
     justifyContent: 'center',
     alignItems: 'center',
     margin: 20,
-    backgroundColor: '#1a1a2e',
-    borderRadius: 20,
-    borderWidth: 2,
-    borderColor: '#333',
     minHeight: 400,
   },
   dieContainer: {
     alignItems: 'center',
     paddingVertical: 20,
     gap: 15,
-  },
-  playerInfo: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    paddingHorizontal: 10,
-    paddingBottom: 20,
-    gap: 8,
-  },
-  playerCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    backgroundColor: '#1a1a2e',
-    borderRadius: 8,
-    borderWidth: 2,
-    borderColor: 'transparent',
-    minWidth: 130,
-  },
-  activePlayerCard: {
-    backgroundColor: '#2a2a4e',
-    borderColor: '#FFA502',
-  },
-  playerIndicator: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-  },
-  activePlayerIndicator: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: '#FFFFFF',
-  },
-  playerText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '600',
-    flex: 1,
-  },
-  activePlayerText: {
-    color: '#FFA502',
-    fontWeight: '700',
-  },
-  currentPlayerBadge: {
-    color: '#2ED573',
-    fontSize: 16,
-    fontWeight: '700',
   },
   controlsContainer: {
     marginTop: 15,
