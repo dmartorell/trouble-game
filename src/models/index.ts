@@ -9,6 +9,7 @@ export interface MoveValidationResult {
   reason?: string;
   newPosition?: number;
   capturedPegId?: string;
+  warpSpaceCapturedPegId?: string; // For capturing pegs on the warp space itself
   entersFinish?: boolean;
 }
 

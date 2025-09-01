@@ -11,6 +11,7 @@ export interface MoveValidationResult {
   reason?: string;
   newPosition?: number;
   capturedPegId?: string;
+  warpSpaceCapturedPegId?: string; // For capturing pegs on the warp space itself
   entersFinish?: boolean;
 }
 
@@ -290,14 +291,18 @@ export function validatePegMove(
         };
       }
 
-      // Check for opponent capture at warp destination (will be handled during move execution)
-      const { capturedPegId: warpCapturePegId } = checkForCapture(warpDestination, peg.playerId, allPegs);
+      // Check for opponent capture at the warp space itself (before warping)
+      const { capturedPegId: warpSpaceCapturedPegId } = checkForCapture(newPosition, peg.playerId, allPegs);
 
-      // Return the original position, but note that a capture will occur at warp destination
+      // Check for opponent capture at warp destination (after warping)
+      const { capturedPegId: warpDestinationCapturedPegId } = checkForCapture(warpDestination, peg.playerId, allPegs);
+
+      // Return the original position with both capture possibilities
       return {
         isValid: true,
         newPosition,
-        capturedPegId: warpCapturePegId, // This will be the peg at warp destination if any
+        warpSpaceCapturedPegId, // This will be the peg at the warp space itself if any
+        capturedPegId: warpDestinationCapturedPegId, // This will be the peg at warp destination if any
       };
     }
   }

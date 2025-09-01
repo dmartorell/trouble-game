@@ -453,3 +453,11 @@ This section contains additional tasks that arise during development and don't f
     - Warp space utilities
   - Update imports throughout the codebase
   - Improves code organization and separation of concerns
+
+- [ ] **Code Cleanup: Check for Duplicate Interfaces and Types**
+  - Audit codebase for duplicate interface definitions
+  - Identify types defined in multiple locations (e.g., MoveValidationResult)
+  - Consolidate duplicate interfaces into single source of truth
+  - Update all imports to reference the canonical location
+  - Remove redundant type definitions
+  - Ensures type consistency and prevents future type mismatches

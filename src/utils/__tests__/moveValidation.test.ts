@@ -442,7 +442,7 @@ describe('Move Validation Utils', () => {
         createPeg('red-peg-1', 'player1', 0), // Can move to position 3 (warp) with roll of 3
         createPeg('red-peg-2', 'player1', 17), // Blocking warp destination
       ];
-      
+
       const result = validatePegMove(pegs[0], 3, 'red', pegs);
       expect(result.isValid).toBe(false);
       expect(result.reason).toBe('Cannot use warp - destination is blocked by your own peg');
@@ -452,7 +452,7 @@ describe('Move Validation Utils', () => {
       const pegs = [
         createPeg('red-peg-1', 'player1', 0), // Can move to position 3 (warp) with roll of 3
       ];
-      
+
       const result = validatePegMove(pegs[0], 3, 'red', pegs);
       expect(result.isValid).toBe(true);
       expect(result.newPosition).toBe(3); // Lands on warp space
@@ -463,7 +463,7 @@ describe('Move Validation Utils', () => {
         createPeg('red-peg-1', 'player1', 0), // Can move to position 3 (warp) with roll of 3
         createPeg('blue-peg-1', 'player2', 17), // Opponent at warp destination
       ];
-      
+
       const result = validatePegMove(pegs[0], 3, 'red', pegs);
       expect(result.isValid).toBe(true);
       expect(result.newPosition).toBe(3); // Lands on warp space
@@ -476,7 +476,7 @@ describe('Move Validation Utils', () => {
         createPeg('blue-peg-1', 'player2', 8), // Can move to position 10 (warp) with roll of 2
         createPeg('blue-peg-2', 'player2', 24), // Blocking warp destination
       ];
-      
+
       const result = validatePegMove(pegs[0], 2, 'blue', pegs);
       expect(result.isValid).toBe(false);
       expect(result.reason).toBe('Cannot use warp - destination is blocked by your own peg');
@@ -488,7 +488,7 @@ describe('Move Validation Utils', () => {
         createPeg('green-peg-1', 'player3', 15), // Can move to position 17 with roll of 2
         createPeg('green-peg-2', 'player3', 3), // Blocking the other end of warp
       ];
-      
+
       const result = validatePegMove(pegs[0], 2, 'green', pegs);
       expect(result.isValid).toBe(false);
       expect(result.reason).toBe('Cannot use warp - destination is blocked by your own peg');
@@ -499,10 +499,61 @@ describe('Move Validation Utils', () => {
         createPeg('yellow-peg-1', 'player4', 5), // Moving to position 8 (not a warp)
         createPeg('yellow-peg-2', 'player4', 8), // Blocking destination
       ];
-      
+
       const result = validatePegMove(pegs[0], 3, 'yellow', pegs);
       expect(result.isValid).toBe(false);
       expect(result.reason).toBe('Destination is blocked by your own peg'); // Regular blocking message
+    });
+
+    it('should capture opponent on warp space itself before warping', () => {
+      const pegs = [
+        createPeg('red-peg-1', 'player1', 0), // Can move to position 3 (warp) with roll of 3
+        createPeg('blue-peg-1', 'player2', 3), // Opponent ON the warp space
+      ];
+
+      const result = validatePegMove(pegs[0], 3, 'red', pegs);
+      expect(result.isValid).toBe(true);
+      expect(result.newPosition).toBe(3); // Lands on warp space
+      expect(result.warpSpaceCapturedPegId).toBe('blue-peg-1'); // Should capture opponent on warp space
+      expect(result.capturedPegId).toBeUndefined(); // No capture at destination
+    });
+
+    it('should capture opponent at both warp space and destination', () => {
+      const pegs = [
+        createPeg('red-peg-1', 'player1', 0), // Can move to position 3 (warp) with roll of 3
+        createPeg('blue-peg-1', 'player2', 3), // Opponent ON the warp space
+        createPeg('green-peg-1', 'player3', 17), // Opponent at warp destination
+      ];
+
+      const result = validatePegMove(pegs[0], 3, 'red', pegs);
+      expect(result.isValid).toBe(true);
+      expect(result.newPosition).toBe(3); // Lands on warp space
+      expect(result.warpSpaceCapturedPegId).toBe('blue-peg-1'); // Should capture opponent on warp space
+      expect(result.capturedPegId).toBe('green-peg-1'); // Should also capture opponent at destination
+    });
+
+    it('should handle warp space capture with second warp pair', () => {
+      // Testing with second warp pair: { from: 10, to: 24, id: 'warp2' }
+      const pegs = [
+        createPeg('blue-peg-1', 'player2', 8), // Can move to position 10 (warp) with roll of 2
+        createPeg('red-peg-1', 'player1', 10), // Opponent on the warp space
+      ];
+
+      const result = validatePegMove(pegs[0], 2, 'blue', pegs);
+      expect(result.isValid).toBe(true);
+      expect(result.newPosition).toBe(10); // Lands on warp space
+      expect(result.warpSpaceCapturedPegId).toBe('red-peg-1'); // Should capture opponent on warp space
+    });
+
+    it('should block warp if own peg is on warp space', () => {
+      const pegs = [
+        createPeg('red-peg-1', 'player1', 0), // Can move to position 3 (warp) with roll of 3
+        createPeg('red-peg-2', 'player1', 3), // Own peg blocking the warp space
+      ];
+
+      const result = validatePegMove(pegs[0], 3, 'red', pegs);
+      expect(result.isValid).toBe(false);
+      expect(result.reason).toBe('Destination is blocked by your own peg');
     });
   });
 });

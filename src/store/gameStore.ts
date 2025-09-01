@@ -4,7 +4,7 @@ import { GAME_CONFIG, ANIMATION_DURATION, TIMEOUT_CONFIG } from '@/constants/gam
 import { BOARD_CONFIG, isWarpSpace, getWarpDestination } from '@/constants/board';
 import { createPersistMiddleware, PersistApi } from './middleware/persistence';
 import { generateDiceRoll, applyStreakBreaker, createDieRollResult } from '@/utils/diceUtils';
-import { validatePegMove, getValidMoves, hasValidMoves as checkHasValidMoves, checkForCapture } from '@/utils/moveValidation';
+import { validatePegMove, getValidMoves, hasValidMoves as checkHasValidMoves } from '@/utils/moveValidation';
 import { useSettingsStore } from './settingsStore';
 
 export const useGameStore = create<GameStore & PersistApi>(
@@ -496,10 +496,14 @@ export const useGameStore = create<GameStore & PersistApi>(
 
           clearTurnTimer();
 
-          // Handle opponent capture first if there's one
-          if (validation.capturedPegId) {
-            console.log(`⚔️ Capture! Peg ${pegId} captures ${validation.capturedPegId} at position ${targetPosition}`);
+          // Handle warp space capture first if there's one (before moving to warp space)
+          if (validation.warpSpaceCapturedPegId) {
+            // Animate the capture - this will send the peg home after animation
+            await animateCapture(validation.warpSpaceCapturedPegId);
+          }
 
+          // Handle normal capture if there's one (for non-warp spaces)
+          if (validation.capturedPegId && !validation.warpSpaceCapturedPegId) {
             // Animate the capture - this will send the peg home after animation
             await animateCapture(validation.capturedPegId);
           }
@@ -517,21 +521,11 @@ export const useGameStore = create<GameStore & PersistApi>(
 
             if (warpDestination !== null) {
               finalPosition = warpDestination;
-              console.log(`🌀 Warp teleportation! From space ${targetPosition} to space ${warpDestination}`);
 
-              // Check if warp destination has an opponent that needs to be captured
-              const { pegs } = get();
-              const movingPeg = pegs.find(p => p.id === pegId);
-
-              if (movingPeg) {
-                const captureResult = checkForCapture(warpDestination, movingPeg.playerId, pegs);
-
-                if (captureResult.canCapture && captureResult.capturedPegId) {
-                  console.log(`⚔️ Warp Capture! Peg ${pegId} captures ${captureResult.capturedPegId} at warp destination ${warpDestination}`);
-
-                  // Animate the capture at the warp destination
-                  await animateCapture(captureResult.capturedPegId);
-                }
+              // Handle capture at warp destination if there's one from validation
+              if (validation.capturedPegId) {
+                // Animate the capture at the warp destination
+                await animateCapture(validation.capturedPegId);
               }
 
               // Trigger warp trail effect by updating peg with warp info
@@ -594,20 +588,13 @@ export const useGameStore = create<GameStore & PersistApi>(
             },
           });
 
-          // Log Double Trouble activation for debugging
-          if (landedOnDoubleTrouble && extraTurnsToAdd > 0) {
-            console.log(`🎯 Double Trouble! Peg landed on space ${targetPosition}, granted ${extraTurnsToAdd} extra turn(s)`);
-          }
-
           // Check if turn should end
           if (checkTurnEnd()) {
             endTurn();
           }
 
           return true;
-        } catch (error) {
-          console.error('Error executing peg move:', error);
-
+        } catch {
           return false;
         }
       },
@@ -755,17 +742,16 @@ export const useGameStore = create<GameStore & PersistApi>(
           setTimeout(() => {
             // Handle capture first if there's one
             if (movement.capturedPegId) {
-              console.log(`⚔️ Roll of 1 Capture! Peg ${movement.pegId} captures ${movement.capturedPegId} at START position ${movement.targetPosition}`);
               // Chain the promises properly
               animateCapture(movement.capturedPegId)
                 .then(() => animatePegMove(movement.pegId, movement.targetPosition))
-                .catch(error => {
-                  console.error(`Failed to animate Roll of 1 movement for peg ${movement.pegId}:`, error);
+                .catch(() => {
+                  // Animation failed - continue silently
                 });
             } else {
               // Just animate the peg movement to START
-              animatePegMove(movement.pegId, movement.targetPosition).catch(error => {
-                console.error(`Failed to animate Roll of 1 movement for peg ${movement.pegId}:`, error);
+              animatePegMove(movement.pegId, movement.targetPosition).catch(() => {
+                // Animation failed - continue silently
               });
             }
           }, delay);
