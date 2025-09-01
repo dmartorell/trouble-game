@@ -66,8 +66,7 @@ export const BoardSVG: FC<BoardSVGProps> = ({
         {/* Main Track Path with white background */}
         {renderMainTrack()}
 
-        {/* Warp Connection Indicators (behind spaces) */}
-        {renderWarpConnections()}
+        {/* Warp Connection Indicators (behind spaces) - REMOVED */}
 
         {/* Track Spaces */}
         {renderTrackSpaces(showSpaceNumbers)}
@@ -149,46 +148,6 @@ function renderPlayerCorners() {
       />
     </G>
   );
-}
-
-// Render visual connection indicators between paired warp spaces
-function renderWarpConnections() {
-  const connections: React.ReactElement[] = [];
-  const positions = calculateTrackSpacePositions();
-
-  BOARD_CONFIG.WARP_POSITIONS.forEach((warpPair, index) => {
-    const fromPos = positions.find(p => p.index === warpPair.from);
-    const toPos = positions.find(p => p.index === warpPair.to);
-
-    if (fromPos && toPos) {
-      // Create a subtle connecting line between warp pairs
-      connections.push(
-        <G key={`warp-connection-${index}`}>
-          {/* Main connection line */}
-          <Path
-            d={`M ${fromPos.x} ${fromPos.y} L ${toPos.x} ${toPos.y}`}
-            stroke="#6C5CE7"
-            strokeWidth={2}
-            strokeDasharray="5,5"
-            opacity={0.4}
-          />
-
-          {/* Animated pulse effect along the connection */}
-          <Path
-            d={`M ${fromPos.x} ${fromPos.y} L ${toPos.x} ${toPos.y}`}
-            stroke="#A29BFE"
-            strokeWidth={1}
-            strokeDasharray="3,7"
-            opacity={0.6}
-          >
-            {/* Simple animated dash offset for pulsing effect */}
-          </Path>
-        </G>,
-      );
-    }
-  });
-
-  return <G opacity={0.7}>{connections}</G>;
 }
 
 // Render the main white track path
