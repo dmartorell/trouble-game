@@ -226,13 +226,14 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
   - ✅ Send opponent home
   - ✅ Trigger capture animation
 
-- [ ] **#32.5** Implement lap completion tracking for FINISH entry validation
-  - Add hasCompletedLap boolean field to Peg model
-  - Track when pegs pass their START position to mark lap completion
-  - Update shouldEnterFinish logic to require lap completion
-  - Fix conflict between WARP spaces and FINISH entry points
-  - Ensure pegs can use WARP spaces before completing a lap
-  - **Priority: High** - Fixes bug where pegs cannot move to WARP spaces that coincide with FINISH entries
+- ✅ **#32.5** Implement lap completion tracking for FINISH entry validation (GitHub Issue #56 - COMPLETED 2025-09-01)
+  - ✅ Remove hasCompletedLap requirement from FINISH entry validation
+  - ✅ Implement pass-through vs exact-landing detection for FINISH/WARP spaces
+  - ✅ Fix WARP vs FINISH priority: WARP on exact landing, FINISH on pass-through
+  - ✅ Add space availability checking for blocked FINISH spaces
+  - ✅ Remove lap completion tracking from gameStore and Peg model
+  - ✅ Add comprehensive test coverage for all FINISH entry scenarios
+  - **Result**: Fixed core game mechanic bug where pegs couldn't move to WARP spaces that coincide with FINISH entries
 
 - [ ] **#33** Create FINISH zone entry validation
   - Check if peg can enter
@@ -339,12 +340,12 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 - ✅ Phase 1: Foundation (12/12 tasks) - 100% Complete
 - ✅ Phase 2: Core Mechanics (11/11 tasks) - 100% Complete
 - ✅ Phase 2.5: Game Integration (3/3 tasks) - 100% Complete
-- [ ] Phase 3: Special Features (6/11 tasks) - 55% Complete
+- [ ] Phase 3: Special Features (7/11 tasks) - 64% Complete
 - [ ] Phase 4: Polish & UX (0/9 tasks)
 - [ ] Phase 5: Testing & Optimization (0/4 tasks)
 
 ### Overall Progress
-**Completed:** 31/52 tasks (60%)
+**Completed:** 32/52 tasks (62%)
 **In Progress:** 0/52 tasks (0%)
 
 ### Milestones
@@ -413,6 +414,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 - ✅ **#29** Create Warp space pairs (Completed 2025-08-31)
 - ✅ **#30** Implement Warp teleportation animation (Completed 2025-08-31)
 - ✅ **#32** Add opponent capture mechanics (Completed 2025-08-31)
+- ✅ **#32.5** Implement lap completion tracking for FINISH entry validation (Completed 2025-09-01)
 
 **Navigation & Routing Section: 100% Complete**
 **State Management Section: 100% Complete (4/4 tasks)** ✅
@@ -422,7 +424,7 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 **Phase 1 Foundation: COMPLETE** ✅
 **Phase 2 Core Mechanics: COMPLETE** ✅ (11/11 tasks - 100% Complete)
 **Phase 2.5 Game Integration: COMPLETE** ✅ (3/3 tasks - 100% Complete)
-Next: Continue Phase 3 with Task #30 - Implement Warp teleportation animation
+Next: Continue Phase 3 with Task #33 - Create FINISH zone entry validation
 
 ---
 

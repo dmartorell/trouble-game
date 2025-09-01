@@ -21,6 +21,7 @@ export function calculateDestinationPosition(
   peg: Peg,
   dieRoll: number,
   playerColor: string,
+  allPegs: Peg[],
 ): number {
   // Moving from HOME to START requires a roll of 6
   if (peg.isInHome && dieRoll === 6) {
@@ -50,8 +51,6 @@ export function calculateDestinationPosition(
   // Normal board movement
   if (peg.position >= 0 && peg.position < BOARD_CONFIG.TOTAL_SPACES) {
     const newPosition = (peg.position + dieRoll) % BOARD_CONFIG.TOTAL_SPACES;
-
-    // Check if peg should enter FINISH area instead of continuing around board
     const playerColorIndex = ['red', 'blue', 'green', 'yellow'].indexOf(playerColor);
 
     // Invalid color check
@@ -60,17 +59,29 @@ export function calculateDestinationPosition(
     }
 
     const finishEntry = Object.values(BOARD_POSITIONS.finishEntries)[playerColorIndex];
+    const finishEntrySpace = finishEntry.trackSpace;
 
-    // If passing through finish entry point, enter FINISH if peg has completed full lap
-    if (shouldEnterFinish(peg.position, newPosition, finishEntry.trackSpace)) {
-      const spacesIntoFinish = dieRoll - (finishEntry.trackSpace - peg.position + 1);
+    // Check if peg passes THROUGH finish entry (not lands exactly on it)
+    if (passesThrough(peg.position, newPosition, finishEntrySpace)) {
+      // Calculate which FINISH space to enter
+      const finishSpaceIndex = calculateFinishSpace(peg.position, newPosition, finishEntrySpace);
 
-      if (spacesIntoFinish >= 0 && spacesIntoFinish < BOARD_CONFIG.FINISH_SPACES) {
-        return GAME_CONFIG.BOARD_SPACES + spacesIntoFinish;
+      // Check if FINISH space is available
+      if (isFinishSpaceAvailable(peg.playerId, finishSpaceIndex, allPegs)) {
+        return GAME_CONFIG.BOARD_SPACES + finishSpaceIndex;
+      } else {
+        return -2; // Blocked, can't move
       }
+    }
 
-      // If would exceed finish, invalid move
-      return -2;
+    // Check if lands exactly on WARP space (takes priority over FINISH entry)
+    const isWarpSpacePosition = BOARD_CONFIG.WARP_POSITIONS.some(warp =>
+      warp.from === newPosition || warp.to === newPosition,
+    );
+
+    if (isWarpSpacePosition) {
+      // WARP takes priority - return normal position for warp processing
+      return newPosition;
     }
 
     return newPosition;
@@ -80,27 +91,38 @@ export function calculateDestinationPosition(
 }
 
 /**
- * Check if a peg should enter FINISH area based on movement
+ * Check if peg passes THROUGH finish entry (not lands exactly on it)
  */
-function shouldEnterFinish(
-  currentPosition: number,
-  newPosition: number,
-  finishEntrySpace: number,
-): boolean {
-  // Only enter finish if peg has completed at least one full lap
-  // This is simplified - in a full implementation, we'd track lap completion
+function passesThrough(currentPos: number, newPos: number, entryPoint: number): boolean {
+  // Check if path crosses entry point without landing exactly on it
+  return currentPos < entryPoint && newPos > entryPoint;
+}
 
-  // Check if moving past or onto the finish entry point
-  if (currentPosition <= finishEntrySpace && newPosition >= finishEntrySpace) {
-    return true;
+/**
+ * Calculate which FINISH space to enter based on movement
+ */
+function calculateFinishSpace(currentPos: number, newPos: number, entryPoint: number): number {
+  // How many spaces past the entry point
+  return newPos - entryPoint - 1;
+}
+
+/**
+ * Check if a specific FINISH space is available
+ */
+function isFinishSpaceAvailable(playerId: string, spaceIndex: number, allPegs: Peg[]): boolean {
+  // Check if spaceIndex is valid (0-3)
+  if (spaceIndex < 0 || spaceIndex >= BOARD_CONFIG.FINISH_SPACES) {
+    return false;
   }
 
-  // Handle wraparound case
-  if (currentPosition > finishEntrySpace && newPosition < currentPosition) {
-    return newPosition >= finishEntrySpace;
-  }
+  // Check if the specific FINISH space is occupied by own peg
+  const blockingPeg = allPegs.find(peg =>
+    peg.playerId === playerId &&
+    peg.isInFinish &&
+    peg.finishPosition === spaceIndex,
+  );
 
-  return false;
+  return !blockingPeg;
 }
 
 /**
@@ -163,7 +185,7 @@ export function validatePegMove(
     }
 
     // Check if START space is blocked by own peg
-    const startPosition = calculateDestinationPosition(peg, dieRoll, playerColor);
+    const startPosition = calculateDestinationPosition(peg, dieRoll, playerColor, allPegs);
 
     // Check for invalid color
     if (startPosition === -2) {
@@ -193,12 +215,12 @@ export function validatePegMove(
   }
 
   // Calculate destination
-  const newPosition = calculateDestinationPosition(peg, dieRoll, playerColor);
+  const newPosition = calculateDestinationPosition(peg, dieRoll, playerColor, allPegs);
 
   if (newPosition === -2) {
     return {
       isValid: false,
-      reason: 'Move would exceed available spaces',
+      reason: 'Move would exceed available spaces or FINISH space is blocked',
     };
   }
 

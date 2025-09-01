@@ -148,9 +148,6 @@ export const Peg: FC<PegProps> = ({
   useEffect(() => {
     if (!isAnimating) return;
 
-    // For capture animation, targetPosition is not needed
-    if (animationType !== 'capture' && targetPosition === undefined) return;
-
     console.log(`Starting ${animationType} animation for peg ${id}: ${position} -> ${targetPosition}`);
 
     if (animationType === 'capture') {
@@ -189,7 +186,7 @@ export const Peg: FC<PegProps> = ({
       return; // Exit early for capture animation
     }
 
-    if (animationType === 'warp') {
+    if (animationType === 'warp' && targetPosition !== undefined) {
       // Warp teleportation animation
       const currentPos = getCurrentPosition(position);
       const targetPos = getCurrentPosition(targetPosition);
@@ -229,7 +226,7 @@ export const Peg: FC<PegProps> = ({
         }
       }, 800);
 
-    } else {
+    } else if (targetPosition !== undefined) {
       // Normal movement animation
       const config: MoveAnimationConfig = {
         startPosition: position,
