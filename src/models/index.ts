@@ -1,6 +1,6 @@
 export type PlayerColor = 'red' | 'blue' | 'yellow' | 'green';
 
-export type GameState = 'setup' | 'playing' | 'paused' | 'finished';
+export type GameState = 'setup' | 'playing' | 'finished';
 
 export type SpaceType = 'normal' | 'start' | 'home' | 'finish' | 'double-trouble' | 'warp';
 

@@ -40,7 +40,9 @@
       "Bash(npm test:*)",
       "Bash(grep:*)",
       "Bash(npm run test:*)",
-      "Bash(gh label:*)"
+      "Bash(gh label:*)",
+      "WebSearch",
+      "Bash(git restore:*)"
     ],
     "deny": [],
     "ask": []

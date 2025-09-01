@@ -11,7 +11,6 @@ export const GamePlayScreen = () => {
     handleDieRoll,
     handlePegPress,
     handlePlayAgain,
-    handleBackToMenu,
     isLocked,
     currentPlayer,
     players,
@@ -138,12 +137,11 @@ export const GamePlayScreen = () => {
       {/* Victory Modal */}
       <VictoryModal
         visible={!!winner}
-        winner={winner}
+        winner={winner || null}
         players={players}
         pegs={pegs}
         gameDuration={startTime > 0 ? Math.floor((Date.now() - startTime) / 1000) : 0}
         onPlayAgain={handlePlayAgain}
-        onBackToMenu={handleBackToMenu}
       />
     </View>
   );
@@ -215,6 +213,7 @@ const styles = StyleSheet.create({
   dieContainer: {
     alignItems: 'center',
     paddingVertical: 20,
+    gap: 15,
   },
   playerInfo: {
     flexDirection: 'row',

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { FC, useEffect, useRef } from 'react';
 import {
   Modal,
   View,
@@ -8,10 +8,10 @@ import {
   Animated,
   Dimensions,
 } from 'react-native';
+import { router } from 'expo-router';
 import { Player, Peg } from '@/models';
 import { PLAYER_COLORS } from '@/constants/game';
-import { ConfettiSystem } from './ConfettiSystem';
-import { PegCelebration } from './PegCelebration';
+import { useGameStore } from '@/store/gameStore';
 
 interface VictoryModalProps {
   visible: boolean;
@@ -20,20 +20,19 @@ interface VictoryModalProps {
   pegs: Peg[];
   gameDuration?: number;
   onPlayAgain: () => void;
-  onBackToMenu: () => void;
 }
 
 const { width: screenWidth } = Dimensions.get('window');
 
-export const VictoryModal: React.FC<VictoryModalProps> = ({
+export const VictoryModal: FC<VictoryModalProps> = ({
   visible,
   winner,
   players,
   pegs,
   gameDuration,
   onPlayAgain,
-  onBackToMenu,
 }) => {
+  const { resetGame } = useGameStore();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
@@ -46,7 +45,7 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
         Animated.timing(fadeAnim, {
           toValue: 1,
           duration: 300,
-          useNativeDriver: true,
+          useNativeDriver: false, // Changed to false because it's used with backgroundColor
         }),
         Animated.timing(slideAnim, {
           toValue: 0,
@@ -91,16 +90,27 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
     }
   }, [visible]);
 
-  if (!winner) return null;
+  // Enhanced null/undefined guards
+  if (!winner || typeof winner !== 'object') {
+    return null;
+  }
+
+  if (!winner.color || !PLAYER_COLORS[winner.color]) {
+    return null;
+  }
+
+  if (!Array.isArray(players) || !Array.isArray(pegs)) {
+    return null;
+  }
 
   const winnerColor = PLAYER_COLORS[winner.color];
-  const winnerPegs = pegs.filter(peg => peg.playerId === winner.id && peg.isInFinish);
 
   // Calculate final standings (winner first, then by number of pegs in finish)
   const standings = [...players]
+    .filter(player => player && typeof player === 'object' && player.id && player.name)
     .map(player => ({
       ...player,
-      finishedPegs: pegs.filter(peg => peg.playerId === player.id && peg.isInFinish).length,
+      finishedPegs: pegs.filter(peg => peg && peg.playerId === player.id && peg.isInFinish).length,
     }))
     .sort((a, b) => {
       if (a.id === winner.id) return -1;
@@ -109,16 +119,26 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
       return b.finishedPegs - a.finishedPegs;
     });
 
-  const formatDuration = (seconds: number) => {
+  const formatDuration = (seconds: number): string => {
+    // Guard against invalid numbers
+    if (typeof seconds !== 'number' || isNaN(seconds) || seconds < 0) {
+      return '0:00';
+    }
+
     const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
+    const remainingSeconds = Math.floor(seconds % 60);
 
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
+  // Create safe background color interpolation
+  const winnerColorWithAlpha = winnerColor && typeof winnerColor === 'string'
+    ? `${winnerColor}15`
+    : 'rgba(22, 33, 62, 0.95)';
+
   const backgroundColorInterpolation = backgroundPulseAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ['rgba(22, 33, 62, 0.95)', `${winnerColor}15`],
+    outputRange: ['rgba(22, 33, 62, 0.95)', winnerColorWithAlpha],
   });
 
   return (
@@ -137,20 +157,6 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
           },
         ]}
       >
-        {/* Confetti System */}
-        <ConfettiSystem
-          visible={visible}
-          winnerColor={winnerColor}
-          intensity={80}
-        />
-
-        {/* Peg Celebration for winner's pegs */}
-        <PegCelebration
-          visible={visible}
-          pegs={winnerPegs}
-          winnerColor={winnerColor}
-        />
-
         {/* Victory Modal Content */}
         <Animated.View
           style={[
@@ -176,50 +182,62 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
           {/* Winner Announcement */}
           <Text style={styles.winnerText}>
             <Text style={[styles.winnerName, { color: winnerColor }]}>
-              {winner.name}
+              {winner.name || 'Unknown Player'}
             </Text>
-            {' '}WINS!
+            <Text> WINS!</Text>
           </Text>
 
           {/* Game Stats */}
-          {gameDuration && (
+          {typeof gameDuration === 'number' && gameDuration > 0 && (
             <Text style={styles.durationText}>
-              Game Duration: {formatDuration(gameDuration)}
+              <Text>Game Duration: {formatDuration(gameDuration)}</Text>
             </Text>
           )}
 
           {/* Final Standings */}
           <View style={styles.standingsContainer}>
             <Text style={styles.standingsTitle}>Final Standings</Text>
-            {standings.map((player, index) => (
-              <View key={player.id} style={styles.standingRow}>
-                <Text style={styles.standingPosition}>#{index + 1}</Text>
-                <View
-                  style={[
-                    styles.standingColorDot,
-                    { backgroundColor: PLAYER_COLORS[player.color] },
-                  ]}
-                />
-                <Text
-                  style={[
-                    styles.standingName,
-                    player.id === winner.id && { color: winnerColor },
-                  ]}
-                >
-                  {player.name}
-                </Text>
-                <Text style={styles.standingPegs}>
-                  {player.finishedPegs}/4 pegs
-                </Text>
-              </View>
-            ))}
+            {standings.map((player, index) => {
+              if (!player || !player.id || !player.name) {
+                return null;
+              }
+
+              const playerColor = player.color && PLAYER_COLORS[player.color] ? PLAYER_COLORS[player.color] : '#CCCCCC';
+              const finishedPegsCount = typeof player.finishedPegs === 'number' ? player.finishedPegs : 0;
+
+              return (
+                <View key={player.id} style={styles.standingRow}>
+                  <Text style={styles.standingPosition}>#{index + 1}</Text>
+                  <View
+                    style={[
+                      styles.standingColorDot,
+                      { backgroundColor: playerColor },
+                    ]}
+                  />
+                  <Text
+                    style={[
+                      styles.standingName,
+                      player.id === winner.id && { color: winnerColor },
+                    ]}
+                  >
+                    {player.name}
+                  </Text>
+                  <Text style={styles.standingPegs}>
+                    {finishedPegsCount}/4 pegs
+                  </Text>
+                </View>
+              );
+            })}
           </View>
 
           {/* Action Buttons */}
           <View style={styles.buttonContainer}>
             <Pressable
               style={[styles.button, styles.secondaryButton]}
-              onPress={onBackToMenu}
+              onPress={() => {
+                resetGame(); // Reset game state and close modal
+                router.back(); // Navigate back to previous screen (same as EXIT button)
+              }}
             >
               <Text style={styles.secondaryButtonText}>Back to Menu</Text>
             </Pressable>
