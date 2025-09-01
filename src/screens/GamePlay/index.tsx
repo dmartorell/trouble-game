@@ -54,11 +54,6 @@ export const GamePlayScreen = () => {
               {currentPlayer ? `${currentPlayer.name}'s Turn` : 'Loading...'}
             </Text>
           </View>
-          {extraTurnsRemaining > 0 && (
-            <Text style={styles.extraTurnsIndicator}>
-              Extra Turns: {extraTurnsRemaining} | Roll {rollsThisTurn}/2
-            </Text>
-          )}
         </View>
       </View>
 
@@ -189,12 +184,6 @@ const styles = StyleSheet.create({
     color: '#FFA502',
     fontSize: 16,
     fontWeight: '700',
-  },
-  extraTurnsIndicator: {
-    color: '#2ED573',
-    fontSize: 12,
-    fontWeight: '600',
-    marginTop: 2,
   },
   scrollContent: {
     flex: 1,

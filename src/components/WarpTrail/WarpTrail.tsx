@@ -150,7 +150,7 @@ export const WarpTrail: FC<WarpTrailProps> = ({
         {/* Bright core */}
         <AnimatedPath
           d={pathData}
-          stroke="#FFFFFF"
+          stroke="#6C5CE7"
           strokeWidth={1}
           fill="none"
           strokeLinecap="round"

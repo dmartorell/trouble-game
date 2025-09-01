@@ -235,12 +235,12 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
   - ✅ Add comprehensive test coverage for all FINISH entry scenarios
   - **Result**: Fixed core game mechanic bug where pegs couldn't move to WARP spaces that coincide with FINISH entries
 
-- [ ] **#33** Create FINISH zone entry validation
+- ✅ **#33** Create FINISH zone entry validation
   - Check if peg can enter
   - Validate exact count
   - Handle overflow
 
-- [ ] **#34** Implement exact count for FINISH
+- ✅ **#34** Implement exact count for FINISH
   - Calculate remaining spaces
   - Block invalid moves
   - Suggest alternatives
@@ -340,12 +340,12 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 - ✅ Phase 1: Foundation (12/12 tasks) - 100% Complete
 - ✅ Phase 2: Core Mechanics (11/11 tasks) - 100% Complete
 - ✅ Phase 2.5: Game Integration (3/3 tasks) - 100% Complete
-- [ ] Phase 3: Special Features (7/11 tasks) - 64% Complete
+- [ ] Phase 3: Special Features (9/11 tasks) - 82% Complete
 - [ ] Phase 4: Polish & UX (0/9 tasks)
 - [ ] Phase 5: Testing & Optimization (0/4 tasks)
 
 ### Overall Progress
-**Completed:** 32/52 tasks (62%)
+**Completed:** 34/52 tasks (65%)
 **In Progress:** 0/52 tasks (0%)
 
 ### Milestones
