@@ -14,12 +14,14 @@ export const useGamePlay = () => {
     currentTurn,
     players,
     pegs,
+    winner,
     getCurrentPlayer,
     getPlayerPegs,
     getSelectablePegs,
     isValidMove,
     executePegMove,
     getMoveValidation,
+    resetGame,
   } = useGameStore();
 
   const currentPlayer = getCurrentPlayer();
@@ -48,6 +50,19 @@ export const useGamePlay = () => {
   const exitGame = () => {
     router.back();
   };
+
+  const handlePlayAgain = useCallback(() => {
+    resetGame();
+    router.replace('/game/setup');
+  }, [resetGame]);
+
+  const handleBackToMenu = useCallback(() => {
+    resetGame();
+    router.replace('/');
+  }, [resetGame]);
+
+  // Get winner as Player object
+  const winnerPlayer = winner ? players.find(p => p.id === winner) : null;
 
   const handleDieRoll = useCallback((value: number) => {
     // Update local state
@@ -108,6 +123,8 @@ export const useGamePlay = () => {
     exitGame,
     handleDieRoll,
     handlePegPress,
+    handlePlayAgain,
+    handleBackToMenu,
     dieValue,
     rollCount,
     isLocked,
@@ -115,6 +132,7 @@ export const useGamePlay = () => {
     currentPlayer,
     players,
     pegs,
+    winner: winnerPlayer,
     currentPlayerPegs,
     selectablePegIds,
     currentDieRoll: currentTurn?.dieRoll?.value,
