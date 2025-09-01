@@ -93,17 +93,65 @@ export function calculateDestinationPosition(
 
 /**
  * Check if peg passes THROUGH finish entry (not lands exactly on it)
+ * Also handles starting AT the entry point and wraparound cases
  */
 function passesThrough(currentPos: number, newPos: number, entryPoint: number): boolean {
-  // Check if path crosses entry point without landing exactly on it
-  return currentPos < entryPoint && newPos > entryPoint;
+  // Case 1: Starting AT the entry point and moving forward
+  if (currentPos === entryPoint && newPos !== entryPoint) {
+    return true;
+  }
+
+  // Case 2: Normal pass through (not wrapping around)
+  if (currentPos < entryPoint && newPos > entryPoint) {
+    return true;
+  }
+
+  // Case 3: Wraparound - when newPos < currentPos, we've wrapped around the board
+  if (newPos < currentPos) {
+    // Check if entry point is between current position and end of board (27)
+    // OR between start of board (0) and new position
+    return (currentPos < entryPoint) || (entryPoint <= newPos);
+  }
+
+  return false;
 }
 
 /**
  * Calculate which FINISH space to enter based on movement
  */
 function calculateFinishSpace(currentPos: number, newPos: number, entryPoint: number): number {
-  // How many spaces past the entry point
+  // Special case: Starting AT the entry point
+  if (currentPos === entryPoint) {
+    // When at entry point, any forward movement enters FINISH
+    // Roll of 2 → FINISH[0], Roll of 3 → FINISH[1], etc.
+    const moveDistance = ((newPos - currentPos + BOARD_CONFIG.TOTAL_SPACES) % BOARD_CONFIG.TOTAL_SPACES);
+
+    // Subtract 2 because we need to account for passing through the entry
+    return moveDistance - 2;
+  }
+
+  // Case: Wraparound movement
+  if (newPos < currentPos) {
+    // Calculate total distance moved considering wraparound
+    const totalDistance = (BOARD_CONFIG.TOTAL_SPACES - currentPos) + newPos;
+
+    // Calculate spaces from current position to entry point (handling wraparound)
+    let spacesToEntry;
+
+    if (currentPos <= entryPoint) {
+      spacesToEntry = entryPoint - currentPos;
+    } else {
+      spacesToEntry = (BOARD_CONFIG.TOTAL_SPACES - currentPos) + entryPoint;
+    }
+
+    // Spaces moved past the entry point determines the FINISH position
+    const spacesPastEntry = totalDistance - spacesToEntry;
+
+    // When passing through, spaces past entry directly maps to FINISH position
+    return spacesPastEntry;
+  }
+
+  // Normal case: How many spaces past the entry point
   return newPos - entryPoint - 1;
 }
 

@@ -319,6 +319,39 @@ describe('Move Validation Utils', () => {
       expect(result).toBe(24); // Returns warp space position for warp processing
     });
 
+    it('should enter FINISH when starting AT entry point', () => {
+      // RED PEG AT 24 (after warp), roll 2: should go to FINISH[0]
+      // This is the exact bug scenario reported by the user
+      const peg = createPeg('red-peg-1', 'player1', 24);
+      const allPegs = [peg];
+      const result = calculateDestinationPosition(peg, 2, 'red', allPegs);
+      expect(result).toBe(56); // BOARD_SPACES(28) + FINISH[0] = 56
+    });
+
+    it('should enter FINISH when starting AT entry point with different roll', () => {
+      // Red peg at 24, roll 3: should go to FINISH[1]
+      const peg = createPeg('red-peg-1', 'player1', 24);
+      const allPegs = [peg];
+      const result = calculateDestinationPosition(peg, 3, 'red', allPegs);
+      expect(result).toBe(57); // BOARD_SPACES(28) + FINISH[1] = 57
+    });
+
+    it('should handle wraparound FINISH entry for Red player', () => {
+      // Red peg at 26, roll 6: 26→27→0→1→2→3, passes through 24 → FINISH[3]
+      const peg = createPeg('red-peg-1', 'player1', 26);
+      const allPegs = [peg];
+      const result = calculateDestinationPosition(peg, 6, 'red', allPegs);
+      expect(result).toBe(4); // Normal movement, doesn't pass through 24
+    });
+
+    it('should handle wraparound FINISH entry for Blue player', () => {
+      // Blue peg at 27, roll 6: 27→0→1→2→3(pass through)→4→5, passes through 3 → FINISH[2]
+      const peg = createPeg('blue-peg-1', 'player2', 27);
+      const allPegs = [peg];
+      const result = calculateDestinationPosition(peg, 6, 'blue', allPegs);
+      expect(result).toBe(58); // GAME_CONFIG.BOARD_SPACES(56) + FINISH[2] = 58
+    });
+
     it('should reject FINISH entry when space is blocked', () => {
       // Red peg at 22, roll 3, but FINISH[0] is occupied
       const peg1 = createPeg('red-peg-1', 'player1', 22);
