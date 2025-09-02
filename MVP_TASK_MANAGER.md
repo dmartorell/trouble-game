@@ -3,7 +3,7 @@
 ## Overview
 This document tracks all development tasks for the Trouble Game MVP. Each task is designed to be completed in 1-3 hours of focused work.
 
-**Total Tasks:** 52
+**Total Tasks:** 53
 **Estimated Duration:** 8 weeks
 **Target:** 2-player fully functional game
 
@@ -312,6 +312,13 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
   - Show path preview
   - Indicate special effects
 
+- [ ] **#44** Fix Peg Movement Animation in FINISH Area
+  - Pegs moving within FINISH area have no animation/movement effect
+  - Add smooth animation when pegs move between FINISH spaces
+  - Ensure consistent animation behavior with main board movements
+  - Test movement animations for all FINISH positions (0-3)
+  - Maintain visual feedback for player actions in FINISH area
+
 ---
 
 ## Phase 5: Testing & Optimization (Week 8)
@@ -344,12 +351,12 @@ This document tracks all development tasks for the Trouble Game MVP. Each task i
 - ✅ Phase 2: Core Mechanics (11/11 tasks) - 100% Complete
 - ✅ Phase 2.5: Game Integration (3/3 tasks) - 100% Complete
 - ✅ Phase 3: Special Features (10/10 tasks) - 100% Complete
-- [ ] Phase 4: Polish & UX (2/9 tasks) - 22% Complete
+- [ ] Phase 4: Polish & UX (2/10 tasks) - 20% Complete
 - [ ] Phase 5: Testing & Optimization (0/4 tasks)
 
 ### Overall Progress
-**Completed:** 38/52 tasks (73%)
-**In Progress:** 0/52 tasks (0%)
+**Completed:** 38/53 tasks (72%)
+**In Progress:** 0/53 tasks (0%)
 
 ### Milestones
 - ✅ **Milestone 1:** MVP Foundation - Basic navigation and state (100% complete)
